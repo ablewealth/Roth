@@ -132,6 +132,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 }, 0);
             };
 
+            const getFederalTaxableIncome = (income) => Math.max(0, income - federalStandardDeduction);
+            const getFederalGrossCeilingForBracket = (bracket) => bracket.max + federalStandardDeduction;
+
             const calculateFederalTax = (income) => calculateTax(income, federalTaxBrackets, federalStandardDeduction);
             
             const calculateStateTax = (income, state) => {
@@ -207,8 +210,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 if (strategy === 'optimized') {
                     const targetBracket = federalTaxBrackets.find(b => b.rate === maxTaxBracket);
-                    const targetIncome = targetBracket ? targetBracket.max : federalTaxBrackets[2].max;
-                    
+                    const targetIncome = getFederalGrossCeilingForBracket(targetBracket || federalTaxBrackets[2]);
+
                     let remainingAmount = total;
                     for (let i = 0; i < years && remainingAmount > 0; i++) {
                         const growingIncome = currentIncome * Math.pow(1 + inputs.incomeGrowthRate, i);
@@ -918,8 +921,8 @@ document.addEventListener('DOMContentLoaded', function() {
             function createAdvancedCharts() {
                 // Enhanced Tax Bracket Chart
                 const maxConv = Math.max(...(analysisData.inputs.conversions.map(c => c.amount) || [0]));
-                const income = analysisData.inputs.currentIncome;
-                const incomeWithConv = income + maxConv;
+                const income = getFederalTaxableIncome(analysisData.inputs.currentIncome);
+                const incomeWithConv = getFederalTaxableIncome(analysisData.inputs.currentIncome + maxConv);
                 
                 const bracketData = federalTaxBrackets.map(bracket => {
                     if (incomeWithConv < bracket.min) return 0;
@@ -1529,7 +1532,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const currentMarginalRate = calculateMarginalFederalTaxRate(inputs.currentIncome) + calculateMarginalStateTaxRate(inputs.currentIncome, inputs.stateResidency);
                 
                 // Calculate optimal conversion amount
-                const roomInBracket = Math.max(0, targetBracket.max - inputs.currentIncome);
+                const roomInBracket = Math.max(0, getFederalGrossCeilingForBracket(targetBracket) - inputs.currentIncome);
                 const optimalAnnual = Math.min(roomInBracket, inputs.iraBalance * 0.15); // Max 15% per year
                 
                 if (optimalAnnual > 0) {
