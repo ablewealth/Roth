@@ -184,6 +184,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     maxTaxBracket: getInputValue('maxTaxBracket') / 100,
                     preRetirementReturn: getInputValue('preRetirementReturn') / 100,
                     postRetirementReturn: getInputValue('postRetirementReturn') / 100,
+                    inflationRate: getInputValue('inflationRate') / 100,
+                    adjustForInflation: document.getElementById('adjustForInflation').checked,
                     payTaxesFrom: document.getElementById('payTaxesFrom').value,
                     rmdAge: getInputValue('rmdAge'),
                     includeSocialSecurity: document.getElementById('includeSocialSecurity').checked,
@@ -254,6 +256,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 return (originalValue - discountedValue) / originalValue;
             }
 
+            function getInflationFactor(year, inputs) {
+                if (!inputs.adjustForInflation) return 1;
+                return Math.pow(1 + inputs.inflationRate, year);
+            }
+
+            function getDisplayValue(value, year, inputs) {
+                return value / getInflationFactor(year, inputs);
+            }
+
             // Enhanced calculation engine
             function performCalculations(inputs) {
                 const data = {
@@ -280,9 +291,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 let traditionalBalance = inputs.iraBalance;
                 let rothBalance = 0;
                 let opportunityCost = 0;
-                let cumulativeConversions = 0;
-                let cumulativeTaxes = 0;
-                let cumulativeDiscountBenefit = 0;
+                let opportunityCostBasis = 0;
+                let displayCumulativeConversions = 0;
+                let displayCumulativeTaxes = 0;
+                let displayDiscountBenefit = 0;
 
                 const analysisYears = 45; // Extended for better analysis
 
@@ -296,7 +308,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (year > 0) {
                         traditionalBalance *= (1 + returnRate);
                         rothBalance *= (1 + returnRate);
-                        opportunityCost *= (1 + (isRetired ? inputs.postRetirementReturn : inputs.preRetirementReturn));
+                        opportunityCost *= (1 + returnRate);
                     }
                     
                     // Process conversions with potential asset discounting
@@ -316,9 +328,11 @@ document.addEventListener('DOMContentLoaded', function() {
                             const discountRatio = discountedBalance / traditionalBalance;
                             discountedConversionValue = conversionAmount * discountRatio;
                         }
+
+                        const discountBenefit = conversionAmount - discountedConversionValue;
                         
                         effectiveDiscountRate = calculateEffectiveDiscountRate(conversionAmount, discountedConversionValue);
-                        cumulativeDiscountBenefit += (conversionAmount - discountedConversionValue);
+                        displayDiscountBenefit += getDisplayValue(discountBenefit, year, inputs);
                     }
                     
                     let federalTax = 0;
@@ -337,13 +351,15 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         marginalRate = calculateMarginalFederalTaxRate(incomeWithConversion) + calculateMarginalStateTaxRate(incomeWithConversion, inputs.stateResidency);
                         
-                        cumulativeConversions += conversionAmount; // Track actual IRA amount converted
-                        cumulativeTaxes += totalTax;
+                        // Track actual IRA amounts converted and taxes paid in display terms
+                        displayCumulativeConversions += getDisplayValue(conversionAmount, year, inputs);
+                        displayCumulativeTaxes += getDisplayValue(totalTax, year, inputs);
                         
                         if (inputs.payTaxesFrom === 'ira') {
                             traditionalBalance -= totalTax;
                         } else {
                             opportunityCost += totalTax;
+                            opportunityCostBasis += totalTax;
                         }
 
                         traditionalBalance -= conversionAmount; // Remove actual conversion amount from traditional IRA
@@ -363,34 +379,45 @@ document.addEventListener('DOMContentLoaded', function() {
                     const retirementFedRate = calculateMarginalFederalTaxRate(projectedRetirementIncome);
                     const retirementStateRate = calculateMarginalStateTaxRate(projectedRetirementIncome, inputs.stateResidency);
                     const totalRetirementTaxRate = retirementFedRate + retirementStateRate;
+                    const taxableOpportunityGain = Math.max(0, opportunityCost - opportunityCostBasis);
+                    const afterTaxOpportunityCost = opportunityCost - (taxableOpportunityGain * inputs.capitalGainsRate);
+                    const displayTraditionalBalance = getDisplayValue(traditionalBalance, year, inputs);
+                    const displayRothBalance = getDisplayValue(rothBalance, year, inputs);
+                    const displayTraditionalAfterTax = getDisplayValue(traditionalBalance * (1 - totalRetirementTaxRate), year, inputs);
+                    const displayOpportunityCost = getDisplayValue(afterTaxOpportunityCost, year, inputs);
+                    const displayRmd = getDisplayValue(rmd, year, inputs);
+                    const displayFederalTax = getDisplayValue(federalTax, year, inputs);
+                    const displayStateTax = getDisplayValue(stateTax, year, inputs);
+                    const displayTotalTax = getDisplayValue(totalTax, year, inputs);
+                    const displayDiscountedConversion = getDisplayValue(discountedConversionValue, year, inputs);
 
                     // Store data points
                     data.years.push(year);
-                    data.traditionalIRA.push(traditionalBalance);
-                    data.rothIRA.push(rothBalance);
-                    data.traditionalAfterTax.push(traditionalBalance * (1 - totalRetirementTaxRate));
-                    data.opportunityCost.push(opportunityCost);
-                    data.rothNetBenefit.push(rothBalance - opportunityCost);
-                    data.netAdvantage.push((rothBalance - opportunityCost) - (traditionalBalance * (1 - totalRetirementTaxRate)));
-                    data.federalTaxes[year] = federalTax;
-                    data.stateTaxes[year] = stateTax;
-                    data.conversionTaxes[year] = totalTax;
-                    data.cumulativeConversions[year] = cumulativeConversions;
-                    data.rmdAmounts[year] = rmd;
+                    data.traditionalIRA.push(displayTraditionalBalance);
+                    data.rothIRA.push(displayRothBalance);
+                    data.traditionalAfterTax.push(displayTraditionalAfterTax);
+                    data.opportunityCost.push(displayOpportunityCost);
+                    data.rothNetBenefit.push(displayRothBalance - displayOpportunityCost);
+                    data.netAdvantage.push((displayRothBalance - displayOpportunityCost) - displayTraditionalAfterTax);
+                    data.federalTaxes[year] = displayFederalTax;
+                    data.stateTaxes[year] = displayStateTax;
+                    data.conversionTaxes[year] = displayTotalTax;
+                    data.cumulativeConversions[year] = displayCumulativeConversions;
+                    data.rmdAmounts[year] = displayRmd;
                     data.marginalRates[year] = marginalRate;
-                    data.discountedConversions[year] = discountedConversionValue;
+                    data.discountedConversions[year] = displayDiscountedConversion;
                     data.effectiveDiscountRates[year] = effectiveDiscountRate;
-                    data.opportunityGrowth[year] = opportunityCost > 0 ? (opportunityCost / cumulativeTaxes - 1) : 0;
+                    data.opportunityGrowth[year] = displayOpportunityCost > 0 && displayCumulativeTaxes > 0 ? (displayOpportunityCost / displayCumulativeTaxes - 1) : 0;
                 }
                 
                 // Calculate summary metrics
                 data.breakEvenYear = data.netAdvantage.findIndex(adv => adv > 0);
                 data.totalAdvantage = data.netAdvantage[analysisYears];
-                data.totalTaxesPaid = cumulativeTaxes;
+                data.totalTaxesPaid = displayCumulativeTaxes;
                 data.finalOpportunityCost = data.opportunityCost[analysisYears];
-                data.opportunityReturn = data.finalOpportunityCost > 0 ? Math.pow(data.finalOpportunityCost / cumulativeTaxes, 1/analysisYears) - 1 : 0;
-                data.totalDiscountBenefit = cumulativeDiscountBenefit;
-                data.effectiveTaxSavings = cumulativeDiscountBenefit > 0 ? (cumulativeDiscountBenefit * (data.marginalRates.find(r => r > 0) || 0.24)) : 0;
+                data.opportunityReturn = data.finalOpportunityCost > 0 && displayCumulativeTaxes > 0 ? Math.pow(data.finalOpportunityCost / displayCumulativeTaxes, 1/analysisYears) - 1 : 0;
+                data.totalDiscountBenefit = displayDiscountBenefit;
+                data.effectiveTaxSavings = displayDiscountBenefit > 0 ? (displayDiscountBenefit * (data.marginalRates.find(r => r > 0) || 0.24)) : 0;
                 
                 return data;
             }
@@ -500,15 +527,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 const taxPaymentYears = analysisData.inputs.isMultiYear ? analysisData.inputs.conversionYears : 1;
                 const avgAnnualTax = totalTaxesPaid / taxPaymentYears;
                 const effectiveReturn = opportunityReturn * 100;
+                const projectionLabel = analysisData.inputs.adjustForInflation ? ' (Today\'s Dollars)' : '';
                 
                 let breakdownHTML = `
                     <div class="cost-item">
                         <div class="cost-item-value">${formatCurrency(totalTaxesPaid)}</div>
-                        <div class="cost-item-label">Total Tax Payments</div>
+                        <div class="cost-item-label">Total Tax Payments${projectionLabel}</div>
                     </div>
                     <div class="cost-item">
                         <div class="cost-item-value">${formatCurrency(avgAnnualTax)}</div>
-                        <div class="cost-item-label">Avg. Annual Tax Payment</div>
+                        <div class="cost-item-label">Avg. Annual Tax Payment${projectionLabel}</div>
                     </div>
                     <div class="cost-item">
                         <div class="cost-item-value">${formatPercent(effectiveReturn / 100)}</div>
@@ -540,7 +568,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     breakdownHTML += `
                         <div class="cost-item">
                             <div class="cost-item-value">${formatCurrency(finalOpportunityCost)}</div>
-                            <div class="cost-item-label">Final Opportunity Cost</div>
+                            <div class="cost-item-label">Final Opportunity Cost${projectionLabel}</div>
                         </div>
                     `;
                 }
@@ -1679,7 +1707,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const inputsToWatch = [
                     'clientName', 'stateResidency', 'currentAge', 'retirementAge', 'iraBalance', 
                     'currentIncome', 'totalConversionAmount', 'conversionYears', 'preRetirementReturn', 
-                    'postRetirementReturn', 'multiYearStrategy', 'conversionStrategy', 'payTaxesFrom', 
+                    'postRetirementReturn', 'inflationRate', 'adjustForInflation', 'multiYearStrategy', 'conversionStrategy', 'payTaxesFrom',
                     'maxTaxBracket', 'conversionAmount', 'capitalGainsRate', 'rmdAge', 
                     'includeSocialSecurity', 'socialSecurityBenefit', 'incomeGrowthRate',
                     'enableAssetDiscount', 'valuationDiscount', 'operationalReduction', 'discountStrategy',
