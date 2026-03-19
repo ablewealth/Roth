@@ -1,0 +1,3949 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWM Roth Conversion Analyzer Pro - 2025 Enhanced</title>
+
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+
+
+    <style type="text/css">
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 300;
+            src: url(/cf-fonts/v/inter/5.0.16/greek-ext/wght/normal.woff2);
+            unicode-range: U+1F00-1FFF;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 300;
+            src: url(/cf-fonts/v/inter/5.0.16/vietnamese/wght/normal.woff2);
+            unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 300;
+            src: url(/cf-fonts/v/inter/5.0.16/latin-ext/wght/normal.woff2);
+            unicode-range: U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 300;
+            src: url(/cf-fonts/v/inter/5.0.16/latin/wght/normal.woff2);
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 300;
+            src: url(/cf-fonts/v/inter/5.0.16/greek/wght/normal.woff2);
+            unicode-range: U+0370-03FF;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 300;
+            src: url(/cf-fonts/v/inter/5.0.16/cyrillic/wght/normal.woff2);
+            unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 300;
+            src: url(/cf-fonts/v/inter/5.0.16/cyrillic-ext/wght/normal.woff2);
+            unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 400;
+            src: url(/cf-fonts/v/inter/5.0.16/cyrillic/wght/normal.woff2);
+            unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 400;
+            src: url(/cf-fonts/v/inter/5.0.16/latin/wght/normal.woff2);
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 400;
+            src: url(/cf-fonts/v/inter/5.0.16/vietnamese/wght/normal.woff2);
+            unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 400;
+            src: url(/cf-fonts/v/inter/5.0.16/cyrillic-ext/wght/normal.woff2);
+            unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 400;
+            src: url(/cf-fonts/v/inter/5.0.16/greek/wght/normal.woff2);
+            unicode-range: U+0370-03FF;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 400;
+            src: url(/cf-fonts/v/inter/5.0.16/greek-ext/wght/normal.woff2);
+            unicode-range: U+1F00-1FFF;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 400;
+            src: url(/cf-fonts/v/inter/5.0.16/latin-ext/wght/normal.woff2);
+            unicode-range: U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 500;
+            src: url(/cf-fonts/v/inter/5.0.16/cyrillic-ext/wght/normal.woff2);
+            unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 500;
+            src: url(/cf-fonts/v/inter/5.0.16/greek/wght/normal.woff2);
+            unicode-range: U+0370-03FF;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 500;
+            src: url(/cf-fonts/v/inter/5.0.16/vietnamese/wght/normal.woff2);
+            unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 500;
+            src: url(/cf-fonts/v/inter/5.0.16/cyrillic/wght/normal.woff2);
+            unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 500;
+            src: url(/cf-fonts/v/inter/5.0.16/latin/wght/normal.woff2);
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 500;
+            src: url(/cf-fonts/v/inter/5.0.16/greek-ext/wght/normal.woff2);
+            unicode-range: U+1F00-1FFF;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 500;
+            src: url(/cf-fonts/v/inter/5.0.16/latin-ext/wght/normal.woff2);
+            unicode-range: U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 600;
+            src: url(/cf-fonts/v/inter/5.0.16/cyrillic/wght/normal.woff2);
+            unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 600;
+            src: url(/cf-fonts/v/inter/5.0.16/latin/wght/normal.woff2);
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 600;
+            src: url(/cf-fonts/v/inter/5.0.16/cyrillic-ext/wght/normal.woff2);
+            unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 600;
+            src: url(/cf-fonts/v/inter/5.0.16/latin-ext/wght/normal.woff2);
+            unicode-range: U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 600;
+            src: url(/cf-fonts/v/inter/5.0.16/vietnamese/wght/normal.woff2);
+            unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 600;
+            src: url(/cf-fonts/v/inter/5.0.16/greek/wght/normal.woff2);
+            unicode-range: U+0370-03FF;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 600;
+            src: url(/cf-fonts/v/inter/5.0.16/greek-ext/wght/normal.woff2);
+            unicode-range: U+1F00-1FFF;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 700;
+            src: url(/cf-fonts/v/inter/5.0.16/cyrillic/wght/normal.woff2);
+            unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 700;
+            src: url(/cf-fonts/v/inter/5.0.16/latin/wght/normal.woff2);
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 700;
+            src: url(/cf-fonts/v/inter/5.0.16/latin-ext/wght/normal.woff2);
+            unicode-range: U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 700;
+            src: url(/cf-fonts/v/inter/5.0.16/vietnamese/wght/normal.woff2);
+            unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 700;
+            src: url(/cf-fonts/v/inter/5.0.16/greek/wght/normal.woff2);
+            unicode-range: U+0370-03FF;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 700;
+            src: url(/cf-fonts/v/inter/5.0.16/greek-ext/wght/normal.woff2);
+            unicode-range: U+1F00-1FFF;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 700;
+            src: url(/cf-fonts/v/inter/5.0.16/cyrillic-ext/wght/normal.woff2);
+            unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 800;
+            src: url(/cf-fonts/v/inter/5.0.16/latin/wght/normal.woff2);
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 800;
+            src: url(/cf-fonts/v/inter/5.0.16/cyrillic/wght/normal.woff2);
+            unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 800;
+            src: url(/cf-fonts/v/inter/5.0.16/greek/wght/normal.woff2);
+            unicode-range: U+0370-03FF;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 800;
+            src: url(/cf-fonts/v/inter/5.0.16/latin-ext/wght/normal.woff2);
+            unicode-range: U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 800;
+            src: url(/cf-fonts/v/inter/5.0.16/vietnamese/wght/normal.woff2);
+            unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 800;
+            src: url(/cf-fonts/v/inter/5.0.16/cyrillic-ext/wght/normal.woff2);
+            unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 800;
+            src: url(/cf-fonts/v/inter/5.0.16/greek-ext/wght/normal.woff2);
+            unicode-range: U+1F00-1FFF;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 900;
+            src: url(/cf-fonts/v/inter/5.0.16/cyrillic-ext/wght/normal.woff2);
+            unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 900;
+            src: url(/cf-fonts/v/inter/5.0.16/cyrillic/wght/normal.woff2);
+            unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 900;
+            src: url(/cf-fonts/v/inter/5.0.16/latin-ext/wght/normal.woff2);
+            unicode-range: U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 900;
+            src: url(/cf-fonts/v/inter/5.0.16/latin/wght/normal.woff2);
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 900;
+            src: url(/cf-fonts/v/inter/5.0.16/greek/wght/normal.woff2);
+            unicode-range: U+0370-03FF;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 900;
+            src: url(/cf-fonts/v/inter/5.0.16/vietnamese/wght/normal.woff2);
+            unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: Inter;
+            font-style: normal;
+            font-weight: 900;
+            src: url(/cf-fonts/v/inter/5.0.16/greek-ext/wght/normal.woff2);
+            unicode-range: U+1F00-1FFF;
+            font-display: swap;
+        }
+    </style>
+    <style>
+        :root {
+            /* Black Theme Color Palette */
+            --primary-color: #000000;
+            --primary-hover: #333333;
+            --primary-light: #f5f5f5;
+            --primary-gradient: linear-gradient(135deg, #000000 0%, #333333 100%);
+            --secondary-color: #1f2937;
+            --accent-color: #000000;
+            --accent-hover: #333333;
+            --warning-color: #f59e0b;
+            --error-color: #ef4444;
+            --success-color: #000000;
+
+            /* Modern Grays */
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+
+            /* Backgrounds */
+            --background-primary: #ffffff;
+            --background-secondary: var(--gray-50);
+            --card-background: #ffffff;
+
+            /* Text Colors */
+            --text-primary: var(--gray-900);
+            --text-secondary: var(--gray-600);
+            --text-muted: var(--gray-500);
+
+            /* Borders */
+            --border-color: var(--gray-200);
+            --border-light: var(--gray-100);
+
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+
+            /* Border Radius - All set to 0 for sharp corners */
+            --radius-sm: 0px;
+            --radius-md: 0px;
+            --radius-lg: 0px;
+            --radius-xl: 0px;
+            --radius-2xl: 0px;
+
+            /* Transitions */
+            --transition-fast: 0.15s ease;
+            --transition-medium: 0.3s ease;
+            --transition-slow: 0.5s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: var(--background-secondary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            font-size: 15px;
+            font-weight: 400;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .header {
+            background: var(--card-background);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-xl);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+        }
+
+        .header-logo img {
+            height: 40px;
+            width: auto;
+        }
+
+        .header-title {
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        .header-title h3 {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .header-title h1 {
+            font-size: 2.25rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            letter-spacing: -0.025em;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-title h4 a {
+            font-size: 1rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            background: var(--primary-light);
+            transition: all var(--transition-fast);
+        }
+
+        .header-title h4 a:hover {
+            color: var(--primary-hover);
+            background: #dbeafe;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .header-client-info {
+            text-align: right;
+            font-size: 1rem;
+            color: var(--text-secondary);
+        }
+
+        #headerClientName {
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 24px;
+        }
+
+        .sidebar {
+            background: var(--card-background);
+            height: fit-content;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+        }
+
+        .sidebar-content {
+            padding: 28px;
+            max-height: calc(100vh - 10px);
+            overflow-y: auto;
+        }
+
+        .sidebar-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .sidebar-content::-webkit-scrollbar-track {
+            background: var(--gray-100);
+            border-radius: 0px;
+        }
+
+        .sidebar-content::-webkit-scrollbar-thumb {
+            background: var(--gray-300);
+            border-radius: 0px;
+        }
+
+        .sidebar-content::-webkit-scrollbar-thumb:hover {
+            background: var(--gray-400);
+        }
+
+        .content-area {
+            background: var(--card-background);
+            border-radius: var(--radius-2xl);
+            box-shadow: var(--shadow-lg);
+            padding: 28px;
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .content-area::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+        }
+
+        .section-header {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .subsection-header {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 24px 0 20px 0;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            background: var(--card-background);
+            transition: all var(--transition-fast);
+            font-family: inherit;
+            font-weight: 400;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 16px;
+            background: var(--gray-50);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-light);
+            transition: all var(--transition-fast);
+        }
+
+        .checkbox-group:hover {
+            background: var(--gray-100);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary-color);
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            font-weight: 600;
+            color: var(--text-primary);
+            cursor: pointer;
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .input-hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 6px;
+            font-style: italic;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .strategy-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .action-btn {
+            padding: 12px 24px;
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all var(--transition-fast);
+            font-family: inherit;
+            box-shadow: var(--shadow-md);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .optimization-btn {
+            background: var(--accent-color);
+        }
+
+        .optimization-btn:hover {
+            background: var(--accent-hover);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .report-btn {
+            background: var(--primary-color);
+        }
+
+        .report-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+
+        .metric-card {
+            background: var(--card-background);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-xl);
+            padding: 24px;
+            text-align: center;
+            transition: all var(--transition-medium);
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .metric-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-5px);
+            border-color: var(--primary-color);
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary-gradient);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform var(--transition-medium);
+        }
+
+        .metric-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: var(--primary-color);
+            transition: all var(--transition-fast);
+        }
+
+        .metric-label {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .alert {
+            padding: 16px 20px;
+            border-radius: var(--radius-md);
+            margin-bottom: 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            border: 1px solid;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            box-shadow: var(--shadow-sm);
+            animation: fadeInUp 0.4s ease-out;
+        }
+
+        .alert i {
+            font-size: 1.25rem;
+            margin-top: 2px;
+        }
+
+        .alert-success {
+            color: #065f46;
+            border-color: #a7f3d0;
+            background: #ecfdf5;
+        }
+
+        .alert-success i {
+            color: #10b981;
+        }
+
+        .alert-warning {
+            color: #92400e;
+            border-color: #fde68a;
+            background: #fffbeb;
+        }
+
+        .alert-warning i {
+            color: #f59e0b;
+        }
+
+        .alert-info {
+            color: #1e40af;
+            border-color: #bfdbfe;
+            background: #eff6ff;
+        }
+
+        .alert-info i {
+            color: #3b82f6;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+            background: var(--gray-50);
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            padding: 6px;
+            gap: 6px;
+        }
+
+        .tab {
+            padding: 14px 20px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text-secondary);
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-md);
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab:hover {
+            color: var(--primary-color);
+            background: var(--card-background);
+        }
+
+        .tab.active {
+            color: var(--primary-color);
+            background: var(--card-background);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .chart-container {
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-xl);
+            padding: 56px;
+            margin-bottom: 28px;
+            position: relative;
+            height: 450px;
+            background: var(--card-background);
+            box-shadow: var(--shadow-sm);
+            overflow: auto;
+        }
+
+        .chart-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary-gradient);
+        }
+
+        .chart-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+            background: var(--card-background);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 14px 18px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .data-table th {
+            background: var(--gray-50);
+            font-weight: 700;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .data-table tr:hover {
+            background: var(--gray-50);
+        }
+
+        .positive {
+            color: var(--success-color);
+            font-weight: 700;
+        }
+
+        .negative {
+            color: var(--error-color);
+            font-weight: 700;
+        }
+
+        .comparison-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 28px;
+        }
+
+        .strategy-card {
+            background: var(--card-background);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-xl);
+            padding: 28px;
+            transition: all var(--transition-medium);
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .strategy-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+        }
+
+        .strategy-card.selected {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .strategy-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .strategy-title {
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            font-size: 1.25rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .strategy-details {
+            flex-grow: 1;
+            margin-bottom: 20px;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            font-size: 1rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .detail-value {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .strategy-final-value {
+            margin-top: auto;
+            padding: 24px;
+            border-radius: var(--radius-md);
+            text-align: center;
+            border: 1px solid var(--primary-color);
+            background: var(--primary-light);
+        }
+
+        .final-label {
+            display: block;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+
+        .final-value {
+            display: block;
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            line-height: 1.2;
+        }
+
+        /* Opportunity Cost Section */
+        .opportunity-cost-section {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.05) 0%, rgba(16, 185, 129, 0.05) 100%);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-xl);
+            padding: 28px;
+            margin-bottom: 28px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .opportunity-explanation {
+            background: var(--card-background);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            margin-top: 20px;
+            border-left: 4px solid var(--warning-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .cost-breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .cost-item {
+            background: var(--card-background);
+            padding: 20px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            transition: all var(--transition-fast);
+        }
+
+        .cost-item:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .cost-item-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--warning-color);
+            margin-bottom: 8px;
+        }
+
+        .cost-item-label {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .disclosure {
+            margin-top: 48px;
+            padding: 28px 0;
+            background: transparent;
+            border: none;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .disclosure h4 {
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            font-size: 1.125rem;
+            font-weight: 700;
+        }
+
+        .disclosure p {
+            margin-bottom: 12px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar-content {
+                max-height: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 16px;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 20px;
+                padding: 20px;
+            }
+
+            .header-title {
+                text-align: center;
+            }
+
+            .comparison-container {
+                grid-template-columns: 1fr;
+            }
+
+            .content-area,
+            .sidebar {
+                padding: 24px;
+            }
+
+            .chart-container {
+                height: 350px;
+                padding: 25px;
+            }
+
+            .results-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .action-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .strategy-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Enhanced Print Styles - Professional Wealth Management Report */
+        @media print {
+            :root {
+                --print-primary-color: #1a1a1a;
+                --print-secondary-color: #4a5568;
+                --print-accent-color: #2563eb;
+                --print-border-color: #e2e8f0;
+                --print-background-color: #f8fafc;
+                --print-header-bg: #f1f5f9;
+            }
+
+            @page {
+                size: A4 portrait;
+                margin: 1.5cm 2cm;
+            }
+
+            body {
+                background: #ffffff !important;
+                color: var(--print-primary-color) !important;
+                font-family: 'Times New Roman', serif;
+                font-size: 11pt;
+                line-height: 1.4;
+            }
+
+            /* Hide non-report content */
+            body>*:not(#print-report-container) {
+                display: none !important;
+            }
+
+            #print-report-container {
+                display: block !important;
+                width: 100% !important;
+                margin: 0;
+                padding: 0;
+            }
+
+            /* Header Styles */
+            .print-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 2em;
+                padding: 1.5em;
+                background: var(--print-header-bg);
+                border: 2px solid var(--print-accent-color);
+                border-radius: 8px;
+                page-break-inside: avoid;
+            }
+
+            .print-company-name {
+                font-size: 20pt;
+                font-weight: bold;
+                color: var(--print-accent-color);
+                margin: 0;
+                letter-spacing: 0.5px;
+            }
+
+            .print-company-tagline {
+                font-size: 10pt;
+                color: var(--print-secondary-color);
+                margin: 0.3em 0 0 0;
+                font-style: italic;
+            }
+
+            .print-header-info {
+                text-align: right;
+            }
+
+            .print-header-info h2 {
+                font-size: 16pt;
+                font-weight: bold;
+                margin: 0 0 0.5em 0;
+                color: var(--print-primary-color);
+            }
+
+            .print-header-info p {
+                font-size: 10pt;
+                margin: 0.2em 0;
+                color: var(--print-secondary-color);
+            }
+
+            /* Section Headers */
+            .print-section-header {
+                font-size: 14pt;
+                font-weight: bold;
+                color: var(--print-accent-color);
+                margin: 1.5em 0 0.8em 0;
+                padding-bottom: 0.3em;
+                border-bottom: 2px solid var(--print-accent-color);
+                page-break-after: avoid;
+            }
+
+            /* Executive Summary */
+            .executive-summary {
+                background: var(--print-background-color);
+                padding: 1.5em;
+                border-left: 4px solid var(--print-accent-color);
+                margin: 1.5em 0;
+                page-break-inside: avoid;
+                border-radius: 4px;
+            }
+
+            .executive-summary h3 {
+                font-size: 13pt;
+                font-weight: bold;
+                margin: 0 0 1em 0;
+                color: var(--print-accent-color);
+            }
+
+            .executive-summary p {
+                margin: 0.6em 0;
+                line-height: 1.5;
+            }
+
+            .executive-summary strong {
+                color: var(--print-primary-color);
+            }
+
+            /* Key Metrics Grid */
+            .results-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1em;
+                margin: 1.5em 0;
+                page-break-inside: avoid;
+            }
+
+            .metric-card {
+                border: 1px solid var(--print-border-color);
+                padding: 1em;
+                text-align: center;
+                background: var(--print-background-color);
+                border-radius: 4px;
+            }
+
+            .metric-value {
+                font-size: 14pt;
+                font-weight: bold;
+                margin-bottom: 0.4em;
+                color: var(--print-accent-color);
+            }
+
+            .metric-label {
+                font-size: 9pt;
+                color: var(--print-secondary-color);
+                font-weight: normal;
+                line-height: 1.3;
+            }
+
+            /* Chart Styling */
+            .chart-section {
+                margin: 2em 0;
+                page-break-inside: avoid;
+            }
+
+            .chart-image {
+                width: 100%;
+                height: auto;
+                border: 1px solid var(--print-border-color);
+                border-radius: 4px;
+                margin: 1em 0;
+            }
+
+            /* Table Styling */
+            .print-table-container {
+                margin: 1.5em 0;
+                page-break-inside: avoid;
+            }
+
+            .data-table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 9pt;
+                margin: 1em 0;
+                border: 1px solid var(--print-border-color);
+            }
+
+            .data-table th {
+                background: var(--print-header-bg);
+                border: 1px solid var(--print-border-color);
+                padding: 0.6em 0.4em;
+                font-weight: bold;
+                text-align: center;
+                font-size: 8pt;
+                color: var(--print-primary-color);
+            }
+
+            .data-table td {
+                border: 1px solid var(--print-border-color);
+                padding: 0.5em 0.4em;
+                text-align: center;
+                font-size: 8pt;
+            }
+
+            .data-table th:first-child,
+            .data-table td:first-child {
+                text-align: left;
+                font-weight: 500;
+            }
+
+            .data-table tr:nth-child(even) {
+                background: #fafafa;
+            }
+
+            /* Key Insights Box */
+            .key-insights {
+                background: var(--print-background-color);
+                border: 1px solid var(--print-border-color);
+                border-radius: 4px;
+                padding: 1.5em;
+                margin: 1.5em 0;
+                page-break-inside: avoid;
+            }
+
+            .key-insights h4 {
+                font-size: 12pt;
+                font-weight: bold;
+                margin: 0 0 1em 0;
+                color: var(--print-accent-color);
+            }
+
+            .key-insights ul {
+                margin: 0;
+                padding-left: 1.2em;
+            }
+
+            .key-insights li {
+                margin: 0.5em 0;
+                line-height: 1.4;
+            }
+
+            /* Disclaimer/Disclosure */
+            .print-disclosure {
+                margin-top: 3em;
+                padding-top: 1.5em;
+                border-top: 1px solid var(--print-border-color);
+                font-size: 8pt;
+                color: var(--print-secondary-color);
+                line-height: 1.4;
+                page-break-inside: avoid;
+            }
+
+            .print-disclosure h4 {
+                font-size: 10pt;
+                font-weight: bold;
+                margin: 0 0 0.8em 0;
+                color: var(--print-primary-color);
+            }
+
+            .print-disclosure p {
+                margin: 0.5em 0;
+                text-align: justify;
+            }
+
+            /* Page break controls */
+            .page-break-before {
+                page-break-before: always;
+            }
+
+            .page-break-after {
+                page-break-after: always;
+            }
+
+            .no-page-break {
+                page-break-inside: avoid;
+            }
+
+            /* Footer styling for page numbers */
+            @page {
+                @bottom-center {
+                    content: "Page " counter(page) " of " counter(pages);
+                    font-size: 8pt;
+                    color: var(--print-secondary-color);
+                }
+            }
+        }
+
+        /* Loading Animation */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            backdrop-filter: blur(4px);
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--gray-200);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Enhanced animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.4s ease-out;
+        }
+
+        /* Tooltip styles */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: var(--gray-800);
+            color: white;
+            text-align: center;
+            border-radius: var(--radius-md);
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            font-size: 0.85rem;
+            opacity: 0;
+            transition: opacity 0.2s;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Card hover effects */
+        .metric-card,
+        .strategy-card,
+        .chart-container,
+        .opportunity-cost-section {
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .metric-card:hover,
+        .strategy-card:hover,
+        .chart-container:hover,
+        .opportunity-cost-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Input focus effects */
+        .input-group input:focus,
+        .input-group select:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.2);
+        }
+
+        /* Button hover effects */
+        .action-btn {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+
+        .action-btn:focus:not(:active)::after {
+            animation: ripple 1s ease-out;
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: scale(50, 50);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header class="header fade-in-up">
+            <div class="header-logo">
+                <img src="https://ablewealth.com/AWM%20Logo%203.png" alt="Able Wealth Management Logo"
+                    onerror="this.alt='Able Wealth Management'; this.style.display='none';">
+            </div>
+            <div class="header-title">
+                <h1>Roth Conversion Analyzer</h1>
+            </div>
+            <div class="header-client-info">
+                <div id="headerClientName"><i class="fas fa-user"></i> <span id="clientNameDisplay">John & Jane
+                        Doe</span></div>
+                <div id="headerDate"></div>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <div class="sidebar fade-in-up">
+                <div class="sidebar-content">
+                    <div class="section-header"><i class="fas fa-user-edit"></i> Client & Scenario Inputs</div>
+
+                    <div class="subsection-header"><i class="fas fa-address-card"></i> Client Details</div>
+                    <div class="input-group">
+                        <label for="clientName"><i class="fas fa-signature"></i> Client Name</label>
+                        <input type="text" id="clientName" value="John & Jane Doe">
+                    </div>
+                    <div class="input-group">
+                        <label for="stateResidency"><i class="fas fa-map-marker-alt"></i> State of Residency</label>
+                        <select id="stateResidency">
+                            <option value="NY">New York</option>
+                            <option value="NJ">New Jersey</option>
+                            <option value="CA">California</option>
+                            <option value="FL">Florida</option>
+                            <option value="TX">Texas</option>
+                            <option value="other">Other (No State Tax)</option>
+                        </select>
+                    </div>
+
+                    <div class="subsection-header"><i class="fas fa-dollar-sign"></i> Financial Parameters</div>
+                    <div class="input-group">
+                        <label for="currentAge"><i class="fas fa-birthday-cake"></i> Current Age</label>
+                        <input type="number" id="currentAge" value="45">
+                    </div>
+                    <div class="input-group">
+                        <label for="retirementAge"><i class="fas fa-cocktail"></i> Retirement Age</label>
+                        <input type="number" id="retirementAge" value="65">
+                    </div>
+                    <div class="input-group">
+                        <label for="iraBalance"><i class="fas fa-piggy-bank"></i> Current IRA Balance</label>
+                        <input type="text" id="iraBalance" value="1,000,000" data-type="currency">
+                    </div>
+                    <div class="input-group">
+                        <label for="currentIncome"><i class="fas fa-money-bill-wave"></i> Current Annual Income</label>
+                        <input type="text" id="currentIncome" value="150,000" data-type="currency">
+                    </div>
+                    <div class="input-group hidden" id="incomeGrowthRateGroup">
+                        <label for="incomeGrowthRate"><i class="fas fa-chart-line"></i> Income Growth Rate (%)</label>
+                        <input type="number" id="incomeGrowthRate" value="3" step="0.1">
+                    </div>
+
+                    <div class="subsection-header"><i class="fas fa-exchange-alt"></i> Conversion Strategy</div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="multiYearStrategy" checked>
+                        <label for="multiYearStrategy">Multi-Year Conversion Strategy</label>
+                    </div>
+                    <div id="conversionStrategyDiv">
+                        <div class="input-group">
+                            <label for="totalConversionAmount"><i class="fas fa-coins"></i> Total Conversion
+                                Amount</label>
+                            <input type="text" id="totalConversionAmount" value="500,000" data-type="currency">
+                        </div>
+                        <div class="strategy-grid">
+                            <div class="input-group">
+                                <label for="conversionYears"><i class="fas fa-calendar-alt"></i> Period (Years)</label>
+                                <input type="number" id="conversionYears" value="5">
+                                <div class="input-hint" id="conversionAgeHint"></div>
+                            </div>
+                            <div class="input-group">
+                                <label for="conversionStrategy"><i class="fas fa-cogs"></i> Type</label>
+                                <select id="conversionStrategy">
+                                    <option value="equal">Equal Annual</option>
+                                    <option value="optimized">Tax-Optimized</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="input-group hidden" id="maxBracketDiv">
+                            <label for="maxTaxBracket"><i class="fas fa-percentage"></i> Max Tax Bracket</label>
+                            <select id="maxTaxBracket">
+                                <option value="22">22%</option>
+                                <option value="24" selected>24%</option>
+                                <option value="32">32%</option>
+                                <option value="35">35%</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="input-group hidden" id="singleConversionDiv">
+                        <label for="conversionAmount"><i class="fas fa-coins"></i> Single Conversion Amount</label>
+                        <input type="text" id="conversionAmount" value="500,000" data-type="currency">
+                    </div>
+
+                    <div class="subsection-header"><i class="fas fa-sliders-h"></i> Assumptions & Advanced Options</div>
+                    <div class="input-group">
+                        <label for="preRetirementReturn"><i class="fas fa-chart-line"></i> Pre-Retirement Return
+                            (%)</label>
+                        <input type="number" id="preRetirementReturn" value="8" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label for="postRetirementReturn"><i class="fas fa-chart-line"></i> Post-Retirement Return
+                            (%)</label>
+                        <input type="number" id="postRetirementReturn" value="6" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label for="capitalGainsRate"><i class="fas fa-percentage"></i> Capital Gains Rate (%)</label>
+                        <input type="number" id="capitalGainsRate" value="20" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label for="payTaxesFrom"><i class="fas fa-file-invoice-dollar"></i> Pay Conversion Taxes
+                            From</label>
+                        <select id="payTaxesFrom">
+                            <option value="outside">Outside Funds</option>
+                            <option value="ira">IRA Withdrawal</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="rmdAge"><i class="fas fa-calendar-alt"></i> RMD Starting Age</label>
+                        <input type="number" id="rmdAge" value="73">
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="includeSocialSecurity">
+                        <label for="includeSocialSecurity">Include Social Security</label>
+                    </div>
+                    <div class="input-group hidden" id="socialSecurityDiv">
+                        <label for="socialSecurityBenefit"><i class="fas fa-hand-holding-usd"></i> Annual Social
+                            Security</label>
+                        <input type="text" id="socialSecurityBenefit" value="30,000" data-type="currency">
+                    </div>
+
+                    <div class="subsection-header"><i class="fas fa-tags"></i> Asset Valuation Discount (Advanced)</div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="enableAssetDiscount">
+                        <label for="enableAssetDiscount">Apply Asset Valuation Discount</label>
+                    </div>
+                    <div class="input-group hidden" id="assetDiscountDiv">
+                        <div class="opportunity-explanation">
+                            <h4><i class="fas fa-exclamation-triangle"></i> Advanced Feature</h4>
+                            <p>This feature models scenarios where IRA assets are valued at a discount prior to
+                                conversion (e.g., private investments, oil & gas partnerships, real estate). Requires
+                                qualified independent appraisal for actual implementation.</p>
+                        </div>
+                        <div class="strategy-grid">
+                            <div class="input-group">
+                                <label for="valuationDiscount"><i class="fas fa-percentage"></i> Valuation Discount
+                                    (%)</label>
+                                <input type="number" id="valuationDiscount" value="35" step="1" min="0" max="90">
+                                <div class="input-hint">Combined DLOM + Minority Interest discount</div>
+                            </div>
+                            <div class="input-group">
+                                <label for="operationalReduction"><i class="fas fa-percentage"></i> Initial Operational
+                                    Reduction (%)</label>
+                                <input type="number" id="operationalReduction" value="70" step="1" min="0" max="95">
+                                <div class="input-hint">IDCs, startup costs, operational expenses</div>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label for="discountStrategy"><i class="fas fa-cogs"></i> Discount Application</label>
+                            <select id="discountStrategy">
+                                <option value="conversion">Apply Only to Conversion Amount</option>
+                                <option value="entire">Apply to Entire IRA Balance</option>
+                            </select>
+                            <div class="input-hint">Whether discount applies to full IRA or just conversion portion
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="subsection-header"><i class="fas fa-calendar-alt"></i> Analysis Year</div>
+                    <div class="input-group">
+                        <label for="analysisYear"><i class="fas fa-clock"></i> Net Advantage Analysis Year</label>
+                        <input type="number" id="analysisYear" min="1" max="45" value="45"
+                            onchange="updateNetAdvantage(this.value);" oninput="updateNetAdvantage(this.value);">
+                        <div class="input-hint">
+                            <i class="fas fa-info-circle"></i> Adjusts the "Net Advantage at Year X" metric to show
+                            results for the selected year (1-45)
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-area fade-in-up">
+                <div class="results-header">
+                    <button class="action-btn optimization-btn" id="optimizeBtn"><i class="fas fa-magic"></i>
+                        Auto-Optimize Strategy</button>
+                    <button class="action-btn report-btn" id="generateReportBtn"><i class="fas fa-file-pdf"></i>
+                        Generate Professional Report</button>
+                </div>
+
+                <div id="alertsContainer"></div>
+
+                <div class="tabs">
+                    <button class="tab active" data-tab="summary"><i class="fas fa-chart-bar"></i> Executive
+                        Summary</button>
+                    <button class="tab" data-tab="opportunity"><i class="fas fa-lightbulb"></i> Opportunity Cost
+                        Analysis</button>
+                    <button class="tab" data-tab="strategy"><i class="fas fa-chart-line"></i> Conversion
+                        Strategy</button>
+                    <button class="tab" data-tab="analysis"><i class="fas fa-table"></i> Detailed Analysis</button>
+                    <button class="tab" data-tab="tax"><i class="fas fa-file-invoice-dollar"></i> Tax
+                        Optimization</button>
+                    <button class="tab" data-tab="scenarios"><i class="fas fa-dice"></i> Scenario Modeling</button>
+                    <button class="tab" data-tab="rmd"><i class="fas fa-calendar-alt"></i> RMD Analysis</button>
+                </div>
+
+                <div class="tab-content">
+                    <div id="summaryTab">
+                        <div class="results-grid" id="keyMetrics"></div>
+                        <div class="chart-container">
+                            <div class="chart-title"><i class="fas fa-chart-line"></i> Net Worth Comparison (After-Tax)
+                            </div>
+                            <canvas id="comparisonChart"></canvas>
+                        </div>
+                        <div class="comparison-container">
+                            <div class="strategy-card" id="traditionalCard">
+                                <div class="strategy-title"><i class="fas fa-university"></i> Traditional IRA Strategy
+                                </div>
+                                <div class="strategy-details">
+                                    <div class="detail-item">
+                                        <span class="detail-label">Final Pre-Tax Value</span>
+                                        <span class="detail-value" id="tradPreTaxValue"></span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Total RMDs Taken</span>
+                                        <span class="detail-value" id="tradRmdsValue"></span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Est. Future Taxes</span>
+                                        <span class="detail-value" id="tradTaxesValue"></span>
+                                    </div>
+                                </div>
+                                <div class="strategy-final-value">
+                                    <span class="final-label">Final After-Tax Value</span>
+                                    <span class="final-value" id="tradFinalValue"></span>
+                                </div>
+                            </div>
+                            <div class="strategy-card selected" id="rothCard">
+                                <div class="strategy-title"><i class="fas fa-seedling"></i> Roth Conversion Strategy
+                                </div>
+                                <div class="strategy-details">
+                                    <div class="detail-item">
+                                        <span class="detail-label">Final Roth Balance</span>
+                                        <span class="detail-value" id="rothBalanceValue"></span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Opportunity Cost</span>
+                                        <span class="detail-value" id="rothOppCostValue"></span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Total Taxes Paid</span>
+                                        <span class="detail-value" id="rothTaxesPaidValue"></span>
+                                    </div>
+                                </div>
+                                <div class="strategy-final-value">
+                                    <span class="final-label">Final Net Value</span>
+                                    <span class="final-value" id="rothFinalValue"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="opportunityTab" class="hidden">
+                        <div class="opportunity-cost-section">
+                            <div class="chart-title"><i class="fas fa-lightbulb"></i> Opportunity Cost Analysis</div>
+                            <div class="opportunity-explanation">
+                                <h4>Understanding Opportunity Cost</h4>
+                                <p>Opportunity cost represents the potential investment growth that could have been
+                                    achieved if the taxes paid for Roth conversions were instead invested in a taxable
+                                    account. This analysis helps determine whether the tax-free growth of Roth assets
+                                    outweighs the investment potential of the tax payments.</p>
+                                <p><strong>Key Insight:</strong> The Roth conversion is beneficial when the final Roth
+                                    value minus opportunity cost exceeds the traditional IRA after-tax value.</p>
+                            </div>
+                            <div class="cost-breakdown" id="opportunityCostBreakdown"></div>
+                        </div>
+                        <div class="chart-container">
+                            <div class="chart-title"><i class="fas fa-chart-line"></i> Opportunity Cost vs. Roth Growth
+                            </div>
+                            <canvas id="opportunityCostChart"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <div class="chart-title"><i class="fas fa-balance-scale"></i> Break-Even Analysis</div>
+                            <canvas id="breakEvenChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div id="strategyTab" class="hidden">
+                        <div class="chart-container">
+                            <div class="chart-title"><i class="fas fa-calendar-alt"></i> Multi-Year Conversion & Tax
+                                Timeline</div>
+                            <canvas id="conversionTimelineChart"></canvas>
+                        </div>
+                        <div class="table-header">
+                            <div class="chart-title"><i class="fas fa-table"></i> Conversion Schedule</div>
+                        </div>
+                        <table class="data-table" id="conversionTable"></table>
+                    </div>
+
+                    <div id="analysisTab" class="hidden">
+                        <div class="table-header">
+                            <div class="chart-title"><i class="fas fa-table"></i> Year-by-Year Comparison</div>
+                        </div>
+                        <table class="data-table" id="detailedTable"></table>
+                    </div>
+
+                    <div id="taxTab" class="hidden">
+                        <div class="chart-container">
+                            <div class="chart-title"><i class="fas fa-file-invoice-dollar"></i> Tax Bracket Impact
+                                Analysis</div>
+                            <canvas id="taxBracketChart"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <div class="chart-title"><i class="fas fa-percentage"></i> Marginal vs. Effective Tax Rates
+                            </div>
+                            <canvas id="marginalTaxChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div id="scenariosTab" class="hidden">
+                        <div class="chart-container">
+                            <div class="chart-title"><i class="fas fa-dice"></i> Monte Carlo Simulation (1,000
+                                Scenarios)</div>
+                            <canvas id="monteCarloChart"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <div class="chart-title"><i class="fas fa-sliders-h"></i> Sensitivity Analysis</div>
+                            <canvas id="sensitivityChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div id="rmdTab" class="hidden">
+                        <div class="chart-container">
+                            <div class="chart-title"><i class="fas fa-calendar-alt"></i> RMD Projections</div>
+                            <canvas id="rmdChart"></canvas>
+                        </div>
+                        <div class="table-header">
+                            <div class="chart-title"><i class="fas fa-table"></i> RMD Schedule</div>
+                        </div>
+                        <table class="data-table" id="rmdTable"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="disclosure">
+            <p><strong>Disclosure Statement</strong></br>
+                The information provided by the Roth Conversion Analyzer is intended for educational and illustrative
+                purposes only. The projections and calculations presented are based on assumptions input by the user and
+                do not constitute guarantees of future outcomes. Investment results and tax impacts will vary based on
+                individual circumstances, market conditions, and changes in tax laws or regulations. This tool is not
+                intended to provide personalized tax, legal, or investment advice. Clients should consult with a
+                qualified tax professional or financial advisor before implementing any Roth IRA conversion strategies
+                to ensure suitability for their specific financial situation. Able Wealth Management LLC ("AWM") is a
+                registered investment adviser. Registration with the U.S. Securities and Exchange Commission does not
+                imply any particular level of skill or training. All investments carry risk, including the potential
+                loss of principal. Past performance does not guarantee future results. AWM does not warrant the
+                accuracy, completeness, or timeliness of the data or results generated by the Roth Conversion Analyzer.
+                All strategies and projections should be independently reviewed with current information and
+                professional guidance. For more information about our advisory services, please refer to our Form ADV
+                Part 2A, available upon request or at www.adviserinfo.sec.gov (CRD #298085).</p>
+        </div>
+    </div>
+
+    <div id="print-report-container"></div>
+
+    <script>
+        // Global function to update net advantage for a specific year
+        function updateNetAdvantage(year) {
+            console.log('updateNetAdvantage called with year:', year);
+
+            const selectedYear = parseInt(year);
+            if (isNaN(selectedYear) || selectedYear < 1 || selectedYear > 45) {
+                console.log('Invalid year:', year);
+                return;
+            }
+
+            // Check if we have analysis data
+            if (!window.analysisData || !window.analysisData.netAdvantage) {
+                console.log('No analysis data available yet - please run calculation first');
+                alert('Please wait for the initial calculation to complete, then try again.');
+                return;
+            }
+
+            // Get all relevant data for the selected year
+            const data = window.analysisData;
+            const selectedYearAdvantage = data.netAdvantage[selectedYear];
+            const rothBalance = data.rothIRA[selectedYear];
+            const traditionalBalance = data.traditionalIRA[selectedYear];
+            const opportunityCost = data.opportunityCost[selectedYear];
+            const totalTaxesPaid = data.totalTaxesPaid;
+
+            if (selectedYearAdvantage === undefined) {
+                console.log('No data for year:', selectedYear);
+                return;
+            }
+
+            // Format currency function
+            const formatCurrency = (v) => new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(v);
+
+            console.log('Year', selectedYear, 'data:');
+            console.log('- Net Advantage:', formatCurrency(selectedYearAdvantage));
+            console.log('- Roth Balance:', formatCurrency(rothBalance));
+            console.log('- Traditional Balance:', formatCurrency(traditionalBalance));
+            console.log('- Opportunity Cost:', formatCurrency(opportunityCost));
+            console.log('- Total Taxes Paid:', formatCurrency(totalTaxesPaid));
+            
+            // Show conversion details if multi-year
+            if (data.inputs && data.inputs.isMultiYear) {
+                console.log('Multi-year conversion details:');
+                console.log('- Total Conversion Amount:', formatCurrency(data.inputs.totalConversionAmount));
+                console.log('- Conversion Years:', data.inputs.conversionYears);
+                console.log('- Strategy:', data.inputs.conversionStrategy);
+                
+                // Show conversions by year
+                if (data.inputs.conversions) {
+                    console.log('Conversions by year:');
+                    data.inputs.conversions.forEach(conv => {
+                        console.log(`  Year ${conv.year}: ${formatCurrency(conv.amount)}`);
+                    });
+                }
+            }
+
+            const formatPercent = (v) => isNaN(v) ? '0.0%' : (v * 100).toFixed(1) + '%';
+
+            // Calculate ROI for selected year
+            const conversionROI = totalTaxesPaid > 0 ? ((selectedYearAdvantage / totalTaxesPaid) * 100) : 0;
+
+            // Find break-even year (first year where net advantage becomes positive)
+            let breakEvenYear = -1;
+            for (let i = 1; i <= 45; i++) {
+                if (data.netAdvantage[i] > 0) {
+                    breakEvenYear = i;
+                    break;
+                }
+            }
+
+            // Update all relevant metric cards
+            const metricCards = document.querySelectorAll('.metric-card');
+            let netAdvantageUpdated = false;
+            let roiUpdated = false;
+
+            metricCards.forEach(card => {
+                const label = card.querySelector('.metric-label');
+                const valueElement = card.querySelector('.metric-value');
+
+                if (label && valueElement) {
+                    if (label.textContent.includes('Net Advantage at Year')) {
+                        valueElement.textContent = formatCurrency(selectedYearAdvantage);
+                        valueElement.className = `metric-value ${selectedYearAdvantage >= 0 ? 'positive' : 'negative'}`;
+                        label.textContent = `Net Advantage at Year ${selectedYear}`;
+                        netAdvantageUpdated = true;
+                        console.log('Updated Net Advantage card');
+                    }
+                    else if (label.textContent.includes('Conversion ROI')) {
+                        valueElement.textContent = formatPercent(conversionROI / 100);
+                        valueElement.className = `metric-value ${conversionROI >= 0 ? 'positive' : 'negative'}`;
+                        roiUpdated = true;
+                        console.log('Updated ROI card');
+                    }
+                }
+            });
+
+            if (!netAdvantageUpdated) {
+                console.log('Could not find net advantage metric card to update');
+            }
+
+            console.log('Successfully updated metrics for year', selectedYear);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            let charts = {};
+            let analysisData = {};
+
+            // Enhanced tax brackets with 2025 adjustments
+            const federalTaxBrackets = [
+                { min: 0, max: 23850, rate: 0.10 },
+                { min: 23850, max: 96950, rate: 0.12 },
+                { min: 96950, max: 206700, rate: 0.22 },
+                { min: 206700, max: 394600, rate: 0.24 },
+                { min: 394600, max: 501050, rate: 0.32 },
+                { min: 501050, max: 751600, rate: 0.35 },
+                { min: 751600, max: Infinity, rate: 0.37 }
+            ];
+
+            const stateTaxInfo = {
+                'NY': {
+                    name: 'New York',
+                    brackets: [
+                        { min: 0, max: 17150, rate: 0.04 },
+                        { min: 17150, max: 23600, rate: 0.045 },
+                        { min: 23600, max: 27900, rate: 0.0525 },
+                        { min: 27900, max: 161550, rate: 0.055 },
+                        { min: 161550, max: 323200, rate: 0.06 },
+                        { min: 323200, max: 2155350, rate: 0.0685 },
+                        { min: 2155350, max: 5000000, rate: 0.0965 },
+                        { min: 5000000, max: 25000000, rate: 0.103 },
+                        { min: 25000000, max: Infinity, rate: 0.109 }
+                    ],
+                    standardDeduction: 17050
+                },
+                'NJ': {
+                    name: 'New Jersey',
+                    brackets: [
+                        { min: 0, max: 20000, rate: 0.014 },
+                        { min: 20000, max: 35000, rate: 0.0175 },
+                        { min: 35000, max: 40000, rate: 0.035 },
+                        { min: 40000, max: 75000, rate: 0.0553 },
+                        { min: 75000, max: 500000, rate: 0.0637 },
+                        { min: 500000, max: 1000000, rate: 0.0897 },
+                        { min: 1000000, max: Infinity, rate: 0.1075 }
+                    ],
+                    standardDeduction: 0
+                },
+                'CA': {
+                    name: 'California',
+                    brackets: [
+                        { min: 0, max: 23942, rate: 0.01 },
+                        { min: 23942, max: 56746, rate: 0.02 },
+                        { min: 56746, max: 89450, rate: 0.04 },
+                        { min: 89450, max: 123918, rate: 0.06 },
+                        { min: 123918, max: 156456, rate: 0.08 },
+                        { min: 156456, max: 1000000, rate: 0.093 },
+                        { min: 1000000, max: 1200000, rate: 0.103 },
+                        { min: 1200000, max: 2000000, rate: 0.113 },
+                        { min: 2000000, max: Infinity, rate: 0.133 }
+                    ],
+                    standardDeduction: 10726,
+                    mentalHealthTax: 0.01
+                },
+                'FL': { name: 'Florida', brackets: [], standardDeduction: 0 },
+                'TX': { name: 'Texas', brackets: [], standardDeduction: 0 },
+                'other': { name: 'No State Tax', brackets: [], standardDeduction: 0 }
+            };
+
+            const rmdFactors = {
+                73: 26.5, 74: 25.5, 75: 24.6, 76: 23.7, 77: 22.9, 78: 22.0, 79: 21.1, 80: 20.2,
+                81: 19.4, 82: 18.5, 83: 17.7, 84: 16.8, 85: 16.0, 86: 15.2, 87: 14.4, 88: 13.7,
+                89: 12.9, 90: 12.2, 91: 11.5, 92: 10.8, 93: 10.1, 94: 9.5, 95: 8.9, 96: 8.4,
+                97: 7.8, 98: 7.3, 99: 6.8, 100: 6.4
+            };
+
+            // Utility functions
+            const formatCurrency = (v) => isNaN(v) ? '$0' : new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(v);
+
+            const formatPercent = (v) => isNaN(v) ? '0.0%' : (v * 100).toFixed(1) + '%';
+
+            const parseInputValue = (v) => {
+                const p = parseFloat(String(v).replace(/[,$]/g, ''));
+                return isNaN(p) ? 0 : p;
+            };
+
+            const getInputValue = (id) => {
+                const el = document.getElementById(id);
+                if (!el) return 0;
+                return el.dataset.type === 'currency' ? parseInputValue(el.value) : parseFloat(el.value) || 0;
+            };
+
+            // Enhanced tax calculation functions
+            const calculateTax = (income, brackets, deduction = 0) => {
+                const taxable = Math.max(0, income - deduction);
+                return brackets.reduce((acc, br) => {
+                    if (taxable > br.min) {
+                        const taxableInBracket = Math.min(taxable, br.max) - br.min;
+                        return acc + (taxableInBracket * br.rate);
+                    }
+                    return acc;
+                }, 0);
+            };
+
+            const calculateFederalTax = (income) => calculateTax(income, federalTaxBrackets, 30000);
+
+            const calculateStateTax = (income, state) => {
+                const info = stateTaxInfo[state];
+                if (!info || info.brackets.length === 0) return 0;
+                let tax = calculateTax(income, info.brackets, info.standardDeduction);
+                if (state === 'CA' && income > 1000000) {
+                    tax += (income - 1000000) * info.mentalHealthTax;
+                }
+                return tax;
+            };
+
+            const getMarginalRate = (income, brackets, deduction = 0) => {
+                if (!brackets || brackets.length === 0) return 0;
+                const taxable = Math.max(0, income - deduction);
+                const bracket = brackets.find(b => taxable <= b.max);
+                return bracket ? bracket.rate : brackets[brackets.length - 1].rate;
+            };
+
+            const calculateMarginalFederalTaxRate = (income) => getMarginalRate(income, federalTaxBrackets, 30000);
+            const calculateMarginalStateTaxRate = (income, state) => {
+                const info = stateTaxInfo[state];
+                if (!info || !info.brackets || info.brackets.length === 0) return 0;
+                return getMarginalRate(income, info.brackets, info.standardDeduction);
+            };
+
+            // Enhanced input gathering
+            function getCurrentInputs() {
+                return {
+                    clientName: document.getElementById('clientName').value || 'Client',
+                    stateResidency: document.getElementById('stateResidency').value,
+                    currentAge: getInputValue('currentAge'),
+                    retirementAge: getInputValue('retirementAge'),
+                    iraBalance: getInputValue('iraBalance'),
+                    currentIncome: getInputValue('currentIncome'),
+                    incomeGrowthRate: getInputValue('incomeGrowthRate') / 100,
+                    isMultiYear: document.getElementById('multiYearStrategy').checked,
+                    conversionAmount: getInputValue('conversionAmount'),
+                    totalConversionAmount: getInputValue('totalConversionAmount'),
+                    conversionYears: getInputValue('conversionYears'),
+                    conversionStrategy: document.getElementById('conversionStrategy').value,
+                    maxTaxBracket: getInputValue('maxTaxBracket') / 100,
+                    preRetirementReturn: getInputValue('preRetirementReturn') / 100,
+                    postRetirementReturn: getInputValue('postRetirementReturn') / 100,
+                    payTaxesFrom: document.getElementById('payTaxesFrom').value,
+                    rmdAge: getInputValue('rmdAge'),
+                    includeSocialSecurity: document.getElementById('includeSocialSecurity').checked,
+                    socialSecurityBenefit: getInputValue('socialSecurityBenefit'),
+                    capitalGainsRate: getInputValue('capitalGainsRate') / 100,
+                    enableAssetDiscount: document.getElementById('enableAssetDiscount').checked,
+                    valuationDiscount: getInputValue('valuationDiscount') / 100,
+                    operationalReduction: getInputValue('operationalReduction') / 100,
+                    discountStrategy: document.getElementById('discountStrategy').value,
+                };
+            }
+
+            // Enhanced conversion amount calculation
+            function getConversionAmounts(inputs) {
+                if (!inputs.isMultiYear) {
+                    return [{ year: 0, amount: inputs.conversionAmount }];
+                }
+
+                const { totalConversionAmount: total, conversionYears: years, conversionStrategy: strategy, maxTaxBracket, currentIncome } = inputs;
+
+                if (years <= 0) return [];
+
+                const conversions = [];
+
+                if (strategy === 'optimized') {
+                    const targetBracket = federalTaxBrackets.find(b => b.rate === maxTaxBracket);
+                    const targetIncome = targetBracket ? targetBracket.max : federalTaxBrackets[2].max;
+
+                    let remainingAmount = total;
+                    for (let i = 0; i < years && remainingAmount > 0; i++) {
+                        const growingIncome = currentIncome * Math.pow(1 + inputs.incomeGrowthRate, i);
+                        const roomInBracket = Math.max(0, targetIncome - growingIncome);
+                        const conversionAmount = Math.min(remainingAmount, roomInBracket);
+
+                        conversions.push({ year: i, amount: conversionAmount });
+                        remainingAmount -= conversionAmount;
+                    }
+                } else {
+                    const amount = total / years;
+                    for (let i = 0; i < years; i++) {
+                        conversions.push({ year: i, amount });
+                    }
+                }
+
+                return conversions;
+            }
+
+            // Asset discount calculation function
+            function calculateAssetDiscount(originalValue, inputs) {
+                if (!inputs.enableAssetDiscount) {
+                    return originalValue;
+                }
+
+                // Step 1: Apply operational reduction (IDCs, startup costs)
+                const afterOperationalReduction = originalValue * (1 - inputs.operationalReduction);
+
+                // Step 2: Apply valuation discounts (DLOM + Minority Interest)
+                const totalValuationDiscount = inputs.valuationDiscount;
+                const discountAmount = afterOperationalReduction * totalValuationDiscount;
+                const finalDiscountedValue = afterOperationalReduction - discountAmount;
+
+                return Math.max(finalDiscountedValue, 0); // Ensure non-negative
+            }
+
+            // Calculate effective discount rate for display
+            function calculateEffectiveDiscountRate(originalValue, discountedValue) {
+                if (originalValue <= 0) return 0;
+                return (originalValue - discountedValue) / originalValue;
+            }
+
+            // Enhanced calculation engine
+            function performCalculations(inputs) {
+                const data = {
+                    years: [],
+                    traditionalIRA: [],
+                    rothIRA: [],
+                    traditionalAfterTax: [],
+                    rothNetBenefit: [],
+                    netAdvantage: [],
+                    conversionTaxes: [],
+                    federalTaxes: [],
+                    stateTaxes: [],
+                    cumulativeConversions: [],
+                    rmdAmounts: [],
+                    marginalRates: [],
+                    opportunityCost: [],
+                    opportunityGrowth: [],
+                    breakEvenPoints: [],
+                    discountedConversions: [],
+                    effectiveDiscountRates: [],
+                    inputs
+                };
+
+                let traditionalBalance = inputs.iraBalance;
+                let rothBalance = 0;
+                let opportunityCost = 0;
+                let cumulativeConversions = 0;
+                let cumulativeTaxes = 0;
+                let cumulativeDiscountBenefit = 0;
+
+                const analysisYears = 45; // Extended for better analysis
+
+                for (let year = 0; year <= analysisYears; year++) {
+                    const age = inputs.currentAge + year;
+                    const isRetired = age >= inputs.retirementAge;
+                    const returnRate = isRetired ? inputs.postRetirementReturn : inputs.preRetirementReturn;
+                    const annualIncome = inputs.currentIncome * Math.pow(1 + inputs.incomeGrowthRate, Math.min(year, inputs.retirementAge - inputs.currentAge));
+
+                    // Apply investment returns
+                    if (year > 0) {
+                        traditionalBalance *= (1 + returnRate);
+                        rothBalance *= (1 + returnRate);
+                        opportunityCost *= (1 + (isRetired ? inputs.postRetirementReturn : inputs.preRetirementReturn));
+                    }
+
+                    // Process conversions with potential asset discounting
+                    const conversionThisYear = inputs.conversions.find(c => c.year === year);
+                    let conversionAmount = conversionThisYear ? Math.min(traditionalBalance, conversionThisYear.amount) : 0;
+                    let discountedConversionValue = conversionAmount;
+                    let effectiveDiscountRate = 0;
+
+                    // Apply asset discount if enabled
+                    if (conversionAmount > 0 && inputs.enableAssetDiscount) {
+                        if (inputs.discountStrategy === 'conversion') {
+                            // Apply discount only to conversion amount
+                            discountedConversionValue = calculateAssetDiscount(conversionAmount, inputs);
+                        } else {
+                            // Apply discount to entire IRA balance, then take conversion portion
+                            const discountedBalance = calculateAssetDiscount(traditionalBalance, inputs);
+                            const discountRatio = discountedBalance / traditionalBalance;
+                            discountedConversionValue = conversionAmount * discountRatio;
+                        }
+
+                        effectiveDiscountRate = calculateEffectiveDiscountRate(conversionAmount, discountedConversionValue);
+                        cumulativeDiscountBenefit += (conversionAmount - discountedConversionValue);
+                    }
+
+                    let federalTax = 0;
+                    let stateTax = 0;
+                    let totalTax = 0;
+                    let marginalRate = 0;
+
+                    if (conversionAmount > 0) {
+                        // Calculate taxes based on discounted conversion value
+                        const incomeWithConversion = annualIncome + discountedConversionValue;
+                        const incomeWithoutConversion = annualIncome;
+
+                        federalTax = calculateFederalTax(incomeWithConversion) - calculateFederalTax(incomeWithoutConversion);
+                        stateTax = calculateStateTax(incomeWithConversion, inputs.stateResidency) - calculateStateTax(incomeWithoutConversion, inputs.stateResidency);
+                        totalTax = federalTax + stateTax;
+
+                        marginalRate = calculateMarginalFederalTaxRate(incomeWithConversion) + calculateMarginalStateTaxRate(incomeWithConversion, inputs.stateResidency);
+
+                        cumulativeConversions += conversionAmount; // Track actual IRA amount converted
+                        cumulativeTaxes += totalTax;
+
+                        if (inputs.payTaxesFrom === 'ira') {
+                            traditionalBalance -= totalTax;
+                        } else {
+                            opportunityCost += totalTax;
+                        }
+
+                        traditionalBalance -= conversionAmount; // Remove actual conversion amount from traditional IRA
+                        rothBalance += conversionAmount; // Add actual conversion amount to Roth IRA
+                    }
+
+                    // Calculate RMDs
+                    let rmd = 0;
+                    if (age >= inputs.rmdAge && traditionalBalance > 0) {
+                        const factor = rmdFactors[age] || 6.4;
+                        rmd = traditionalBalance / factor;
+                        traditionalBalance -= rmd;
+                    }
+
+                    // Calculate projected retirement tax rate for traditional assets
+                    const projectedRetirementIncome = rmd + (inputs.includeSocialSecurity ? inputs.socialSecurityBenefit : 0);
+                    const retirementFedRate = calculateMarginalFederalTaxRate(projectedRetirementIncome);
+                    const retirementStateRate = calculateMarginalStateTaxRate(projectedRetirementIncome, inputs.stateResidency);
+                    const totalRetirementTaxRate = retirementFedRate + retirementStateRate;
+
+                    // Store data points
+                    data.years.push(year);
+                    data.traditionalIRA.push(traditionalBalance);
+                    data.rothIRA.push(rothBalance);
+                    data.traditionalAfterTax.push(traditionalBalance * (1 - totalRetirementTaxRate));
+                    data.opportunityCost.push(opportunityCost);
+                    data.rothNetBenefit.push(rothBalance - opportunityCost);
+                    data.netAdvantage.push((rothBalance - opportunityCost) - (traditionalBalance * (1 - totalRetirementTaxRate)));
+                    data.federalTaxes[year] = federalTax;
+                    data.stateTaxes[year] = stateTax;
+                    data.conversionTaxes[year] = totalTax;
+                    data.cumulativeConversions[year] = cumulativeConversions;
+                    data.rmdAmounts[year] = rmd;
+                    data.marginalRates[year] = marginalRate;
+                    data.discountedConversions[year] = discountedConversionValue;
+                    data.effectiveDiscountRates[year] = effectiveDiscountRate;
+                    data.opportunityGrowth[year] = opportunityCost > 0 ? (opportunityCost / cumulativeTaxes - 1) : 0;
+                }
+
+                // Calculate summary metrics
+                data.breakEvenYear = data.netAdvantage.findIndex(adv => adv > 0);
+                data.totalAdvantage = data.netAdvantage[analysisYears];
+                data.totalTaxesPaid = cumulativeTaxes;
+                data.finalOpportunityCost = data.opportunityCost[analysisYears];
+                data.opportunityReturn = data.finalOpportunityCost > 0 ? Math.pow(data.finalOpportunityCost / cumulativeTaxes, 1 / analysisYears) - 1 : 0;
+                data.totalDiscountBenefit = cumulativeDiscountBenefit;
+                data.effectiveTaxSavings = cumulativeDiscountBenefit > 0 ? (cumulativeDiscountBenefit * (data.marginalRates.find(r => r > 0) || 0.24)) : 0;
+
+                return data;
+            }
+
+            // UI Enhancement functions
+            function toggleUIElements() {
+                const isMultiYear = document.getElementById('multiYearStrategy').checked;
+                document.getElementById('conversionStrategyDiv').classList.toggle('hidden', !isMultiYear);
+                document.getElementById('singleConversionDiv').classList.toggle('hidden', isMultiYear);
+                document.getElementById('incomeGrowthRateGroup').classList.toggle('hidden', !isMultiYear);
+
+                const strategy = document.getElementById('conversionStrategy').value;
+                document.getElementById('maxBracketDiv').classList.toggle('hidden', strategy !== 'optimized');
+
+                document.getElementById('socialSecurityDiv').classList.toggle('hidden', !document.getElementById('includeSocialSecurity').checked);
+
+                const enableDiscount = document.getElementById('enableAssetDiscount').checked;
+                document.getElementById('assetDiscountDiv').classList.toggle('hidden', !enableDiscount);
+            }
+
+            function updateKeyMetrics() {
+                const { totalAdvantage, breakEvenYear, totalTaxesPaid, rothNetBenefit, traditionalAfterTax, finalOpportunityCost, opportunityReturn, totalDiscountBenefit, effectiveTaxSavings } = analysisData;
+                const finalYear = 45;
+
+                // Calculate ROI on conversions
+                const conversionROI = totalTaxesPaid > 0 ? ((totalAdvantage / totalTaxesPaid) * 100) : 0;
+
+                let metricsHTML = `
+                    <div class="metric-card">
+                        <div class="metric-value ${totalAdvantage >= 0 ? 'positive' : 'negative'}">${formatCurrency(totalAdvantage)}</div>
+                        <div class="metric-label">Net Advantage at Year ${finalYear}</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">${breakEvenYear >= 0 ? `Year ${breakEvenYear}` : 'Beyond Analysis'}</div>
+                        <div class="metric-label">Break-Even Point</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">${formatCurrency(totalTaxesPaid)}</div>
+                        <div class="metric-label">Total Conversion Taxes</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value">${formatPercent(conversionROI / 100)}</div>
+                        <div class="metric-label">Conversion ROI</div>
+                    </div>
+                `;
+
+                // Add discount-specific metrics if enabled
+                if (analysisData.inputs.enableAssetDiscount && totalDiscountBenefit > 0) {
+                    const effectiveDiscountRate = calculateEffectiveDiscountRate(analysisData.inputs.totalConversionAmount || analysisData.inputs.conversionAmount, (analysisData.inputs.totalConversionAmount || analysisData.inputs.conversionAmount) - totalDiscountBenefit);
+
+                    metricsHTML += `
+                        <div class="metric-card" style="border-color: var(--warning-color);">
+                            <div class="metric-value" style="color: var(--warning-color);">${formatPercent(effectiveDiscountRate)}</div>
+                            <div class="metric-label">Effective Discount Rate</div>
+                        </div>
+                        <div class="metric-card" style="border-color: var(--success-color);">
+                            <div class="metric-value" style="color: var(--success-color);">${formatCurrency(effectiveTaxSavings)}</div>
+                            <div class="metric-label">Tax Savings from Discount</div>
+                        </div>
+                    `;
+                } else {
+                    metricsHTML += `
+                        <div class="metric-card">
+                            <div class="metric-value">${formatCurrency(finalOpportunityCost)}</div>
+                            <div class="metric-label">Opportunity Cost</div>
+                        </div>
+                    `;
+                }
+
+                document.getElementById('keyMetrics').innerHTML = metricsHTML;
+            }
+
+            function updateStrategySummary() {
+                const finalYear = 45;
+                const totalRmds = analysisData.rmdAmounts.reduce((a, b) => a + b, 0);
+                const tradFinalPreTax = analysisData.traditionalIRA[finalYear];
+                const estimatedTaxes = tradFinalPreTax - analysisData.traditionalAfterTax[finalYear];
+
+                document.getElementById('tradPreTaxValue').textContent = formatCurrency(tradFinalPreTax);
+                document.getElementById('tradRmdsValue').textContent = formatCurrency(totalRmds);
+                document.getElementById('tradTaxesValue').textContent = formatCurrency(estimatedTaxes);
+                document.getElementById('tradFinalValue').textContent = formatCurrency(analysisData.traditionalAfterTax[finalYear]);
+
+                document.getElementById('rothBalanceValue').textContent = formatCurrency(analysisData.rothIRA[finalYear]);
+                document.getElementById('rothOppCostValue').textContent = formatCurrency(analysisData.opportunityCost[finalYear]);
+                document.getElementById('rothTaxesPaidValue').textContent = formatCurrency(analysisData.totalTaxesPaid);
+                document.getElementById('rothFinalValue').textContent = formatCurrency(analysisData.rothNetBenefit[finalYear]);
+            }
+
+            function updateOpportunityCostBreakdown() {
+                const { totalTaxesPaid, finalOpportunityCost, opportunityReturn, totalAdvantage, totalDiscountBenefit, effectiveTaxSavings } = analysisData;
+                const taxPaymentYears = analysisData.inputs.isMultiYear ? analysisData.inputs.conversionYears : 1;
+                const avgAnnualTax = totalTaxesPaid / taxPaymentYears;
+                const effectiveReturn = opportunityReturn * 100;
+
+                let breakdownHTML = `
+                    <div class="cost-item">
+                        <div class="cost-item-value">${formatCurrency(totalTaxesPaid)}</div>
+                        <div class="cost-item-label">Total Tax Payments</div>
+                    </div>
+                    <div class="cost-item">
+                        <div class="cost-item-value">${formatCurrency(avgAnnualTax)}</div>
+                        <div class="cost-item-label">Avg. Annual Tax Payment</div>
+                    </div>
+                    <div class="cost-item">
+                        <div class="cost-item-value">${formatPercent(effectiveReturn / 100)}</div>
+                        <div class="cost-item-label">Opportunity Cost Return</div>
+                    </div>
+                `;
+
+                // Add discount-specific breakdown if enabled
+                if (analysisData.inputs.enableAssetDiscount && totalDiscountBenefit > 0) {
+                    const originalConversionValue = (analysisData.inputs.totalConversionAmount || analysisData.inputs.conversionAmount);
+                    const discountedValue = originalConversionValue - totalDiscountBenefit;
+                    const effectiveDiscountRate = calculateEffectiveDiscountRate(originalConversionValue, discountedValue);
+
+                    breakdownHTML += `
+                        <div class="cost-item" style="border-color: var(--warning-color);">
+                            <div class="cost-item-value" style="color: var(--warning-color);">${formatCurrency(originalConversionValue)}</div>
+                            <div class="cost-item-label">Original Conversion Value</div>
+                        </div>
+                        <div class="cost-item" style="border-color: var(--warning-color);">
+                            <div class="cost-item-value" style="color: var(--warning-color);">${formatCurrency(discountedValue)}</div>
+                            <div class="cost-item-label">Discounted Conversion Value</div>
+                        </div>
+                        <div class="cost-item" style="border-color: var(--success-color);">
+                            <div class="cost-item-value" style="color: var(--success-color);">${formatCurrency(effectiveTaxSavings)}</div>
+                            <div class="cost-item-label">Tax Savings from Discount</div>
+                        </div>
+                    `;
+                } else {
+                    breakdownHTML += `
+                        <div class="cost-item">
+                            <div class="cost-item-value">${formatCurrency(finalOpportunityCost)}</div>
+                            <div class="cost-item-label">Final Opportunity Cost</div>
+                        </div>
+                    `;
+                }
+
+                breakdownHTML += `
+                    <div class="cost-item">
+                        <div class="cost-item-value ${totalAdvantage >= 0 ? 'positive' : 'negative'}" style="color: ${totalAdvantage >= 0 ? 'var(--success-color)' : 'var(--error-color)'};">${formatCurrency(Math.abs(totalAdvantage))}</div>
+                        <div class="cost-item-label">${totalAdvantage >= 0 ? 'Net Benefit' : 'Net Cost'}</div>
+                    </div>
+                `;
+
+                document.getElementById('opportunityCostBreakdown').innerHTML = breakdownHTML;
+            }
+
+            function createOrUpdateChart(id, config) {
+                try {
+                    const ctx = document.getElementById(id);
+                    if (!ctx) {
+                        console.error('Chart canvas not found:', id);
+                        return;
+                    }
+
+                    if (typeof Chart === 'undefined') {
+                        console.error('Chart.js not loaded');
+                        return;
+                    }
+
+                    const chartCtx = ctx.getContext('2d');
+                    if (charts[id]) {
+                        charts[id].destroy();
+                    }
+                    charts[id] = new Chart(chartCtx, config);
+                } catch (error) {
+                    console.error('Error creating chart:', id, error);
+                }
+            }
+
+            function createComparisonChart() {
+                const labels = analysisData.years.map(year => `Age ${analysisData.inputs.currentAge + year}`);
+                createOrUpdateChart('comparisonChart', {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Roth Net Benefit',
+                                data: analysisData.rothNetBenefit,
+                                borderColor: '#2563eb',
+                                backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                                borderWidth: 3,
+                                fill: false,
+                                pointRadius: 0,
+                                tension: 0.1
+                            },
+                            {
+                                label: 'Traditional After-Tax',
+                                data: analysisData.traditionalAfterTax,
+                                borderColor: '#f59e0b',
+                                backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                                borderWidth: 2,
+                                fill: false,
+                                pointRadius: 0,
+                                tension: 0.1
+                            },
+                            {
+                                label: 'Net Advantage',
+                                data: analysisData.netAdvantage,
+                                borderColor: '#10b981',
+                                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                borderWidth: 2,
+                                fill: true,
+                                pointRadius: 0,
+                                tension: 0.1
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleColor: '#fff',
+                                bodyColor: '#fff',
+                                borderColor: '#2563eb',
+                                borderWidth: 1,
+                                callbacks: {
+                                    label: function (context) {
+                                        return `${context.dataset.label}: ${formatCurrency(context.parsed.y)}`;
+                                    }
+                                }
+                            },
+                            legend: {
+                                position: 'top',
+                                labels: {
+                                    usePointStyle: true,
+                                    padding: 15
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                ticks: {
+                                    callback: function (value, index, ticks) {
+                                        const year = analysisData.years[index];
+                                        if (year % 5 === 0 || index === ticks.length - 1) {
+                                            return this.getLabelForValue(value);
+                                        }
+                                        return '';
+                                    },
+                                    autoSkip: false,
+                                    maxRotation: 0,
+                                    minRotation: 0
+                                },
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.1)'
+                                }
+                            },
+                            y: {
+                                ticks: {
+                                    callback: function (value) {
+                                        return formatCurrency(value);
+                                    }
+                                },
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.1)'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            function createOpportunityChart() {
+                const labels = analysisData.years.map(year => `Age ${analysisData.inputs.currentAge + year}`);
+                createOrUpdateChart('opportunityCostChart', {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Roth IRA Balance',
+                                data: analysisData.rothIRA,
+                                borderColor: '#2563eb',
+                                backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                                borderWidth: 3,
+                                fill: false,
+                                pointRadius: 0
+                            },
+                            {
+                                label: 'Opportunity Cost',
+                                data: analysisData.opportunityCost,
+                                borderColor: '#f59e0b',
+                                backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                                borderWidth: 2,
+                                fill: false,
+                                pointRadius: 0
+                            },
+                            {
+                                label: 'Roth Net Value',
+                                data: analysisData.rothNetBenefit,
+                                borderColor: '#10b981',
+                                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                borderWidth: 2,
+                                fill: true,
+                                pointRadius: 0
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        return `${context.dataset.label}: ${formatCurrency(context.parsed.y)}`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                ticks: {
+                                    callback: function (value, index, ticks) {
+                                        const year = analysisData.years[index];
+                                        if (year % 5 === 0 || index === ticks.length - 1) {
+                                            return this.getLabelForValue(value);
+                                        }
+                                        return '';
+                                    },
+                                    autoSkip: false
+                                }
+                            },
+                            y: {
+                                ticks: {
+                                    callback: function (value) {
+                                        return formatCurrency(value);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Break-even analysis chart
+                const breakEvenData = analysisData.netAdvantage.map((adv, index) => ({
+                    year: index,
+                    advantage: adv,
+                    isPositive: adv > 0
+                }));
+
+                createOrUpdateChart('breakEvenChart', {
+                    type: 'bar',
+                    data: {
+                        labels: analysisData.years.map(year => `Year ${year}`),
+                        datasets: [{
+                            label: 'Net Advantage',
+                            data: analysisData.netAdvantage,
+                            backgroundColor: analysisData.netAdvantage.map(adv => adv >= 0 ? 'rgba(16, 185, 129, 0.7)' : 'rgba(239, 68, 68, 0.7)'),
+                            borderColor: analysisData.netAdvantage.map(adv => adv >= 0 ? '#10b981' : '#ef4444'),
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        return `Net Advantage: ${formatCurrency(context.parsed.y)}`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                ticks: {
+                                    callback: function (value, index) {
+                                        return index % 5 === 0 ? this.getLabelForValue(value) : '';
+                                    }
+                                }
+                            },
+                            y: {
+                                ticks: {
+                                    callback: function (value) {
+                                        return formatCurrency(value);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            function createConversionChart() {
+                const convYears = analysisData.inputs.conversionYears;
+                const labels = Array.from({ length: convYears }, (_, i) => `Year ${i + 1} (Age ${analysisData.inputs.currentAge + i})`);
+
+                createOrUpdateChart('conversionTimelineChart', {
+                    type: 'bar',
+                    data: {
+                        labels,
+                        datasets: [
+                            {
+                                label: 'Federal Tax',
+                                data: analysisData.federalTaxes.slice(0, convYears),
+                                backgroundColor: 'rgba(239, 68, 68, 0.8)',
+                                borderColor: '#ef4444',
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'State Tax',
+                                data: analysisData.stateTaxes.slice(0, convYears),
+                                backgroundColor: 'rgba(245, 158, 11, 0.8)',
+                                borderColor: '#f59e0b',
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'Conversion Amount',
+                                data: analysisData.inputs.conversions.map(c => c.amount),
+                                backgroundColor: 'rgba(37, 99, 235, 0.3)',
+                                borderColor: '#2563eb',
+                                borderWidth: 1,
+                                type: 'line',
+                                yAxisID: 'y1'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        return `${context.dataset.label}: ${formatCurrency(context.parsed.y)}`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: { stacked: true },
+                            y: {
+                                stacked: true,
+                                ticks: {
+                                    callback: function (value) {
+                                        return formatCurrency(value);
+                                    }
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Tax Amount'
+                                }
+                            },
+                            y1: {
+                                type: 'linear',
+                                display: true,
+                                position: 'right',
+                                ticks: {
+                                    callback: function (value) {
+                                        return formatCurrency(value);
+                                    }
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Conversion Amount'
+                                },
+                                grid: {
+                                    drawOnChartArea: false,
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            function createAdvancedCharts() {
+                // Enhanced Tax Bracket Chart
+                const maxConv = Math.max(...(analysisData.inputs.conversions.map(c => c.amount) || [0]));
+                const income = analysisData.inputs.currentIncome;
+                const incomeWithConv = income + maxConv;
+
+                const bracketData = federalTaxBrackets.map(bracket => {
+                    if (incomeWithConv < bracket.min) return 0;
+                    return Math.min(incomeWithConv, bracket.max) - bracket.min;
+                });
+
+                createOrUpdateChart('taxBracketChart', {
+                    type: 'bar',
+                    data: {
+                        labels: federalTaxBrackets.map(b => `${(b.rate * 100).toFixed(0)}%`),
+                        datasets: [
+                            {
+                                label: 'Current Income',
+                                data: federalTaxBrackets.map(bracket => {
+                                    if (income < bracket.min) return 0;
+                                    return Math.min(income, bracket.max) - bracket.min;
+                                }),
+                                backgroundColor: 'rgba(37, 99, 235, 0.5)',
+                                borderColor: '#2563eb',
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'Income + Conversion',
+                                data: bracketData,
+                                backgroundColor: 'rgba(245, 158, 11, 0.7)',
+                                borderColor: '#f59e0b',
+                                borderWidth: 1
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        return `${context.dataset.label}: ${formatCurrency(context.parsed.y)}`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                ticks: {
+                                    callback: function (value) {
+                                        return formatCurrency(value);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Enhanced Monte Carlo Simulation
+                const mcResults = [];
+                const numSimulations = 1000;
+
+                for (let i = 0; i < numSimulations; i++) {
+                    const variance = 0.3; // 30% variance
+                    const variedInputs = {
+                        ...analysisData.inputs,
+                        preRetirementReturn: analysisData.inputs.preRetirementReturn * (1 + (Math.random() - 0.5) * variance),
+                        postRetirementReturn: analysisData.inputs.postRetirementReturn * (1 + (Math.random() - 0.5) * variance),
+                        currentIncome: analysisData.inputs.currentIncome * (1 + (Math.random() - 0.5) * 0.2)
+                    };
+
+                    variedInputs.conversions = getConversionAmounts(variedInputs);
+                    const result = performCalculations(variedInputs);
+                    mcResults.push(result.totalAdvantage);
+                }
+
+                mcResults.sort((a, b) => a - b);
+
+                const percentiles = [10, 25, 50, 75, 90].map(p => {
+                    const index = Math.floor((p / 100) * mcResults.length);
+                    return mcResults[index];
+                });
+
+                createOrUpdateChart('monteCarloChart', {
+                    type: 'bar',
+                    data: {
+                        labels: ['10th', '25th', '50th (Median)', '75th', '90th'],
+                        datasets: [{
+                            label: 'Net Advantage Distribution',
+                            data: percentiles,
+                            backgroundColor: percentiles.map(val => val >= 0 ? 'rgba(16, 185, 129, 0.7)' : 'rgba(239, 68, 68, 0.7)'),
+                            borderColor: percentiles.map(val => val >= 0 ? '#10b981' : '#ef4444'),
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        return `${context.label} Percentile: ${formatCurrency(context.parsed.y)}`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                ticks: {
+                                    callback: function (value) {
+                                        return formatCurrency(value);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Enhanced Sensitivity Analysis
+                const baseInputs = analysisData.inputs;
+                const sensitivityTests = [
+                    { name: 'Returns +3%', field: 'preRetirementReturn', change: 0.03 },
+                    { name: 'Returns -3%', field: 'preRetirementReturn', change: -0.03 },
+                    { name: 'Income +25%', field: 'currentIncome', change: baseInputs.currentIncome * 0.25 },
+                    { name: 'Income -25%', field: 'currentIncome', change: -baseInputs.currentIncome * 0.25 },
+                    { name: 'Tax Rates +5%', field: 'marginalTaxMultiplier', change: 0.05 },
+                    { name: 'Earlier Retirement', field: 'retirementAge', change: -5 }
+                ];
+
+                const sensitivityResults = sensitivityTests.map(test => {
+                    const testInputs = { ...baseInputs };
+                    if (test.field === 'marginalTaxMultiplier') {
+                        // Simulate higher tax environment
+                        testInputs.preRetirementReturn *= 0.95; // Slightly lower returns due to higher taxes
+                    } else {
+                        testInputs[test.field] = (testInputs[test.field] || 0) + test.change;
+                    }
+
+                    testInputs.conversions = getConversionAmounts(testInputs);
+                    const result = performCalculations(testInputs);
+                    return { name: test.name, advantage: result.totalAdvantage };
+                });
+
+                createOrUpdateChart('sensitivityChart', {
+                    type: 'bar',
+                    data: {
+                        labels: sensitivityResults.map(r => r.name),
+                        datasets: [{
+                            label: 'Net Advantage',
+                            data: sensitivityResults.map(r => r.advantage),
+                            backgroundColor: sensitivityResults.map(r =>
+                                r.advantage > analysisData.totalAdvantage ? 'rgba(16, 185, 129, 0.7)' :
+                                    r.advantage < 0 ? 'rgba(239, 68, 68, 0.7)' : 'rgba(245, 158, 11, 0.7)'
+                            ),
+                            borderColor: sensitivityResults.map(r =>
+                                r.advantage > analysisData.totalAdvantage ? '#10b981' :
+                                    r.advantage < 0 ? '#ef4444' : '#f59e0b'
+                            ),
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        const baseline = analysisData.totalAdvantage;
+                                        const current = context.parsed.y;
+                                        const diff = current - baseline;
+                                        return [
+                                            `Net Advantage: ${formatCurrency(current)}`,
+                                            `vs. Baseline: ${diff >= 0 ? '+' : ''}${formatCurrency(diff)}`
+                                        ];
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                ticks: {
+                                    callback: function (value) {
+                                        return formatCurrency(value);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Marginal vs Effective Tax Rates Chart
+                const conversionYears = analysisData.inputs.conversionYears;
+                const marginalTaxData = [];
+                const effectiveTaxData = [];
+                const incomeLabels = [];
+
+                for (let i = 0; i < conversionYears; i++) {
+                    const year = i;
+                    const age = analysisData.inputs.currentAge + year;
+                    const annualIncome = analysisData.inputs.currentIncome * Math.pow(1 + analysisData.inputs.incomeGrowthRate, year);
+                    const conversion = analysisData.inputs.conversions.find(c => c.year === year);
+                    const conversionAmount = conversion ? conversion.amount : 0;
+                    const totalIncome = annualIncome + conversionAmount;
+
+                    // Calculate marginal rate
+                    const marginalFedRate = calculateMarginalFederalTaxRate(totalIncome);
+                    const marginalStateRate = calculateMarginalStateTaxRate(totalIncome, analysisData.inputs.stateResidency);
+                    const totalMarginalRate = marginalFedRate + marginalStateRate;
+
+                    // Calculate effective rate
+                    const totalTax = analysisData.conversionTaxes[year] || 0;
+                    const effectiveRate = conversionAmount > 0 ? (totalTax / conversionAmount) : 0;
+
+                    marginalTaxData.push(totalMarginalRate * 100);
+                    effectiveTaxData.push(effectiveRate * 100);
+                    incomeLabels.push(`Year ${i + 1} (Age ${age})`);
+                }
+
+                createOrUpdateChart('marginalTaxChart', {
+                    type: 'bar',
+                    data: {
+                        labels: incomeLabels,
+                        datasets: [
+                            {
+                                label: 'Marginal Tax Rate',
+                                data: marginalTaxData,
+                                backgroundColor: 'rgba(239, 68, 68, 0.7)',
+                                borderColor: '#ef4444',
+                                borderWidth: 2,
+                                type: 'line',
+                                yAxisID: 'y'
+                            },
+                            {
+                                label: 'Effective Tax Rate on Conversion',
+                                data: effectiveTaxData,
+                                backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                                borderColor: '#3b82f6',
+                                borderWidth: 1
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        return `${context.dataset.label}: ${context.parsed.y.toFixed(2)}%`;
+                                    }
+                                }
+                            },
+                            legend: {
+                                position: 'top'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: Math.max(Math.max(...marginalTaxData), Math.max(...effectiveTaxData)) + 5,
+                                ticks: {
+                                    callback: function (value) {
+                                        return value + '%';
+                                    }
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Tax Rate (%)'
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // RMD Chart
+                const rmdLabels = analysisData.years.filter(y => analysisData.rmdAmounts[y] > 0)
+                    .map(y => `Age ${analysisData.inputs.currentAge + y}`);
+                const rmdData = analysisData.rmdAmounts.filter(a => a > 0);
+
+                createOrUpdateChart('rmdChart', {
+                    type: 'line',
+                    data: {
+                        labels: rmdLabels,
+                        datasets: [{
+                            label: 'Projected RMD',
+                            data: rmdData,
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#f59e0b'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function (context) {
+                                        return `RMD: ${formatCurrency(context.parsed.y)}`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                ticks: {
+                                    callback: function (value) {
+                                        return formatCurrency(value);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            function updateTables() {
+                // Enhanced Conversion Table
+                let convHTML = `
+                    <thead>
+                        <tr>
+                            <th>Year</th>
+                            <th>Age</th>
+                            <th>Original Amount</th>
+                            ${analysisData.inputs.enableAssetDiscount ? '<th>Discounted Value</th><th>Effective Discount</th>' : ''}
+                            <th>Federal Tax</th>
+                            <th>State Tax</th>
+                            <th>Total Tax</th>
+                            <th>Effective Tax Rate</th>
+                            <th>Marginal Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                `;
+
+                analysisData.inputs.conversions.forEach(c => {
+                    const year = c.year;
+                    const federalTax = analysisData.federalTaxes[year] || 0;
+                    const stateTax = analysisData.stateTaxes[year] || 0;
+                    const totalTax = analysisData.conversionTaxes[year] || 0;
+                    const discountedValue = analysisData.discountedConversions[year] || c.amount;
+                    const effectiveDiscountRate = analysisData.effectiveDiscountRates[year] || 0;
+                    const effectiveRate = discountedValue > 0 ? (totalTax / discountedValue) : 0;
+                    const marginalRate = analysisData.marginalRates[year] || 0;
+
+                    convHTML += `
+                        <tr>
+                            <td>${year + 1}</td>
+                            <td>${analysisData.inputs.currentAge + year}</td>
+                            <td>${formatCurrency(c.amount)}</td>
+                            ${analysisData.inputs.enableAssetDiscount ?
+                            `<td style="color: var(--warning-color); font-weight: 600;">${formatCurrency(discountedValue)}</td>
+                                 <td style="color: var(--success-color); font-weight: 600;">${formatPercent(effectiveDiscountRate)}</td>` : ''
+                        }
+                            <td>${formatCurrency(federalTax)}</td>
+                            <td>${formatCurrency(stateTax)}</td>
+                            <td>${formatCurrency(totalTax)}</td>
+                            <td>${formatPercent(effectiveRate)}</td>
+                            <td>${formatPercent(marginalRate)}</td>
+                        </tr>
+                    `;
+                });
+                document.getElementById('conversionTable').innerHTML = convHTML + '</tbody>';
+
+                // Enhanced Detailed Analysis Table
+                let detailHTML = `
+                    <thead>
+                        <tr>
+                            <th>Year</th>
+                            <th>Age</th>
+                            <th>Traditional After-Tax</th>
+                            <th>Roth Balance</th>
+                            <th>Opportunity Cost</th>
+                            <th>Roth Net Benefit</th>
+                            <th>Net Advantage</th>
+                            <th>RMD</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                `;
+
+                analysisData.years.forEach((year, index) => {
+                    if (index % 2 === 0 || year >= 40) { // Show every other year until year 40, then all years
+                        const adv = analysisData.netAdvantage[year];
+                        detailHTML += `
+                            <tr>
+                                <td>${year}</td>
+                                <td>${analysisData.inputs.currentAge + year}</td>
+                                <td>${formatCurrency(analysisData.traditionalAfterTax[year])}</td>
+                                <td>${formatCurrency(analysisData.rothIRA[year])}</td>
+                                <td>${formatCurrency(analysisData.opportunityCost[year])}</td>
+                                <td>${formatCurrency(analysisData.rothNetBenefit[year])}</td>
+                                <td class="${adv >= 0 ? 'positive' : 'negative'}">${formatCurrency(adv)}</td>
+                                <td>${formatCurrency(analysisData.rmdAmounts[year])}</td>
+                            </tr>
+                        `;
+                    }
+                });
+                document.getElementById('detailedTable').innerHTML = detailHTML + '</tbody>';
+
+                // RMD Table
+                let rmdHTML = `
+                    <thead>
+                        <tr>
+                            <th>Age</th>
+                            <th>Traditional IRA Balance</th>
+                            <th>Life Expectancy Factor</th>
+                            <th>Required RMD</th>
+                            <th>Tax on RMD</th>
+                            <th>After-Tax RMD</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                `;
+
+                analysisData.years.forEach(year => {
+                    const age = analysisData.inputs.currentAge + year;
+                    if (analysisData.rmdAmounts[year] > 0) {
+                        const factor = rmdFactors[age] || 6.4;
+                        const rmdTax = analysisData.rmdAmounts[year] * 0.22; // Approximate tax rate
+                        const afterTaxRmd = analysisData.rmdAmounts[year] - rmdTax;
+
+                        rmdHTML += `
+                            <tr>
+                                <td>${age}</td>
+                                <td>${formatCurrency(analysisData.traditionalIRA[year] + analysisData.rmdAmounts[year])}</td>
+                                <td>${factor}</td>
+                                <td>${formatCurrency(analysisData.rmdAmounts[year])}</td>
+                                <td>${formatCurrency(rmdTax)}</td>
+                                <td>${formatCurrency(afterTaxRmd)}</td>
+                            </tr>
+                        `;
+                    }
+                });
+                document.getElementById('rmdTable').innerHTML = rmdHTML + '</tbody>';
+            }
+
+            function updateHeaderInfo() {
+                const clientName = document.getElementById('clientName').value || 'Client';
+                const currentDate = new Date().toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                document.getElementById('clientNameDisplay').textContent = clientName;
+                document.getElementById('headerDate').textContent = `Date: ${currentDate}`;
+            }
+
+            function updateAgeHints() {
+                const currentAge = getInputValue('currentAge');
+                const conversionYears = getInputValue('conversionYears');
+                const hintEl = document.getElementById('conversionAgeHint');
+                if (hintEl && conversionYears > 0) {
+                    hintEl.textContent = `Conversions end at age ${currentAge + conversionYears - 1}`;
+                } else if (hintEl) {
+                    hintEl.textContent = '';
+                }
+            }
+
+            function showAlerts() {
+                const alertsContainer = document.getElementById('alertsContainer');
+                let alerts = [];
+
+                // Check for potential issues and opportunities
+                if (analysisData.breakEvenYear < 0) {
+                    alerts.push({
+                        type: 'warning',
+                        message: 'Break-even point is beyond the analysis period. Consider reducing conversion amounts or extending the analysis timeframe.'
+                    });
+                }
+
+                if (analysisData.totalAdvantage < 0) {
+                    alerts.push({
+                        type: 'warning',
+                        message: 'Current strategy shows a net disadvantage. Consider adjusting conversion amounts or timing.'
+                    });
+                }
+
+                if (analysisData.totalAdvantage > analysisData.inputs.iraBalance * 0.5) {
+                    alerts.push({
+                        type: 'success',
+                        message: 'Excellent opportunity! This strategy could provide substantial long-term benefits.'
+                    });
+                }
+
+                if (analysisData.inputs.payTaxesFrom === 'ira') {
+                    alerts.push({
+                        type: 'info',
+                        message: 'Consider paying conversion taxes from outside funds to maximize the benefit of the conversion strategy.'
+                    });
+                }
+
+                // Asset discount specific alerts
+                if (analysisData.inputs.enableAssetDiscount) {
+                    const totalDiscount = (1 - analysisData.inputs.operationalReduction) * (1 - analysisData.inputs.valuationDiscount);
+                    const effectiveDiscountRate = 1 - totalDiscount;
+
+                    if (effectiveDiscountRate > 0.7) {
+                        alerts.push({
+                            type: 'warning',
+                            message: `High discount rate (${formatPercent(effectiveDiscountRate)}) detected. Ensure independent qualified appraisal supports this valuation for IRS compliance.`
+                        });
+                    }
+
+                    alerts.push({
+                        type: 'info',
+                        message: '🔍 Asset Discount Active: Conversion taxes calculated on discounted values. Requires qualified independent appraisal for actual implementation.'
+                    });
+
+                    if (analysisData.totalDiscountBenefit > 0) {
+                        alerts.push({
+                            type: 'success',
+                            message: `💰 Estimated tax savings from asset discount: ${formatCurrency(analysisData.effectiveTaxSavings)}. Results depend on IRS acceptance of appraisal.`
+                        });
+                    }
+                }
+
+                alertsContainer.innerHTML = alerts.map(alert =>
+                    `<div class="alert alert-${alert.type}"><i class="fas fa-${alert.type === 'success' ? 'check-circle' : alert.type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i> ${alert.message}</div>`
+                ).join('');
+            }
+
+            function calculateAndDisplay() {
+                try {
+                    toggleUIElements();
+                    updateAgeHints();
+                    updateHeaderInfo();
+
+                    const inputs = getCurrentInputs();
+                    inputs.conversions = getConversionAmounts(inputs);
+                    analysisData = performCalculations(inputs);
+
+                    // Make analysis data available globally
+                    window.analysisData = analysisData;
+
+                    updateKeyMetrics();
+                    updateStrategySummary();
+                    updateOpportunityCostBreakdown();
+                    updateTables();
+                    showAlerts();
+
+                    const activeTab = document.querySelector('.tab.active').dataset.tab;
+                    showTab(activeTab, true);
+
+                    // Add animation classes
+                    document.querySelectorAll('.metric-card, .strategy-card').forEach((card, index) => {
+                        card.style.animationDelay = `${index * 0.1}s`;
+                        card.classList.add('fade-in-up');
+                    });
+
+                } catch (error) {
+                    console.error('Calculation error:', error);
+                    alert('An error occurred during calculation. Please check your inputs and try again.');
+                }
+            }
+
+            function showTab(tabName, forceUpdate = false) {
+                if (!forceUpdate) {
+                    document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+                    document.querySelector(`.tab[data-tab="${tabName}"]`).classList.add('active');
+                    document.querySelectorAll('.tab-content > div').forEach(content => content.classList.add('hidden'));
+                    document.getElementById(tabName + 'Tab').classList.remove('hidden');
+                }
+
+                // Create charts based on active tab
+                setTimeout(() => {
+                    switch (tabName) {
+                        case 'summary':
+                            createComparisonChart();
+                            break;
+                        case 'opportunity':
+                            createOpportunityChart();
+                            break;
+                        case 'strategy':
+                            createConversionChart();
+                            break;
+                        case 'tax':
+                        case 'scenarios':
+                        case 'rmd':
+                            createAdvancedCharts();
+                            break;
+                    }
+                }, 50);
+            }
+
+            function optimizeConversions() {
+                const inputs = getCurrentInputs();
+                const targetBracket = federalTaxBrackets.find(b => b.rate === inputs.maxTaxBracket) || federalTaxBrackets[2];
+                const currentMarginalRate = calculateMarginalFederalTaxRate(inputs.currentIncome) + calculateMarginalStateTaxRate(inputs.currentIncome, inputs.stateResidency);
+
+                // Calculate optimal conversion amount
+                const roomInBracket = Math.max(0, targetBracket.max - inputs.currentIncome);
+                const optimalAnnual = Math.min(roomInBracket, inputs.iraBalance * 0.15); // Max 15% per year
+
+                if (optimalAnnual > 0) {
+                    const optimalTotal = Math.min(inputs.iraBalance * 0.7, optimalAnnual * 10); // Max 70% of IRA over max 10 years
+                    const optimalYears = Math.min(10, Math.max(3, Math.ceil(optimalTotal / optimalAnnual)));
+
+                    document.getElementById('totalConversionAmount').value = Math.round(optimalTotal / 1000) * 1000;
+                    document.getElementById('conversionYears').value = optimalYears;
+                    document.getElementById('conversionStrategy').value = 'optimized';
+                    document.getElementById('multiYearStrategy').checked = true;
+
+                    // Show success message
+                    const alertsContainer = document.getElementById('alertsContainer');
+                    alertsContainer.innerHTML = `
+                        <div class="alert alert-success"><i class="fas fa-check-circle"></i> ✅ Strategy optimized! Recommended ${optimalYears}-year conversion of ${formatCurrency(optimalTotal)} 
+                            to stay within the ${formatPercent(inputs.maxTaxBracket)} tax bracket.
+                        </div>
+                    ` + alertsContainer.innerHTML;
+                }
+
+                calculateAndDisplay();
+            }
+
+            /*************  ✨ Windsurf Command ⭐  *************/
+            /**
+             * Generates a print-friendly report with key findings and visualizations.
+             * 
+             * The report includes an executive summary with key metrics, a projected net worth comparison chart,
+             * a recommended conversion schedule table, and a full disclosure statement.
+             * 
+             * The report is generated in the `#print-report-container` element, and the browser's print dialog is opened.
+             */
+            /*******  19fb3606-dada-4cc4-99ad-62b0b9efe408 *******/
+            function generateReport() {
+                try {
+                    // Check if analysis data exists
+                    if (!analysisData || !analysisData.years || analysisData.years.length === 0) {
+                        alert('Please run the analysis first by entering your information in the input fields.');
+                        return;
+                    }
+
+                    const summaryTab = document.getElementById('summaryTab');
+                    const wasHidden = summaryTab.classList.contains('hidden');
+
+                    // Temporarily show the summary tab to render the chart and get content
+                    if (wasHidden) {
+                        summaryTab.classList.remove('hidden');
+                    }
+
+                    // Ensure the comparison chart is rendered and available for the report
+                    createComparisonChart();
+
+                    // Wait for chart to be fully rendered before capturing
+                    setTimeout(() => {
+                        try {
+                            const inputs = getCurrentInputs();
+                            const clientName = inputs.clientName || 'Client';
+                            const reportDate = new Date().toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                            });
+
+                            // Create enhanced report content with better chart handling
+                            let chartImage = '';
+                            if (charts.comparisonChart) {
+                                try {
+                                    // Force chart update and render
+                                    charts.comparisonChart.update();
+                                    chartImage = charts.comparisonChart.toBase64Image('image/png', 1.0);
+                                    console.log('Chart image generated successfully');
+                                } catch (e) {
+                                    console.warn('Could not generate chart image:', e);
+                                    // Try alternative method
+                                    try {
+                                        chartImage = charts.comparisonChart.toBase64Image();
+                                    } catch (e2) {
+                                        console.error('Chart image generation failed completely:', e2);
+                                        chartImage = '';
+                                    }
+                                }
+                            } else {
+                                console.warn('Comparison chart not available');
+                                // Try to create the chart again
+                                createComparisonChart();
+                                if (charts.comparisonChart) {
+                                    try {
+                                        chartImage = charts.comparisonChart.toBase64Image('image/png', 1.0);
+                                    } catch (e) {
+                                        console.error('Retry chart generation failed:', e);
+                                    }
+                                }
+                            }
+
+                            const metricsElement = document.getElementById('keyMetrics');
+                            const metricsHTML = metricsElement ? metricsElement.innerHTML : '<p>Metrics not available</p>';
+
+                            const conversionTableElement = document.getElementById('conversionTable');
+                            const conversionTableHTML = conversionTableElement ? conversionTableElement.outerHTML : '<p>Conversion table not available</p>';
+
+                            const disclosureElement = document.querySelector('.disclosure');
+                            const fullDisclosureHTML = disclosureElement ? disclosureElement.innerHTML : '<p>Disclosure information not available</p>';
+
+                            // Generate client summary
+                            const clientSummary = `
+                                <div class="key-insights no-page-break">
+                                    <h4>Client Profile Summary</h4>
+                                    <ul>
+                                        <li><strong>Age:</strong> ${inputs.currentAge} years old (Retirement planned at age ${inputs.retirementAge})</li>
+                                        <li><strong>Current IRA Balance:</strong> ${formatCurrency(inputs.iraBalance)}</li>
+                                        <li><strong>Annual Income:</strong> ${formatCurrency(inputs.currentIncome)}</li>
+                                        <li><strong>State of Residency:</strong> ${stateTaxInfo[inputs.stateResidency]?.name || inputs.stateResidency}</li>
+                                        <li><strong>Conversion Strategy:</strong> ${inputs.isMultiYear ? `${inputs.conversionYears}-year ${inputs.conversionStrategy} strategy` : 'Single-year conversion'}</li>
+                                        <li><strong>Total Conversion Amount:</strong> ${formatCurrency(inputs.isMultiYear ? inputs.totalConversionAmount : inputs.conversionAmount)}</li>
+                                    </ul>
+                                </div>
+                            `;
+
+                            // Generate key insights
+                            const keyInsights = `
+                                <div class="key-insights no-page-break">
+                                    <h4>Key Analysis Insights</h4>
+                                    <ul>
+                                        <li>The Roth conversion strategy ${analysisData.totalAdvantage >= 0 ? 'provides a net benefit' : 'results in a net cost'} of <strong>${formatCurrency(Math.abs(analysisData.totalAdvantage))}</strong> over the analysis period.</li>
+                                        <li>Break-even point: ${analysisData.breakEvenYear >= 0 ? `Year ${analysisData.breakEvenYear} (age ${inputs.currentAge + analysisData.breakEvenYear})` : 'Beyond the analysis period'}.</li>
+                                        <li>Total tax investment required: <strong>${formatCurrency(analysisData.totalTaxesPaid)}</strong> ${inputs.payTaxesFrom === 'ira' ? '(paid from IRA withdrawals)' : '(paid from outside funds)'}.</li>
+                                        <li>Conversion ROI: <strong>${formatPercent((analysisData.totalAdvantage / analysisData.totalTaxesPaid))}</strong> return on tax payments over the analysis period.</li>
+                                        ${analysisData.inputs.enableAssetDiscount ? `<li>Asset valuation discount applied: Estimated tax savings of <strong>${formatCurrency(analysisData.effectiveTaxSavings || 0)}</strong> (subject to IRS acceptance of qualified appraisal).</li>` : ''}
+                                    </ul>
+                                </div>
+                            `;
+
+                            // Generate recommendations
+                            const recommendations = `
+                                <div class="key-insights no-page-break">
+                                    <h4>Professional Recommendations</h4>
+                                    <ul>
+                                        <li>${analysisData.totalAdvantage >= 0 ? '<strong>Proceed</strong> with the Roth conversion strategy as outlined.' : '<strong>Reconsider</strong> the current conversion strategy or explore alternative approaches.'}</li>
+                                        ${inputs.payTaxesFrom === 'ira' ? '<li>Consider paying conversion taxes from <strong>outside sources</strong> rather than IRA withdrawals to maximize conversion benefits.</li>' : '<li>Paying taxes from outside funds optimizes the conversion strategy effectiveness.</li>'}
+                                        ${analysisData.breakEvenYear > 15 ? '<li>Note the extended break-even period; ensure this aligns with your long-term financial goals and timeline.</li>' : ''}
+                                        <li>Monitor tax law changes that could impact the analysis assumptions.</li>
+                                        <li>Consider implementing conversions during market downturns to maximize tax efficiency.</li>
+                                        ${analysisData.inputs.enableAssetDiscount ? '<li><strong>Asset Discount Strategy:</strong> Requires qualified independent appraisal and IRS compliance. Consult with tax professionals before implementation.</li>' : ''}
+                                    </ul>
+                                </div>
+                            `;
+
+                            // Add executive summary
+                            const executiveSummary = `
+                                <div class="executive-summary">
+                                    <h3>Executive Summary</h3>
+                                    <p><strong>Investment Recommendation:</strong> ${analysisData.totalAdvantage >= 0 ? 'Proceed with' : 'Reconsider'} the proposed Roth conversion strategy based on current analysis.</p>
+                                    <p><strong>Financial Impact:</strong> Projected net ${analysisData.totalAdvantage >= 0 ? 'benefit' : 'cost'} of ${formatCurrency(Math.abs(analysisData.totalAdvantage))} over the ${analysisData.years.length - 1}-year analysis period.</p>
+                                    <p><strong>Break-Even Analysis:</strong> ${analysisData.breakEvenYear >= 0 ? `Conversion becomes profitable in Year ${analysisData.breakEvenYear} (age ${inputs.currentAge + analysisData.breakEvenYear})` : 'Break-even point extends beyond the current analysis timeframe'}.</p>
+                                    <p><strong>Tax Investment Required:</strong> ${formatCurrency(analysisData.totalTaxesPaid)} in conversion taxes represents ${formatPercent(analysisData.totalTaxesPaid / (inputs.isMultiYear ? inputs.totalConversionAmount : inputs.conversionAmount))} of the conversion amount.</p>
+                                    <p><strong>Strategic Timing:</strong> ${inputs.isMultiYear ? `Multi-year approach spreads tax impact over ${inputs.conversionYears} years, potentially optimizing tax efficiency` : 'Single-year conversion provides immediate tax certainty but may result in higher marginal rates'}.</p>
+                                </div>
+                            `;
+
+                            const reportHTML = `
+                                <div class="print-header no-page-break">
+                                    <div class="print-company-section">
+                                        <h1 class="print-company-name">Able Wealth Management</h1>
+                                        <p class="print-company-tagline">Comprehensive Financial Planning & Investment Management</p>
+                                    </div>
+                                    <div class="print-header-info">
+                                        <h2>Roth Conversion Analysis Report</h2>
+                                        <p><strong>Prepared for:</strong> ${clientName}</p>
+                                        <p><strong>Report Date:</strong> ${reportDate}</p>
+                                        <p><strong>Analysis Period:</strong> ${analysisData.years.length - 1} years</p>
+                                        <p><strong>Advisor:</strong> Able Wealth Management Team</p>
+                                    </div>
+                                </div>
+
+                                ${executiveSummary}
+                                
+                                ${clientSummary}
+
+                                <h3 class="print-section-header">Key Performance Metrics</h3>
+                                <div class="results-grid no-page-break">${metricsHTML}</div>
+
+                                ${keyInsights}
+
+                                ${chartImage ? `
+                                <div class="chart-section">
+                                    <h3 class="print-section-header">Projected Net Worth Comparison</h3>
+                                    <img src="${chartImage}" class="chart-image" alt="Net Worth Comparison Chart">
+                                    <p style="font-size: 9pt; text-align: center; color: #666; margin-top: 0.5em;">
+                                        This chart compares the projected after-tax value of the Roth conversion strategy versus maintaining traditional IRA assets over time.
+                                    </p>
+                                </div>
+                                ` : ''}
+
+                                <div class="print-table-container">
+                                    <h3 class="print-section-header">Recommended Conversion Schedule</h3>
+                                    ${conversionTableHTML}
+                                </div>
+
+                                ${recommendations}
+
+                                <div class="print-disclosure">
+                                    <h4>Important Disclosures & Disclaimers</h4>
+                                    ${fullDisclosureHTML}
+                                    <p><strong>Report Methodology:</strong> This analysis is based on current tax laws, client-provided information, and stated assumptions. Results are projections and do not guarantee future performance. All recommendations should be reviewed with qualified tax and legal professionals before implementation.</p>
+                                    <p><strong>Analysis Date:</strong> ${reportDate} | <strong>Software Version:</strong> Roth Conversion Analyzer Pro 2025</p>
+                                </div>
+                            `;
+
+                            const reportContainer = document.getElementById('print-report-container');
+                            if (reportContainer) {
+                                reportContainer.innerHTML = reportHTML;
+                            } else {
+                                console.error('Print report container not found');
+                                alert('Error: Could not generate report. Please try again.');
+                                return;
+                            }
+
+                            // Hide the summary tab again if it was originally hidden
+                            if (wasHidden) {
+                                summaryTab.classList.add('hidden');
+                            }
+
+                            // Trigger print dialog with a short delay
+                            setTimeout(() => {
+                                window.print();
+                            }, 100);
+
+                        } catch (error) {
+                            console.error('Error in setTimeout for report generation:', error);
+                            alert('Error generating report: ' + error.message);
+                        }
+                    }, 500); // Give chart time to render
+
+                } catch (error) {
+                    console.error('Error generating report:', error);
+                    alert('Error generating report: ' + error.message + '. Please try again.');
+                }
+            }
+
+            function initialize() {
+                // Input change listeners
+                const inputsToWatch = [
+                    'clientName', 'stateResidency', 'currentAge', 'retirementAge', 'iraBalance',
+                    'currentIncome', 'totalConversionAmount', 'conversionYears', 'preRetirementReturn',
+                    'postRetirementReturn', 'multiYearStrategy', 'conversionStrategy', 'payTaxesFrom',
+                    'maxTaxBracket', 'conversionAmount', 'capitalGainsRate', 'rmdAge',
+                    'includeSocialSecurity', 'socialSecurityBenefit', 'incomeGrowthRate',
+                    'enableAssetDiscount', 'valuationDiscount', 'operationalReduction', 'discountStrategy'
+                ];
+
+                inputsToWatch.forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.addEventListener('input', calculateAndDisplay);
+                        element.addEventListener('change', calculateAndDisplay);
+                    }
+                });
+
+                // Currency formatting
+                document.querySelectorAll('input[data-type="currency"]').forEach(input => {
+                    input.addEventListener('blur', (e) => {
+                        let value = e.target.value.replace(/[,$]/g, '');
+                        if (!isNaN(value) && value !== '') {
+                            e.target.value = parseInt(value).toLocaleString();
+                        }
+                    });
+                });
+
+                // Tab functionality
+                document.querySelectorAll('.tab').forEach(tab => {
+                    tab.addEventListener('click', (e) => {
+                        const tabName = e.target.dataset.tab;
+                        showTab(tabName);
+                    });
+                });
+
+                // Button functionality
+                document.getElementById('optimizeBtn').addEventListener('click', optimizeConversions);
+                document.getElementById('generateReportBtn').addEventListener('click', generateReport);
+
+                // Initialize calculations
+                // Wait for Chart.js to be available
+                const initializeApp = () => {
+                    if (typeof Chart !== 'undefined') {
+                        calculateAndDisplay();
+                    } else {
+                        // Try again in 100ms if Chart.js isn't loaded yet
+                        setTimeout(initializeApp, 100);
+                    }
+                };
+                initializeApp();
+
+                // Add keyboard shortcuts
+                document.addEventListener('keydown', (e) => {
+                    if (e.ctrlKey || e.metaKey) {
+                        switch (e.key) {
+                            case 'o':
+                                e.preventDefault();
+                                optimizeConversions();
+                                break;
+                            case 'p':
+                                e.preventDefault();
+                                generateReport();
+                                break;
+                        }
+                    }
+                });
+
+                console.log('Enhanced Roth Conversion Analyzer initialized successfully');
+            }
+
+            // Start the application
+            initialize();
+        });
+    </script>
+</body>
+
+</html>
