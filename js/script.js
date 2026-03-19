@@ -25,15 +25,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
 
-            // Enhanced tax brackets with 2025 adjustments
+            // 2026 tax assumptions modeled as married filing jointly / joint return schedules.
+            const federalStandardDeduction = 31500;
+            const californiaBehavioralHealthThreshold = 1000000;
+            const californiaBehavioralHealthTaxRate = 0.01;
+
             const federalTaxBrackets = [
-                { min: 0, max: 23850, rate: 0.10 },
-                { min: 23850, max: 96950, rate: 0.12 },
-                { min: 96950, max: 206700, rate: 0.22 },
-                { min: 206700, max: 394600, rate: 0.24 },
-                { min: 394600, max: 501050, rate: 0.32 },
-                { min: 501050, max: 751600, rate: 0.35 },
-                { min: 751600, max: Infinity, rate: 0.37 }
+                { min: 0, max: 24800, rate: 0.10 },
+                { min: 24800, max: 100800, rate: 0.12 },
+                { min: 100800, max: 211400, rate: 0.22 },
+                { min: 211400, max: 403550, rate: 0.24 },
+                { min: 403550, max: 512450, rate: 0.32 },
+                { min: 512450, max: 768700, rate: 0.35 },
+                { min: 768700, max: Infinity, rate: 0.37 }
             ];
 
             const stateTaxInfo = {
@@ -50,16 +54,17 @@ document.addEventListener('DOMContentLoaded', function() {
                         { min: 5000000, max: 25000000, rate: 0.103 },
                         { min: 25000000, max: Infinity, rate: 0.109 }
                     ],
-                    standardDeduction: 17050
+                    standardDeduction: 16050
                 },
                 'NJ': {
                     name: 'New Jersey',
                     brackets: [
                         { min: 0, max: 20000, rate: 0.014 },
-                        { min: 20000, max: 35000, rate: 0.0175 },
-                        { min: 35000, max: 40000, rate: 0.035 },
-                        { min: 40000, max: 75000, rate: 0.0553 },
-                        { min: 75000, max: 500000, rate: 0.0637 },
+                        { min: 20000, max: 50000, rate: 0.0175 },
+                        { min: 50000, max: 70000, rate: 0.0245 },
+                        { min: 70000, max: 80000, rate: 0.035 },
+                        { min: 80000, max: 150000, rate: 0.05525 },
+                        { min: 150000, max: 500000, rate: 0.0637 },
                         { min: 500000, max: 1000000, rate: 0.0897 },
                         { min: 1000000, max: Infinity, rate: 0.1075 }
                     ],
@@ -68,18 +73,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 'CA': {
                     name: 'California',
                     brackets: [
-                        { min: 0, max: 23942, rate: 0.01 },
-                        { min: 23942, max: 56746, rate: 0.02 },
-                        { min: 56746, max: 89450, rate: 0.04 },
-                        { min: 89450, max: 123918, rate: 0.06 },
-                        { min: 123918, max: 156456, rate: 0.08 },
-                        { min: 156456, max: 1000000, rate: 0.093 },
-                        { min: 1000000, max: 1200000, rate: 0.103 },
-                        { min: 1200000, max: 2000000, rate: 0.113 },
-                        { min: 2000000, max: Infinity, rate: 0.133 }
+                        { min: 0, max: 22158, rate: 0.01 },
+                        { min: 22158, max: 52528, rate: 0.02 },
+                        { min: 52528, max: 82904, rate: 0.04 },
+                        { min: 82904, max: 115084, rate: 0.06 },
+                        { min: 115084, max: 145448, rate: 0.08 },
+                        { min: 145448, max: 742958, rate: 0.093 },
+                        { min: 742958, max: 891542, rate: 0.103 },
+                        { min: 891542, max: 1485906, rate: 0.113 },
+                        { min: 1485906, max: Infinity, rate: 0.123 }
                     ],
-                    standardDeduction: 10726,
-                    mentalHealthTax: 0.01
+                    standardDeduction: 11412,
+                    behavioralHealthTaxRate: californiaBehavioralHealthTaxRate,
+                    behavioralHealthThreshold: californiaBehavioralHealthThreshold
                 },
                 'FL': { name: 'Florida', brackets: [], standardDeduction: 0 },
                 'TX': { name: 'Texas', brackets: [], standardDeduction: 0 },
@@ -126,14 +132,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 }, 0);
             };
 
-            const calculateFederalTax = (income) => calculateTax(income, federalTaxBrackets, 30000);
+            const calculateFederalTax = (income) => calculateTax(income, federalTaxBrackets, federalStandardDeduction);
             
             const calculateStateTax = (income, state) => {
                 const info = stateTaxInfo[state];
                 if (!info || info.brackets.length === 0) return 0;
+                const taxableIncome = Math.max(0, income - info.standardDeduction);
                 let tax = calculateTax(income, info.brackets, info.standardDeduction);
-                if (state === 'CA' && income > 1000000) {
-                    tax += (income - 1000000) * info.mentalHealthTax;
+                if (state === 'CA' && taxableIncome > info.behavioralHealthThreshold) {
+                    tax += (taxableIncome - info.behavioralHealthThreshold) * info.behavioralHealthTaxRate;
                 }
                 return tax;
             };
@@ -144,10 +151,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 return bracket ? bracket.rate : brackets[brackets.length - 1].rate;
             };
 
-            const calculateMarginalFederalTaxRate = (income) => getMarginalRate(income, federalTaxBrackets, 30000);
+            const calculateMarginalFederalTaxRate = (income) => getMarginalRate(income, federalTaxBrackets, federalStandardDeduction);
             const calculateMarginalStateTaxRate = (income, state) => {
                 const info = stateTaxInfo[state];
-                return info ? getMarginalRate(income, info.brackets, info.standardDeduction) : 0;
+                if (!info || !info.brackets || info.brackets.length === 0) return 0;
+                const taxableIncome = Math.max(0, income - info.standardDeduction);
+                const baseRate = getMarginalRate(income, info.brackets, info.standardDeduction);
+                if (state === 'CA' && taxableIncome > info.behavioralHealthThreshold) {
+                    return baseRate + info.behavioralHealthTaxRate;
+                }
+                return baseRate;
             };
 
             // Enhanced input gathering
