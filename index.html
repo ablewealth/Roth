@@ -1906,12 +1906,12 @@
 
                     <div class="subsection-header"><i class="fas fa-calendar-alt"></i> Analysis Year</div>
                     <div class="input-group">
-                        <label for="analysisYear"><i class="fas fa-clock"></i> Net Advantage Analysis Year</label>
+                        <label for="analysisYear"><i class="fas fa-clock"></i> Analysis Year</label>
                         <input type="number" id="analysisYear" min="1" max="45" value="45"
                             onchange="updateNetAdvantage(this.value);" oninput="updateNetAdvantage(this.value);">
                         <div class="input-hint">
-                            <i class="fas fa-info-circle"></i> Adjusts the "Net Advantage at Year X" metric to show
-                            results for the selected year (1-45)
+                            <i class="fas fa-info-circle"></i> Sets the full projection and report horizon in years
+                            (1-45)
                         </div>
 
                     </div>
@@ -2110,7 +2110,7 @@
             console.log('updateNetAdvantage called with year:', year);
 
             const selectedYear = parseInt(year);
-            if (isNaN(selectedYear) || selectedYear < 1 || selectedYear > 45) {
+            if (isNaN(selectedYear) || selectedYear < 1) {
                 console.log('Invalid year:', year);
                 return;
             }
@@ -2173,7 +2173,7 @@
 
             // Find break-even year (first year where net advantage becomes positive)
             let breakEvenYear = -1;
-            for (let i = 1; i <= 45; i++) {
+            for (let i = 1; i < data.netAdvantage.length; i++) {
                 if (data.netAdvantage[i] > 0) {
                     breakEvenYear = i;
                     break;
@@ -2312,6 +2312,12 @@
                 return el.dataset.type === 'currency' ? parseInputValue(el.value) : parseFloat(el.value) || 0;
             };
 
+            const normalizeAnalysisYear = (value, maxYears = 45) => {
+                const parsedYear = Math.floor(Number(value));
+                if (Number.isNaN(parsedYear)) return maxYears;
+                return Math.min(maxYears, Math.max(1, parsedYear));
+            };
+
             // Enhanced tax calculation functions
             const calculateTax = (income, brackets, deduction = 0) => {
                 const taxable = Math.max(0, income - deduction);
@@ -2388,6 +2394,7 @@
                     valuationDiscount: getInputValue('valuationDiscount') / 100,
                     operationalReduction: getInputValue('operationalReduction') / 100,
                     discountStrategy: document.getElementById('discountStrategy').value,
+                    analysisYear: normalizeAnalysisYear(getInputValue('analysisYear')),
                 };
             }
 
@@ -2489,7 +2496,7 @@
                 let displayCumulativeTaxes = 0;
                 let displayDiscountBenefit = 0;
 
-                const analysisYears = 45; // Extended for better analysis
+                const analysisYears = normalizeAnalysisYear(inputs.analysisYear);
 
                 for (let year = 0; year <= analysisYears; year++) {
                     const age = inputs.currentAge + year;
@@ -2633,7 +2640,7 @@
 
             function updateKeyMetrics() {
                 const { totalAdvantage, breakEvenYear, totalTaxesPaid, rothNetBenefit, traditionalAfterTax, finalOpportunityCost, opportunityReturn, totalDiscountBenefit, effectiveTaxSavings } = analysisData;
-                const finalYear = 45;
+                const finalYear = analysisData.years.length - 1;
 
                 // Calculate ROI on conversions
                 const conversionROI = totalTaxesPaid > 0 ? ((totalAdvantage / totalTaxesPaid) * 100) : 0;
@@ -2684,7 +2691,7 @@
             }
 
             function updateStrategySummary() {
-                const finalYear = 45;
+                const finalYear = analysisData.years.length - 1;
                 const totalRmds = analysisData.rmdAmounts.reduce((a, b) => a + b, 0);
                 const tradFinalPreTax = analysisData.traditionalIRA[finalYear];
                 const estimatedTaxes = tradFinalPreTax - analysisData.traditionalAfterTax[finalYear];
@@ -3930,7 +3937,8 @@
                     'postRetirementReturn', 'inflationRate', 'adjustForInflation', 'multiYearStrategy', 'conversionStrategy', 'payTaxesFrom',
                     'maxTaxBracket', 'conversionAmount', 'capitalGainsRate', 'rmdAge',
                     'includeSocialSecurity', 'socialSecurityBenefit', 'incomeGrowthRate',
-                    'enableAssetDiscount', 'valuationDiscount', 'operationalReduction', 'discountStrategy'
+                    'enableAssetDiscount', 'valuationDiscount', 'operationalReduction', 'discountStrategy',
+                    'analysisYear'
                 ];
 
                 inputsToWatch.forEach(id => {

@@ -120,6 +120,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 return el.dataset.type === 'currency' ? parseInputValue(el.value) : parseFloat(el.value) || 0;
             };
 
+            const normalizeAnalysisYear = (value, maxYears = 45) => {
+                const parsedYear = Math.floor(Number(value));
+                if (Number.isNaN(parsedYear)) return maxYears;
+                return Math.min(maxYears, Math.max(1, parsedYear));
+            };
+
             // Enhanced tax calculation functions
             const calculateTax = (income, brackets, deduction = 0) => {
                 const taxable = Math.max(0, income - deduction);
@@ -195,6 +201,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     valuationDiscount: getInputValue('valuationDiscount') / 100,
                     operationalReduction: getInputValue('operationalReduction') / 100,
                     discountStrategy: document.getElementById('discountStrategy').value,
+                    analysisYear: normalizeAnalysisYear(getInputValue('analysisYear')),
                 };
             }
 
@@ -296,7 +303,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 let displayCumulativeTaxes = 0;
                 let displayDiscountBenefit = 0;
 
-                const analysisYears = 45; // Extended for better analysis
+                const analysisYears = normalizeAnalysisYear(inputs.analysisYear);
 
                 for (let year = 0; year <= analysisYears; year++) {
                     const age = inputs.currentAge + year;
@@ -441,12 +448,7 @@ document.addEventListener('DOMContentLoaded', function() {
             function updateKeyMetrics() {
                 const { totalAdvantage, breakEvenYear, totalTaxesPaid, rothNetBenefit, traditionalAfterTax, finalOpportunityCost, opportunityReturn, totalDiscountBenefit, effectiveTaxSavings } = analysisData;
                 
-                // Get selected analysis year from input
-                const analysisYearInput = document.getElementById('analysisYear');
-                console.log('Analysis year input element:', analysisYearInput);
-                console.log('Analysis year input value:', analysisYearInput ? analysisYearInput.value : 'not found');
-                
-                const selectedYear = analysisYearInput ? parseInt(analysisYearInput.value) : 45;
+                const selectedYear = analysisData.years.length - 1;
                 
                 console.log('UpdateKeyMetrics - Selected year:', selectedYear);
                 console.log('Net advantage array length:', analysisData.netAdvantage ? analysisData.netAdvantage.length : 'undefined');
@@ -506,7 +508,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             function updateStrategySummary() {
-                const finalYear = 45;
+                const finalYear = analysisData.years.length - 1;
                 const totalRmds = analysisData.rmdAmounts.reduce((a, b) => a + b, 0);
                 const tradFinalPreTax = analysisData.traditionalIRA[finalYear];
                 const estimatedTaxes = tradFinalPreTax - analysisData.traditionalAfterTax[finalYear];
@@ -1796,7 +1798,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('updateNetAdvantageForYear called with year:', year);
             
             const selectedYear = parseInt(year);
-            if (isNaN(selectedYear) || selectedYear < 1 || selectedYear > 45) {
+            if (isNaN(selectedYear) || selectedYear < 1) {
                 console.log('Invalid year:', year);
                 return;
             }
