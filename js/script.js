@@ -247,8 +247,8 @@
                 }, 0);
             };
 
-            const getFederalTaxableIncome = (income) => Math.max(0, income - federalStandardDeduction);
-            const getFederalGrossCeilingForBracket = (bracket) => bracket.max + federalStandardDeduction;
+            const getFederalTaxableIncome = (income, extraDeduction = 0) => Math.max(0, income - (federalStandardDeduction + extraDeduction));
+            const getFederalGrossCeilingForBracket = (bracket, extraDeduction = 0) => bracket.max + federalStandardDeduction + extraDeduction;
 
             // OBBBA senior bonus deduction (tax years 2025–2028, age 65+), with MFJ MAGI phaseout.
             const getSeniorBonusDeduction = (magi, age, calendarYear) => {
@@ -337,11 +337,15 @@
                 const conversions = [];
 
                 if (strategy === 'optimized') {
-                    const targetBracket = federalTaxBrackets.find(b => b.rate === maxTaxBracket);
-                    const targetIncome = getFederalGrossCeilingForBracket(targetBracket || federalTaxBrackets[2]);
+                    const targetBracket = federalTaxBrackets.find(b => b.rate === maxTaxBracket) || federalTaxBrackets[2];
+                    const baseCeiling = targetBracket.max + federalStandardDeduction;
 
                     let remainingAmount = total;
                     for (let i = 0; i < years && remainingAmount > 0; i++) {
+                        // Raise the bracket-fill ceiling by the OBBBA senior bonus deduction when the
+                        // converting year falls in the age-65+/2025–2028 window (0 otherwise).
+                        const extraDeduction = getSeniorBonusDeduction(baseCeiling, inputs.currentAge + i, projectionBaseYear + i);
+                        const targetIncome = getFederalGrossCeilingForBracket(targetBracket, extraDeduction);
                         const growingIncome = currentIncome * Math.pow(1 + inputs.incomeGrowthRate, i);
                         const roomInBracket = Math.max(0, targetIncome - growingIncome);
                         const conversionAmount = Math.min(remainingAmount, roomInBracket);
@@ -1027,8 +1031,13 @@
             function createAdvancedCharts() {
                 // Enhanced Tax Bracket Chart
                 const maxConv = Math.max(...(analysisData.inputs.conversions.map(c => c.amount) || [0]));
-                const income = getFederalTaxableIncome(analysisData.inputs.currentIncome);
-                const incomeWithConv = getFederalTaxableIncome(analysisData.inputs.currentIncome + maxConv);
+                const baseIncome = analysisData.inputs.currentIncome;
+                // Reflect the OBBBA senior bonus deduction (age 65+, 2025–2028) in the bracket view;
+                // the conversion raises MAGI, so each scenario uses its own phased amount.
+                const seniorDed = getSeniorBonusDeduction(baseIncome, analysisData.inputs.currentAge, projectionBaseYear);
+                const seniorDedWithConv = getSeniorBonusDeduction(baseIncome + maxConv, analysisData.inputs.currentAge, projectionBaseYear);
+                const income = getFederalTaxableIncome(baseIncome, seniorDed);
+                const incomeWithConv = getFederalTaxableIncome(baseIncome + maxConv, seniorDedWithConv);
 
                 const bracketData = federalTaxBrackets.map(bracket => {
                     if (incomeWithConv < bracket.min) return 0;
@@ -1620,8 +1629,10 @@
                 const targetBracket = federalTaxBrackets.find(b => b.rate === inputs.maxTaxBracket) || federalTaxBrackets[2];
                 const currentMarginalRate = calculateMarginalFederalTaxRate(inputs.currentIncome) + calculateMarginalStateTaxRate(inputs.currentIncome, inputs.stateResidency);
 
-                // Calculate optimal conversion amount
-                const roomInBracket = Math.max(0, getFederalGrossCeilingForBracket(targetBracket) - inputs.currentIncome);
+                // Calculate optimal conversion amount, including the OBBBA senior bonus deduction
+                // (age 65+, 2025–2028) which raises the bracket-fill ceiling; 0 otherwise.
+                const seniorBonus = getSeniorBonusDeduction(targetBracket.max + federalStandardDeduction, inputs.currentAge, projectionBaseYear);
+                const roomInBracket = Math.max(0, getFederalGrossCeilingForBracket(targetBracket, seniorBonus) - inputs.currentIncome);
                 const optimalAnnual = Math.min(roomInBracket, inputs.iraBalance * 0.15); // Max 15% per year
 
                 if (optimalAnnual > 0) {
