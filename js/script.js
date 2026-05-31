@@ -321,7 +321,7 @@
             // Enhanced input gathering
             function getCurrentInputs() {
                 return {
-                    clientName: document.getElementById('clientName').value || 'Client',
+                    clientName: '',
                     stateResidency: document.getElementById('stateResidency').value,
                     currentAge: getInputValue('currentAge'),
                     retirementAge: getInputValue('retirementAge'),
@@ -1566,13 +1566,11 @@
             }
 
             function updateHeaderInfo() {
-                const clientName = document.getElementById('clientName').value || 'Client';
                 const currentDate = new Date().toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric'
                 });
-                document.getElementById('clientNameDisplay').textContent = clientName;
                 document.getElementById('headerDate').textContent = `Date: ${currentDate}`;
             }
 
@@ -1837,7 +1835,7 @@
                     setTimeout(() => {
                         try {
                             const inputs = getCurrentInputs();
-                            const clientName = inputs.clientName || 'Client';
+                            const clientName = inputs.clientName;
                             const reportDate = new Date().toLocaleDateString('en-US', {
                                 year: 'numeric',
                                 month: 'long',
@@ -1948,7 +1946,7 @@
                                     </div>
                                     <div class="print-header-info">
                                         <h2>Roth Conversion Analysis Report</h2>
-                                        <p><strong>Prepared for:</strong> ${clientName}</p>
+                                        ${clientName ? `<p><strong>Prepared for:</strong> ${clientName}</p>` : ''}
                                         <p><strong>Report Date:</strong> ${reportDate}</p>
                                         <p><strong>Analysis Period:</strong> ${analysisData.years.length - 1} years</p>
                                         <p><strong>Advisor:</strong> Able Wealth Management Team</p>
@@ -2018,7 +2016,7 @@
             function initialize() {
                 // Input change listeners
                 const inputsToWatch = [
-                    'clientName', 'stateResidency', 'currentAge', 'retirementAge', 'iraBalance',
+                    'stateResidency', 'currentAge', 'retirementAge', 'iraBalance',
                     'currentIncome', 'totalConversionAmount', 'conversionYears', 'preRetirementReturn',
                     'postRetirementReturn', 'inflationRate', 'adjustForInflation', 'multiYearStrategy', 'conversionStrategy', 'payTaxesFrom',
                     'maxTaxBracket', 'conversionAmount', 'capitalGainsRate', 'rmdAge',
