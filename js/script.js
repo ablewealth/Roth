@@ -111,7 +111,23 @@
             let analysisData = {};
 
             // 2026 tax assumptions modeled as married filing jointly / joint return schedules.
-            const federalStandardDeduction = 31500;
+            // Federal figures reflect the IRS 2026 inflation adjustments (Rev. Proc. 2025-32) as
+            // amended by the One Big Beautiful Bill Act (OBBBA, 2025), which made the TCJA rate
+            // schedule (10/12/22/24/32/35/37%) permanent — there is no 2026 sunset to pre-TCJA rates.
+            const federalStandardDeduction = 32200; // 2026 MFJ standard deduction (OBBBA-adjusted)
+
+            // OBBBA "senior bonus" deduction: an additional deduction for taxpayers age 65+, available
+            // for tax years 2025–2028 only. Up to $6,000 per eligible person ($12,000 MFJ when both
+            // spouses are 65+). It phases out at 6% of MAGI above $150,000 (MFJ), fully eliminated at
+            // $350,000. Because this calculator models a joint return with a single tracked age, both
+            // spouses are assumed age-eligible in the year the modeled age reaches 65.
+            const seniorBonusDeductionMax = 12000;            // MFJ, both spouses 65+
+            const seniorBonusPhaseoutStart = 150000;          // MFJ MAGI threshold
+            const seniorBonusPhaseoutRate = 0.06;
+            const seniorBonusFirstYear = 2025;
+            const seniorBonusLastYear = 2028;
+            const projectionBaseYear = 2026;                  // projection year 0 maps to calendar 2026
+
             const californiaBehavioralHealthThreshold = 1000000;
             const californiaBehavioralHealthTaxRate = 0.01;
 
@@ -226,7 +242,16 @@
             const getFederalTaxableIncome = (income) => Math.max(0, income - federalStandardDeduction);
             const getFederalGrossCeilingForBracket = (bracket) => bracket.max + federalStandardDeduction;
 
-            const calculateFederalTax = (income) => calculateTax(income, federalTaxBrackets, federalStandardDeduction);
+            // OBBBA senior bonus deduction (tax years 2025–2028, age 65+), with MFJ MAGI phaseout.
+            const getSeniorBonusDeduction = (magi, age, calendarYear) => {
+                if (age < 65) return 0;
+                if (calendarYear < seniorBonusFirstYear || calendarYear > seniorBonusLastYear) return 0;
+                const reduction = Math.max(0, magi - seniorBonusPhaseoutStart) * seniorBonusPhaseoutRate;
+                return Math.max(0, seniorBonusDeductionMax - reduction);
+            };
+
+            const calculateFederalTax = (income, extraDeduction = 0) =>
+                calculateTax(income, federalTaxBrackets, federalStandardDeduction + extraDeduction);
 
             const calculateStateTax = (income, state) => {
                 const info = stateTaxInfo[state];
@@ -438,7 +463,13 @@
                         const incomeWithConversion = annualIncome + discountedConversionValue;
                         const incomeWithoutConversion = annualIncome;
 
-                        federalTax = calculateFederalTax(incomeWithConversion) - calculateFederalTax(incomeWithoutConversion);
+                        // OBBBA senior bonus deduction (2025–2028, age 65+). The conversion raises MAGI,
+                        // which can erode the deduction, so each scenario uses its own phased amount.
+                        const calendarYear = projectionBaseYear + year;
+                        const seniorDeductionWith = getSeniorBonusDeduction(incomeWithConversion, age, calendarYear);
+                        const seniorDeductionWithout = getSeniorBonusDeduction(incomeWithoutConversion, age, calendarYear);
+
+                        federalTax = calculateFederalTax(incomeWithConversion, seniorDeductionWith) - calculateFederalTax(incomeWithoutConversion, seniorDeductionWithout);
                         stateTax = calculateStateTax(incomeWithConversion, inputs.stateResidency) - calculateStateTax(incomeWithoutConversion, inputs.stateResidency);
                         totalTax = federalTax + stateTax;
 
@@ -1786,8 +1817,8 @@
                                 <div class="print-disclosure">
                                     <h4>Important Disclosures & Disclaimers</h4>
                                     ${fullDisclosureHTML}
-                                    <p><strong>Report Methodology:</strong> This analysis is based on current tax laws, client-provided information, and stated assumptions. Results are projections and do not guarantee future performance. All recommendations should be reviewed with qualified tax and legal professionals before implementation.</p>
-                                    <p><strong>Analysis Date:</strong> ${reportDate} | <strong>Software Version:</strong> Roth Conversion Analyzer Pro 2025</p>
+                                    <p><strong>Report Methodology:</strong> This analysis applies 2026 federal income tax schedules (married filing jointly) as adjusted by the IRS for inflation (Rev. Proc. 2025-32) and amended by the One Big Beautiful Bill Act (OBBBA), which made the TCJA rate brackets permanent. It incorporates the OBBBA senior bonus deduction (tax years 2025–2028, age 65+) where applicable, the $32,200 standard deduction, and the SECURE 2.0 required minimum distribution age of 73. Results are projections based on client-provided information and stated assumptions, and do not guarantee future performance. All recommendations should be reviewed with qualified tax and legal professionals before implementation.</p>
+                                    <p><strong>Analysis Date:</strong> ${reportDate} | <strong>Software Version:</strong> Roth Conversion Analyzer Pro (2026 Tax Year)</p>
                                 </div>
                             `;
 
