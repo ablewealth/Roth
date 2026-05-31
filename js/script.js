@@ -422,6 +422,7 @@
                     rothIRA: [],
                     traditionalAfterTax: [],
                     noConvIraAfterTax: [],
+                    noConvRmdReinvest: [],
                     convRemainingAfterTax: [],
                     rothNetBenefit: [],
                     netAdvantage: [],
@@ -594,6 +595,7 @@
                     data.rothIRA.push(displayRothBalance);
                     data.traditionalAfterTax.push(displayNoConversionWealth);
                     data.noConvIraAfterTax.push(displayNoConvIraAfterTax);
+                    data.noConvRmdReinvest.push(getDisplayValue(noConvSideAfterTax, year, inputs));
                     data.convRemainingAfterTax.push(displayConvRemainingAfterTax);
                     data.opportunityCost.push(displayOpportunityCost);
                     data.rothNetBenefit.push(displayConversionWealth);
@@ -691,16 +693,15 @@
 
             function updateStrategySummary() {
                 const finalYear = analysisData.years.length - 1;
-                const totalRmds = analysisData.rmdAmounts.reduce((a, b) => a + b, 0);
-                const tradFinalPreTax = analysisData.traditionalIRA[finalYear];
-                // Tax due on liquidating the remaining (do-nothing) IRA at the effective retirement rate.
-                const estimatedTaxes = tradFinalPreTax - analysisData.noConvIraAfterTax[finalYear];
 
-                document.getElementById('tradPreTaxValue').textContent = formatCurrency(tradFinalPreTax);
-                document.getElementById('tradRmdsValue').textContent = formatCurrency(totalRmds);
-                document.getElementById('tradTaxesValue').textContent = formatCurrency(estimatedTaxes);
+                // Traditional (do-nothing) card — after-tax components that sum to the Final Value:
+                //   remaining IRA after-tax + reinvested RMDs (taxable) + invested tax dollars (taxable)
+                document.getElementById('tradPreTaxValue').textContent = formatCurrency(analysisData.noConvIraAfterTax[finalYear]);
+                document.getElementById('tradRmdsValue').textContent = formatCurrency(analysisData.noConvRmdReinvest[finalYear]);
+                document.getElementById('tradTaxesValue').textContent = formatCurrency(analysisData.opportunityCost[finalYear]);
                 document.getElementById('tradFinalValue').textContent = formatCurrency(analysisData.traditionalAfterTax[finalYear]);
 
+                // Roth conversion card — tax-free Roth + remaining IRA & reinvested RMDs (after-tax)
                 document.getElementById('rothBalanceValue').textContent = formatCurrency(analysisData.rothIRA[finalYear]);
                 document.getElementById('rothOppCostValue').textContent = formatCurrency(analysisData.convRemainingAfterTax[finalYear]);
                 document.getElementById('rothTaxesPaidValue').textContent = formatCurrency(analysisData.totalTaxesPaid);
@@ -1473,10 +1474,10 @@
                         <tr>
                             <th>Year</th>
                             <th>Age</th>
-                            <th>Traditional After-Tax</th>
+                            <th>Do Nothing (After-Tax)</th>
                             <th>Roth Balance</th>
-                            <th>Opportunity Cost</th>
-                            <th>Roth Net Benefit</th>
+                            <th>Invested Tax $ (After-Tax)</th>
+                            <th>Roth Conversion (After-Tax)</th>
                             <th>Net Advantage</th>
                             <th>RMD</th>
                         </tr>
