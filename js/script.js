@@ -549,8 +549,13 @@
                     const rmdFactor = rmdFactors[age] || 6.4;
 
                     // Effective retirement tax rates (blended drawdown) for each track's IRA balance.
-                    const convRetireRate = getEffectiveRetirementRate(traditionalBalance, traditionalBalance > 0 ? traditionalBalance / rmdFactor : 0, inputs);
-                    const noConvRetireRate = getEffectiveRetirementRate(noConvBalance, noConvBalance > 0 ? noConvBalance / rmdFactor : 0, inputs);
+                    // Only feed an actual RMD once at/after RMD age; before then there is no RMD, so
+                    // pass 0 and let getEffectiveRetirementRate use its 4%-of-balance representative
+                    // withdrawal (rmdFactors defaults to 6.4 for ages < 73, which would otherwise
+                    // overstate the withdrawal and inflate the estimated rate).
+                    const atRmdAge = age >= inputs.rmdAge;
+                    const convRetireRate = getEffectiveRetirementRate(traditionalBalance, (atRmdAge && traditionalBalance > 0) ? traditionalBalance / rmdFactor : 0, inputs);
+                    const noConvRetireRate = getEffectiveRetirementRate(noConvBalance, (atRmdAge && noConvBalance > 0) ? noConvBalance / rmdFactor : 0, inputs);
 
                     let rmd = 0;            // no-conversion (do-nothing) RMD — the schedule conversions aim to shrink
                     if (age >= inputs.rmdAge && noConvBalance > 0) {
