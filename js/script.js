@@ -110,13 +110,21 @@
             let charts = {};
             let analysisData = {};
 
-            // Editorial chart theme: warm-gray ink, Inter for axes/legends.
+            // Editorial chart theme (AWM design system): ink ticks, faint ink grid.
             if (window.Chart) {
                 Chart.defaults.font.family = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-                Chart.defaults.font.size = 12;
-                Chart.defaults.color = '#6f6a5c';
-                Chart.defaults.borderColor = 'rgba(28, 46, 76, 0.08)';
+                Chart.defaults.font.size = 11;
+                Chart.defaults.color = 'rgba(30, 42, 74, 0.55)';
+                Chart.defaults.borderColor = 'rgba(30, 42, 74, 0.08)';
             }
+
+            // Shared design-system chart palette
+            const CHART_COLORS = {
+                coral: '#c0562a',          // primary outcome
+                ocean: '#2f6f8f',          // comparison
+                inkFaint: 'rgba(30, 42, 74, 0.45)', // tertiary / baseline
+                ink: '#1e2a4a'
+            };
 
             // 2026 tax assumptions modeled as married filing jointly / joint return schedules.
             // Federal figures reflect the IRS 2026 inflation adjustments (Rev. Proc. 2025-32) as
@@ -541,8 +549,13 @@
                     const rmdFactor = rmdFactors[age] || 6.4;
 
                     // Effective retirement tax rates (blended drawdown) for each track's IRA balance.
-                    const convRetireRate = getEffectiveRetirementRate(traditionalBalance, traditionalBalance > 0 ? traditionalBalance / rmdFactor : 0, inputs);
-                    const noConvRetireRate = getEffectiveRetirementRate(noConvBalance, noConvBalance > 0 ? noConvBalance / rmdFactor : 0, inputs);
+                    // Only feed an actual RMD once at/after RMD age; before then there is no RMD, so
+                    // pass 0 and let getEffectiveRetirementRate use its 4%-of-balance representative
+                    // withdrawal (rmdFactors defaults to 6.4 for ages < 73, which would otherwise
+                    // overstate the withdrawal and inflate the estimated rate).
+                    const atRmdAge = age >= inputs.rmdAge;
+                    const convRetireRate = getEffectiveRetirementRate(traditionalBalance, (atRmdAge && traditionalBalance > 0) ? traditionalBalance / rmdFactor : 0, inputs);
+                    const noConvRetireRate = getEffectiveRetirementRate(noConvBalance, (atRmdAge && noConvBalance > 0) ? noConvBalance / rmdFactor : 0, inputs);
 
                     let rmd = 0;            // no-conversion (do-nothing) RMD — the schedule conversions aim to shrink
                     if (age >= inputs.rmdAge && noConvBalance > 0) {
@@ -627,11 +640,13 @@
             function toggleUIElements() {
                 const isMultiYear = document.getElementById('multiYearStrategy').checked;
                 document.getElementById('conversionStrategyDiv').classList.toggle('hidden', !isMultiYear);
+                const amountEl = document.getElementById('conversionStrategyDiv-amount');
+                if (amountEl) amountEl.classList.toggle('hidden', !isMultiYear);
                 document.getElementById('singleConversionDiv').classList.toggle('hidden', isMultiYear);
                 document.getElementById('incomeGrowthRateGroup').classList.toggle('hidden', !isMultiYear);
 
                 const strategy = document.getElementById('conversionStrategy').value;
-                document.getElementById('maxBracketDiv').classList.toggle('hidden', strategy !== 'optimized');
+                document.getElementById('maxBracketDiv').classList.toggle('hidden', strategy !== 'optimized' || !isMultiYear);
 
                 document.getElementById('socialSecurityDiv').classList.toggle('hidden', !document.getElementById('includeSocialSecurity').checked);
 
@@ -679,14 +694,9 @@
                             <div class="metric-label">Tax Savings from Discount</div>
                         </div>
                     `;
-                } else {
-                    metricsHTML += `
-                        <div class="metric-card">
-                            <div class="metric-value">${formatCurrency(finalOpportunityCost)}</div>
-                            <div class="metric-label">Opportunity Cost</div>
-                        </div>
-                    `;
                 }
+                // Four tiles by default (matches the editorial reference); opportunity cost is
+                // surfaced in its own section below.
 
                 document.getElementById('keyMetrics').innerHTML = metricsHTML;
             }
@@ -761,7 +771,7 @@
 
                 breakdownHTML += `
                     <div class="cost-item">
-                        <div class="cost-item-value ${totalAdvantage >= 0 ? 'positive' : 'negative'}" style="color: ${totalAdvantage >= 0 ? 'var(--success-color)' : 'var(--error-color)'};">${formatCurrency(Math.abs(totalAdvantage))}</div>
+                        <div class="cost-item-value ${totalAdvantage >= 0 ? 'positive' : 'negative'}" style="color: ${totalAdvantage >= 0 ? 'var(--accent-color)' : 'var(--error-color)'};">${formatCurrency(Math.abs(totalAdvantage))}</div>
                         <div class="cost-item-label">${totalAdvantage >= 0 ? 'Net Benefit' : 'Net Cost'}</div>
                     </div>
                 `;
@@ -802,19 +812,21 @@
                             {
                                 label: 'Roth Conversion (after-tax)',
                                 data: analysisData.rothNetBenefit,
-                                borderColor: '#1c2e4c',
-                                backgroundColor: 'rgba(28, 46, 76, 0.1)',
-                                borderWidth: 3,
+                                borderColor: CHART_COLORS.coral,
+                                backgroundColor: 'rgba(192, 86, 42, 0.08)',
+                                borderWidth: 2.5,
                                 fill: false,
                                 pointRadius: 0,
+                                activeDot: { r: 5 },
                                 tension: 0.1
                             },
                             {
                                 label: 'Do Nothing (after-tax)',
                                 data: analysisData.traditionalAfterTax,
-                                borderColor: '#c0562a',
-                                backgroundColor: 'rgba(192, 86, 42, 0.1)',
+                                borderColor: CHART_COLORS.ocean,
+                                backgroundColor: 'rgba(47, 111, 143, 0.08)',
                                 borderWidth: 2,
+                                borderDash: [5, 4],
                                 fill: false,
                                 pointRadius: 0,
                                 tension: 0.1
@@ -822,10 +834,11 @@
                             {
                                 label: 'Net Advantage',
                                 data: analysisData.netAdvantage,
-                                borderColor: '#3f7d57',
-                                backgroundColor: 'rgba(63, 125, 87, 0.1)',
-                                borderWidth: 2,
-                                fill: true,
+                                borderColor: CHART_COLORS.inkFaint,
+                                backgroundColor: 'rgba(30, 42, 74, 0.05)',
+                                borderWidth: 1.5,
+                                borderDash: [2, 3],
+                                fill: false,
                                 pointRadius: 0,
                                 tension: 0.1
                             }
@@ -836,10 +849,10 @@
                         maintainAspectRatio: false,
                         plugins: {
                             tooltip: {
-                                backgroundColor: 'rgba(28, 46, 76, 0.94)',
-                                titleColor: '#fff',
-                                bodyColor: '#fff',
-                                borderColor: '#1c2e4c',
+                                backgroundColor: '#faf6ec',
+                                titleColor: '#1e2a4a',
+                                bodyColor: '#1e2a4a',
+                                borderColor: 'rgba(30, 42, 74, 0.15)',
                                 borderWidth: 1,
                                 callbacks: {
                                     label: function (context) {
@@ -870,7 +883,7 @@
                                     minRotation: 0
                                 },
                                 grid: {
-                                    color: 'rgba(28, 46, 76, 0.08)'
+                                    color: 'rgba(30, 42, 74, 0.08)'
                                 }
                             },
                             y: {
@@ -880,7 +893,7 @@
                                     }
                                 },
                                 grid: {
-                                    color: 'rgba(28, 46, 76, 0.08)'
+                                    color: 'rgba(30, 42, 74, 0.08)'
                                 }
                             }
                         }
@@ -898,8 +911,8 @@
                             {
                                 label: 'Roth IRA Balance',
                                 data: analysisData.rothIRA,
-                                borderColor: '#1c2e4c',
-                                backgroundColor: 'rgba(28, 46, 76, 0.1)',
+                                borderColor: '#1e2a4a',
+                                backgroundColor: 'rgba(30, 42, 74, 0.1)',
                                 borderWidth: 3,
                                 fill: false,
                                 pointRadius: 0
@@ -916,8 +929,8 @@
                             {
                                 label: 'Roth Net Value',
                                 data: analysisData.rothNetBenefit,
-                                borderColor: '#3f7d57',
-                                backgroundColor: 'rgba(63, 125, 87, 0.1)',
+                                borderColor: '#2f6f8f',
+                                backgroundColor: 'rgba(47, 111, 143, 0.1)',
                                 borderWidth: 2,
                                 fill: true,
                                 pointRadius: 0
@@ -974,8 +987,8 @@
                         datasets: [{
                             label: 'Net Advantage',
                             data: analysisData.netAdvantage,
-                            backgroundColor: analysisData.netAdvantage.map(adv => adv >= 0 ? 'rgba(63, 125, 87, 0.7)' : 'rgba(184, 68, 47, 0.7)'),
-                            borderColor: analysisData.netAdvantage.map(adv => adv >= 0 ? '#3f7d57' : '#b8442f'),
+                            backgroundColor: analysisData.netAdvantage.map(adv => adv >= 0 ? 'rgba(47, 111, 143, 0.7)' : 'rgba(184, 68, 47, 0.7)'),
+                            borderColor: analysisData.netAdvantage.map(adv => adv >= 0 ? '#2f6f8f' : '#b8442f'),
                             borderWidth: 1
                         }]
                     },
@@ -1037,8 +1050,8 @@
                             {
                                 label: 'Conversion Amount',
                                 data: analysisData.inputs.conversions.map(c => c.amount),
-                                backgroundColor: 'rgba(28, 46, 76, 0.3)',
-                                borderColor: '#1c2e4c',
+                                backgroundColor: 'rgba(30, 42, 74, 0.3)',
+                                borderColor: '#1e2a4a',
                                 borderWidth: 1,
                                 type: 'line',
                                 yAxisID: 'y1'
@@ -1120,8 +1133,8 @@
                                     if (income < bracket.min) return 0;
                                     return Math.min(income, bracket.max) - bracket.min;
                                 }),
-                                backgroundColor: 'rgba(28, 46, 76, 0.5)',
-                                borderColor: '#1c2e4c',
+                                backgroundColor: 'rgba(30, 42, 74, 0.5)',
+                                borderColor: '#1e2a4a',
                                 borderWidth: 1
                             },
                             {
@@ -1189,8 +1202,8 @@
                         datasets: [{
                             label: 'Net Advantage Distribution',
                             data: percentiles,
-                            backgroundColor: percentiles.map(val => val >= 0 ? 'rgba(63, 125, 87, 0.7)' : 'rgba(184, 68, 47, 0.7)'),
-                            borderColor: percentiles.map(val => val >= 0 ? '#3f7d57' : '#b8442f'),
+                            backgroundColor: percentiles.map(val => val >= 0 ? 'rgba(47, 111, 143, 0.7)' : 'rgba(184, 68, 47, 0.7)'),
+                            borderColor: percentiles.map(val => val >= 0 ? '#2f6f8f' : '#b8442f'),
                             borderWidth: 2
                         }]
                     },
@@ -1251,11 +1264,11 @@
                             label: 'Net Advantage',
                             data: sensitivityResults.map(r => r.advantage),
                             backgroundColor: sensitivityResults.map(r =>
-                                r.advantage > analysisData.totalAdvantage ? 'rgba(63, 125, 87, 0.7)' :
+                                r.advantage > analysisData.totalAdvantage ? 'rgba(47, 111, 143, 0.7)' :
                                     r.advantage < 0 ? 'rgba(184, 68, 47, 0.7)' : 'rgba(192, 86, 42, 0.7)'
                             ),
                             borderColor: sensitivityResults.map(r =>
-                                r.advantage > analysisData.totalAdvantage ? '#3f7d57' :
+                                r.advantage > analysisData.totalAdvantage ? '#2f6f8f' :
                                     r.advantage < 0 ? '#b8442f' : '#c0562a'
                             ),
                             borderWidth: 2
@@ -1336,8 +1349,8 @@
                             {
                                 label: 'Effective Tax Rate on Conversion',
                                 data: effectiveTaxData,
-                                backgroundColor: 'rgba(28, 46, 76, 0.7)',
-                                borderColor: '#1c2e4c',
+                                backgroundColor: 'rgba(30, 42, 74, 0.7)',
+                                borderColor: '#1e2a4a',
                                 borderWidth: 1
                             }
                         ]
@@ -1644,20 +1657,72 @@
                     updateOpportunityCostBreakdown();
                     updateTables();
                     showAlerts();
+                    syncAllSliders();
+                    syncControlsUI();
+                    updateCaption();
 
-                    const activeTab = document.querySelector('.tab.active').dataset.tab;
-                    showTab(activeTab, true);
-
-                    // Add animation classes
-                    document.querySelectorAll('.metric-card, .strategy-card').forEach((card, index) => {
-                        card.style.animationDelay = `${index * 0.1}s`;
-                        card.classList.add('fade-in-up');
-                    });
+                    // Single-screen layout: every section is visible, so render all charts.
+                    renderAllCharts();
 
                 } catch (error) {
                     console.error('Calculation error:', error);
                     alert('An error occurred during calculation. Please check your inputs and try again.');
                 }
+            }
+
+            // Render every chart (single-screen layout — all sections visible).
+            function renderAllCharts() {
+                createComparisonChart();
+                createOpportunityChart();
+                createConversionChart();
+                createAdvancedCharts();
+            }
+
+            // Live value labels for sliders.
+            function syncSliderValue(el) {
+                const span = document.getElementById(el.id + '_val');
+                if (!span) return;
+                const unit = el.dataset.unit || '';
+                span.textContent = `${el.value}${unit}`;
+            }
+            function syncAllSliders() {
+                document.querySelectorAll('.controls-well input[type="range"]').forEach(syncSliderValue);
+            }
+
+            // Keep segmented toggles and preset chips in sync with their backing inputs,
+            // including when values change programmatically (e.g. Auto-Optimize).
+            function syncControlsUI() {
+                document.querySelectorAll('.segmented').forEach(group => {
+                    group.querySelectorAll('.seg-btn').forEach(btn => {
+                        let active = false;
+                        if (btn.dataset.toggle) {
+                            const cb = document.getElementById(btn.dataset.toggle);
+                            active = cb && (cb.checked === (btn.dataset.checked === 'true'));
+                        } else if (group.dataset.target) {
+                            const sel = document.getElementById(group.dataset.target);
+                            active = sel && String(sel.value) === String(btn.dataset.value);
+                        }
+                        btn.classList.toggle('active', active);
+                    });
+                });
+                const stateSel = document.getElementById('stateResidency');
+                if (stateSel) {
+                    document.querySelectorAll('#statePresets button').forEach(b => b.classList.toggle('active', b.dataset.state === stateSel.value));
+                }
+            }
+
+            // Caption under the primary chart — explains the after-tax/net number.
+            function updateCaption() {
+                const el = document.getElementById('mainCaption');
+                if (!el || !analysisData || !analysisData.years) return;
+                const f = analysisData.years.length - 1;
+                const adv = analysisData.netAdvantage[f];
+                const dollars = analysisData.inputs.adjustForInflation ? "in today's dollars" : "in nominal dollars";
+                const verb = adv >= 0 ? 'adds' : 'costs';
+                el.innerHTML = `The <span class="coral">Roth conversion</span> line is total after-tax wealth ${dollars}. `
+                    + `At year ${f} (age ${analysisData.inputs.currentAge + f}), converting ${verb} `
+                    + `<strong>${formatCurrency(Math.abs(adv))}</strong> versus doing nothing — after paying `
+                    + `<strong>${formatCurrency(analysisData.totalTaxesPaid)}</strong> in conversion taxes.`;
             }
 
             function showTab(tabName, forceUpdate = false) {
@@ -1949,12 +2014,57 @@
                     'analysisYear'
                 ];
 
+                // Debounce the (heavy) full recompute so dragging sliders stays smooth.
+                let calcTimer = null;
+                const debouncedCalc = () => {
+                    clearTimeout(calcTimer);
+                    calcTimer = setTimeout(calculateAndDisplay, 160);
+                };
+
                 inputsToWatch.forEach(id => {
                     const element = document.getElementById(id);
                     if (element) {
-                        element.addEventListener('input', calculateAndDisplay);
+                        element.addEventListener('input', debouncedCalc);
                         element.addEventListener('change', calculateAndDisplay);
                     }
+                });
+
+                // Instant live value next to each slider (independent of the debounced recompute).
+                document.querySelectorAll('.controls-well input[type="range"]').forEach(range => {
+                    range.addEventListener('input', () => syncSliderValue(range));
+                });
+
+                // State preset chips drive the (hidden) state select.
+                const presetWrap = document.getElementById('statePresets');
+                if (presetWrap) {
+                    const stateSel = document.getElementById('stateResidency');
+                    const syncPresets = () => presetWrap.querySelectorAll('button').forEach(b => b.classList.toggle('active', b.dataset.state === stateSel.value));
+                    presetWrap.querySelectorAll('button').forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            stateSel.value = btn.dataset.state;
+                            syncPresets();
+                            calculateAndDisplay();
+                        });
+                    });
+                    syncPresets();
+                }
+
+                // Segmented toggles drive a hidden <select> (data-value) or checkbox (data-toggle).
+                document.querySelectorAll('.segmented').forEach(group => {
+                    group.querySelectorAll('.seg-btn').forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            group.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+                            btn.classList.add('active');
+                            if (btn.dataset.toggle) {
+                                const cb = document.getElementById(btn.dataset.toggle);
+                                if (cb) { cb.checked = btn.dataset.checked === 'true'; }
+                            } else if (group.dataset.target) {
+                                const sel = document.getElementById(group.dataset.target);
+                                if (sel) { sel.value = btn.dataset.value; }
+                            }
+                            calculateAndDisplay();
+                        });
+                    });
                 });
 
                 // Currency formatting
@@ -1967,25 +2077,18 @@
                     });
                 });
 
-                // Tab functionality
-                document.querySelectorAll('.tab').forEach(tab => {
-                    tab.addEventListener('click', (e) => {
-                        const tabName = e.target.dataset.tab;
-                        showTab(tabName);
-                    });
-                });
-
                 // Button functionality
                 document.getElementById('optimizeBtn').addEventListener('click', optimizeConversions);
                 document.getElementById('generateReportBtn').addEventListener('click', generateReport);
 
-                // Initialize calculations
-                // Wait for Chart.js to be available
+                // Initialize calculations. Prefer to wait for Chart.js, but never block the
+                // numbers/tables on it — if the CDN is unavailable, run anyway (charts skip safely).
+                let chartWaits = 0;
                 const initializeApp = () => {
-                    if (typeof Chart !== 'undefined') {
+                    if (typeof Chart !== 'undefined' || chartWaits >= 15) {
                         calculateAndDisplay();
                     } else {
-                        // Try again in 100ms if Chart.js isn't loaded yet
+                        chartWaits++;
                         setTimeout(initializeApp, 100);
                     }
                 };

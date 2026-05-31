@@ -14,7 +14,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Spectral:wght@300;400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&family=Spectral:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css"
@@ -1651,375 +1651,612 @@
 
         /* --- Discount metric accents map onto the warm palette --- */
         .metric-card[style*="warning"] { border-color: var(--warning-color) !important; }
+
+        /* ===================================================================
+           AWM Calculator Design System — paper / bone / ink / coral / ocean
+           Editorial illustration: paper-and-ink palette with one coral accent,
+           serif numerals, mono labels & inputs, rounded-sm, hairline borders.
+           =================================================================== */
+        :root {
+            --paper: #faf6ec;
+            --bone:  #ece4d2;
+            --ink:   #1e2a4a;
+            --ink-rgb: 30 42 74;
+            --coral: #c0562a;
+            --coral-rgb: 192 86 42;
+            --ocean: #2f6f8f;
+            --cta:   #15245B;
+            --mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+            /* Re-map legacy tokens onto the new materials */
+            --primary-color: var(--ink);
+            --primary-hover: #16213c;
+            --primary-light: var(--bone);
+            --primary-gradient: linear-gradient(90deg, var(--ink), var(--coral));
+            --secondary-color: var(--ink);
+            --accent-color: var(--coral);
+            --accent-hover: #a4471f;
+            --success-color: var(--ink);
+            --warning-color: var(--coral);
+            --error-color: #b23b2e;
+
+            --background-primary: var(--paper);
+            --background-secondary: var(--paper);
+            --card-background: var(--bone);
+            --field-background: var(--paper);
+
+            --text-primary: var(--ink);
+            --text-secondary: rgb(var(--ink-rgb) / 0.70);
+            --text-muted: rgb(var(--ink-rgb) / 0.55);
+
+            --border-color: rgb(var(--ink-rgb) / 0.12);
+            --border-light: rgb(var(--ink-rgb) / 0.08);
+
+            --radius-sm: 3px; --radius-md: 3px; --radius-lg: 3px; --radius-xl: 3px; --radius-2xl: 3px;
+            --shadow-sm: none;
+            --shadow-md: 0 1px 2px rgb(var(--ink-rgb) / 0.06);
+            --shadow-lg: 0 8px 24px -12px rgb(var(--ink-rgb) / 0.25);
+        }
+
+        /* Deep ink frame around the paper sheet */
+        body { background: var(--cta); color: var(--ink); }
+        .container {
+            background: var(--paper);
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+            box-shadow: 0 30px 80px -24px rgb(0 0 0 / 0.50);
+        }
+
+        /* Header — serif headline, mono client meta */
+        .header { border-bottom: 1px solid var(--border-color); border-radius: 0; }
+        .header::before { display: none; }
+        .header-title h1 {
+            font-family: var(--serif);
+            font-weight: 500;
+            color: var(--ink);
+            -webkit-text-fill-color: var(--ink);
+            background: none;
+            letter-spacing: -0.01em;
+        }
+        #headerClientName, .header-client-info, #headerDate {
+            font-family: var(--mono);
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            color: rgb(var(--ink-rgb) / 0.55);
+            font-weight: 500;
+        }
+        #headerClientName { font-weight: 600; color: rgb(var(--ink-rgb) / 0.75); }
+
+        /* Section / eyebrow headers */
+        .section-header { font-family: var(--serif); font-weight: 500; color: var(--ink); border-bottom: 1px solid var(--border-color); }
+        .subsection-header {
+            font-family: var(--mono);
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            font-size: 0.66rem;
+            font-weight: 600;
+            color: rgb(var(--ink-rgb) / 0.5);
+        }
+
+        /* Controls well = bone */
+        .sidebar { background: var(--bone); border: 1px solid var(--border-color); }
+        .sidebar::before { display: none; }
+
+        .input-group label {
+            font-family: var(--mono);
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            font-size: 0.66rem;
+            font-weight: 600;
+            color: rgb(var(--ink-rgb) / 0.6);
+        }
+
+        .input-group input, .input-group select {
+            background: var(--paper);
+            border: 1px solid rgb(var(--ink-rgb) / 0.15);
+            border-radius: 3px;
+            font-family: var(--mono);
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--ink);
+            font-variant-numeric: tabular-nums;
+        }
+        .input-group input:focus, .input-group select:focus {
+            border-color: var(--coral);
+            box-shadow: 0 0 0 3px rgb(var(--coral-rgb) / 0.30);
+        }
+        .input-hint { font-family: var(--sans); font-style: normal; color: rgb(var(--ink-rgb) / 0.5); }
+        .checkbox-group { background: var(--paper); border: 1px solid var(--border-color); border-radius: 3px; }
+        .checkbox-group:hover { background: var(--paper); }
+        .checkbox-group input[type="checkbox"] { accent-color: var(--coral); }
+        .checkbox-group label { font-family: var(--sans); color: var(--ink); }
+
+        /* Summary tiles */
+        .metric-card { background: var(--bone); border: 1px solid var(--border-color); border-radius: 3px; text-align: left; box-shadow: none; }
+        .metric-card::before { display: none; }
+        .metric-card:hover { transform: none; box-shadow: none; border-color: rgb(var(--ink-rgb) / 0.2); }
+        .metric-label { font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.18em; font-size: 0.6rem; font-weight: 600; color: rgb(var(--ink-rgb) / 0.5); }
+        .metric-value { font-family: var(--serif); font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1; }
+        .metric-value.positive { color: var(--coral); }
+        .metric-value.negative { color: var(--error-color); }
+
+        /* Tabs — ink active / coral hover, mono */
+        .tabs { background: transparent; border-bottom: 1px solid var(--border-color); border-radius: 0; }
+        .tab { font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.64rem; font-weight: 600; border-radius: 3px 3px 0 0; color: rgb(var(--ink-rgb) / 0.6); }
+        .tab:hover { color: var(--coral); background: transparent; }
+        .tab.active { background: var(--ink); color: var(--paper); box-shadow: none; }
+
+        /* Buttons — single dark CTA (report) + coral secondary (optimize) */
+        .action-btn { font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.18em; font-size: 0.66rem; font-weight: 600; border-radius: 3px; box-shadow: none; }
+        .report-btn { background: var(--cta); color: var(--paper); }
+        .report-btn:hover { background: #0f1c47; transform: none; box-shadow: var(--shadow-lg); }
+        .optimization-btn { background: var(--coral); }
+        .optimization-btn:hover { background: var(--accent-hover); transform: none; box-shadow: var(--shadow-lg); }
+
+        /* Strategy comparison cards */
+        .strategy-card { background: var(--bone); border: 1px solid var(--border-color); border-radius: 3px; box-shadow: none; }
+        .strategy-card::before { height: 2px; background: var(--border-color); }
+        .strategy-card.selected { border-color: var(--coral); box-shadow: none; }
+        .strategy-card.selected::before { background: var(--coral); }
+        .strategy-card:hover { transform: none; box-shadow: var(--shadow-md); }
+        .strategy-title { font-family: var(--serif); font-weight: 500; color: var(--ink); border-bottom: 1px solid var(--border-color); }
+        .detail-label { font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.62rem; font-weight: 600; color: rgb(var(--ink-rgb) / 0.6); }
+        .detail-value { font-family: var(--serif); font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; }
+        .strategy-final-value { background: var(--paper); border: 1px solid var(--border-color); border-radius: 3px; }
+        .strategy-card.selected .strategy-final-value { border-color: var(--coral); background: rgb(var(--coral-rgb) / 0.06); }
+        .final-label { font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.16em; font-size: 0.62rem; font-weight: 600; color: rgb(var(--ink-rgb) / 0.6); }
+        .final-value { font-family: var(--serif); font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1; }
+        .strategy-card.selected .final-value { color: var(--coral); }
+
+        /* Opportunity-cost section + cost items */
+        .opportunity-cost-section { background: var(--paper); border: 1px solid var(--border-color); border-radius: 3px; box-shadow: none; }
+        .opportunity-explanation { background: var(--bone); border-left: 3px solid var(--coral); border-radius: 0 3px 3px 0; box-shadow: none; }
+        .opportunity-explanation h4 { font-family: var(--serif); font-weight: 500; color: var(--ink); }
+        .cost-item { background: var(--bone); border: 1px solid var(--border-color); border-radius: 3px; text-align: left; box-shadow: none; }
+        .cost-item:hover { transform: none; box-shadow: none; }
+        .cost-item-value { font-family: var(--serif); font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; }
+        .cost-item-label { font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.6rem; font-weight: 600; color: rgb(var(--ink-rgb) / 0.55); }
+
+        /* Chart frame + tables */
+        .chart-container { background: var(--paper); border: 1px solid var(--border-color); border-radius: 3px; box-shadow: none; }
+        .chart-container::before { display: none; }
+        .chart-title { font-family: var(--serif); font-weight: 500; color: var(--ink); }
+        .data-table { background: var(--paper); border: 1px solid var(--border-color); border-radius: 3px; }
+        .data-table th { background: var(--bone); font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.6rem; font-weight: 600; color: rgb(var(--ink-rgb) / 0.6); }
+        .data-table td { font-variant-numeric: tabular-nums; }
+        .data-table tr:hover { background: rgb(var(--coral-rgb) / 0.04); }
+
+        /* Quiet alerts */
+        .alert { border-radius: 3px; box-shadow: none; }
+        .alert-success, .alert-warning, .alert-info { color: var(--ink); background: var(--bone); border-color: var(--border-color); }
+        .alert-success i, .alert-warning i { color: var(--coral); }
+        .alert-info i { color: var(--ocean); }
+
+        /* Footnote — Info icon + ink/60 paragraphs */
+        .disclosure { border-top: 1px solid var(--border-color); color: rgb(var(--ink-rgb) / 0.6); font-size: 0.75rem; display: flex; gap: 12px; align-items: flex-start; }
+        .disclosure .disclosure-icon { color: var(--ocean); font-size: 0.95rem; margin-top: 4px; flex-shrink: 0; }
+        .disclosure h4 { font-family: var(--serif); font-weight: 500; color: var(--ink); }
+
+        /* Semantic outcome colors — coral for advantage, restrained red for loss */
+        .positive { color: var(--coral); }
+        .negative { color: var(--error-color); }
+
+        /* ===================================================================
+           Single-column editorial layout (matches the Tax-Aware reference)
+           =================================================================== */
+        .visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); border: 0; }
+        .hidden { display: none !important; }
+
+        /* Header */
+        .calc-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 36px; margin-bottom: 36px; }
+        .eyebrow { display: flex; align-items: center; gap: 12px; font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.2em; font-size: 0.66rem; font-weight: 600; color: var(--coral); margin-bottom: 18px; }
+        .eyebrow-rule { width: 34px; height: 1px; background: var(--coral); display: inline-block; }
+        .calc-headline { display: flex; align-items: center; gap: 14px; font-family: var(--serif); font-weight: 500; font-size: 2.4rem; line-height: 1.1; letter-spacing: -0.01em; color: var(--ink); margin-bottom: 16px; }
+        .calc-headline i { color: var(--coral); font-size: 1.5rem; }
+        .calc-subcopy { font-family: var(--sans); font-weight: 300; font-size: 1.05rem; line-height: 1.55; color: rgb(var(--ink-rgb) / 0.7); max-width: 34rem; }
+        .calc-header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 14px; flex-shrink: 0; }
+        .preset-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: flex-end; }
+        .preset-label { font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.18em; font-size: 0.6rem; color: rgb(var(--ink-rgb) / 0.5); }
+        .preset-chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+        .preset-chips button { font-family: var(--mono); text-transform: uppercase; font-size: 0.66rem; font-weight: 600; letter-spacing: 0.04em; padding: 6px 12px; border-radius: 3px; border: 1px solid rgb(var(--ink-rgb) / 0.15); background: var(--bone); color: rgb(var(--ink-rgb) / 0.8); cursor: pointer; transition: all 0.15s; }
+        .preset-chips button:hover { border-color: var(--coral); color: var(--coral); }
+        .preset-chips button.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+        .header-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.14em; font-size: 0.6rem; color: rgb(var(--ink-rgb) / 0.5); }
+
+        /* Tiles */
+        .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 32px; }
+        .tiles .metric-card { padding: 18px 20px; }
+        .tiles .metric-value { font-feature-settings: "onum" 1, "pnum" 1; font-size: 1.7rem; }
+
+        /* Controls well */
+        .controls-well { background: var(--bone); border: 1px solid var(--border-color); border-radius: 3px; padding: 28px 30px; margin-bottom: 24px; }
+        .controls-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px 36px; }
+        .control { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+        .control-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; min-height: 16px; }
+        .control-head label { font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.14em; font-size: 0.62rem; font-weight: 600; color: rgb(var(--ink-rgb) / 0.6); margin: 0; display: block; }
+        .control-val { font-family: var(--mono); font-size: 0.82rem; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+        .control input[type="text"] { width: 100%; padding: 10px 12px; background: var(--paper); border: 1px solid rgb(var(--ink-rgb) / 0.15); border-radius: 3px; font-family: var(--mono); font-size: 0.85rem; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+        .control input[type="text"]:focus { outline: none; border-color: var(--coral); box-shadow: 0 0 0 3px rgb(var(--coral-rgb) / 0.3); }
+        .money { position: relative; }
+        .money span { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-family: var(--mono); font-size: 0.85rem; color: rgb(var(--ink-rgb) / 0.4); pointer-events: none; }
+        .money input { padding-left: 26px !important; }
+
+        /* Slider — gray track, white thumb (matches reference) */
+        .control input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 18px; background: transparent; cursor: pointer; }
+        .control input[type="range"]::-webkit-slider-runnable-track { height: 4px; border-radius: 999px; background: rgb(var(--ink-rgb) / 0.13); }
+        .control input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; margin-top: -7px; border-radius: 50%; background: #fff; border: 1px solid rgb(var(--ink-rgb) / 0.3); box-shadow: 0 1px 3px rgb(var(--ink-rgb) / 0.3); }
+        .control input[type="range"]:hover::-webkit-slider-thumb { border-color: var(--coral); }
+        .control input[type="range"]::-moz-range-track { height: 4px; border-radius: 999px; background: rgb(var(--ink-rgb) / 0.13); }
+        .control input[type="range"]::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: #fff; border: 1px solid rgb(var(--ink-rgb) / 0.3); box-shadow: 0 1px 3px rgb(var(--ink-rgb) / 0.3); }
+        .control input[type="range"]:hover::-moz-range-thumb { border-color: var(--coral); }
+
+        /* Segmented toggles */
+        .segmented { display: flex; gap: 8px; }
+        .seg-btn { flex: 1; padding: 9px 8px; font-family: var(--mono); text-transform: uppercase; font-size: 0.62rem; font-weight: 600; letter-spacing: 0.06em; border: 1px solid rgb(var(--ink-rgb) / 0.15); background: var(--paper); color: rgb(var(--ink-rgb) / 0.8); border-radius: 3px; cursor: pointer; transition: all 0.15s; }
+        .seg-btn:hover { border-color: var(--coral); color: var(--coral); }
+        .seg-btn.active { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+
+        /* Toggle row */
+        .toggle-row { display: flex; flex-wrap: wrap; gap: 22px; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-color); }
+        .toggle { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.62rem; font-weight: 600; color: rgb(var(--ink-rgb) / 0.7); }
+        .toggle input { accent-color: var(--coral); width: 15px; height: 15px; cursor: pointer; }
+        .control-note { margin-top: 10px; font-family: var(--sans); font-size: 0.72rem; color: rgb(var(--ink-rgb) / 0.5); }
+        .advanced-block { margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--border-color); }
+        .advanced-note { display: flex; gap: 8px; font-size: 0.78rem; color: rgb(var(--ink-rgb) / 0.6); margin-bottom: 18px; }
+        .advanced-note i { color: var(--ocean); margin-top: 2px; }
+
+        /* Download row */
+        .download-row { display: flex; justify-content: flex-end; gap: 12px; margin-bottom: 24px; }
+
+        /* Caption + stacked sections */
+        .chart-caption { font-family: var(--sans); font-size: 0.82rem; line-height: 1.55; color: rgb(var(--ink-rgb) / 0.6); margin: 14px 2px 0; max-width: 62rem; }
+        .chart-caption strong { color: var(--ink); font-weight: 600; }
+        .chart-caption .coral { color: var(--coral); font-weight: 600; }
+        .stack-section { margin-top: 44px; padding-top: 32px; border-top: 1px solid var(--border-color); }
+        .stack-section .eyebrow { color: rgb(var(--ink-rgb) / 0.5); }
+        .stack-section .eyebrow-rule { background: rgb(var(--ink-rgb) / 0.3); }
+        .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+        /* Serif display numerals use old-style figures to match the reference */
+        .metric-value, .final-value, .detail-value, .cost-item-value { font-feature-settings: "onum" 1, "pnum" 1; }
+
+        /* Responsive */
+        @media (max-width: 1000px) {
+            .calc-header { flex-direction: column; }
+            .calc-header-right { align-items: flex-start; }
+            .preset-chips, .preset-row, .header-meta { justify-content: flex-start; align-items: flex-start; }
+            .controls-grid { grid-template-columns: repeat(2, 1fr); }
+            .chart-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 640px) {
+            .tiles { grid-template-columns: repeat(2, 1fr); }
+            .controls-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <header class="header fade-in-up">
-            <div class="header-logo">
-                <img src="https://ablewealth.com/AWM%20Logo%203.png" alt="Able Wealth Management Logo"
-                    onerror="this.alt='Able Wealth Management'; this.style.display='none';">
+        <!-- Editorial header -->
+        <header class="calc-header">
+            <div class="calc-header-left">
+                <div class="eyebrow"><span class="eyebrow-rule"></span> Interactive Illustration</div>
+                <h1 class="calc-headline"><i class="fas fa-arrow-trend-up"></i> Roth Conversion Analyzer</h1>
+                <p class="calc-subcopy">Model a multi-year Roth conversion against doing nothing — after-tax, in
+                    today's dollars, across your full retirement horizon.</p>
             </div>
-            <div class="header-title">
-                <h1>Roth Conversion Analyzer</h1>
-            </div>
-            <div class="header-client-info">
-                <div id="headerClientName"><i class="fas fa-user"></i> <span id="clientNameDisplay">John & Jane
-                        Doe</span></div>
-                <div id="headerDate"></div>
+            <div class="calc-header-right">
+                <div class="preset-row">
+                    <span class="preset-label">State preset</span>
+                    <div class="preset-chips" id="statePresets">
+                        <button type="button" data-state="NY">NY</button>
+                        <button type="button" data-state="NJ">NJ</button>
+                        <button type="button" data-state="CA">CA</button>
+                        <button type="button" data-state="FL">FL</button>
+                        <button type="button" data-state="TX">TX</button>
+                        <button type="button" data-state="other">No tax</button>
+                    </div>
+                </div>
+                <div class="header-meta">
+                    <span id="clientNameDisplay"></span>
+                    <span id="headerDate"></span>
+                </div>
+                <select id="stateResidency" class="visually-hidden">
+                    <option value="NY">New York</option>
+                    <option value="NJ">New Jersey</option>
+                    <option value="CA">California</option>
+                    <option value="FL">Florida</option>
+                    <option value="TX">Texas</option>
+                    <option value="other">Other (No State Tax)</option>
+                </select>
             </div>
         </header>
 
-        <div class="main-content">
-            <div class="sidebar fade-in-up">
-                <div class="sidebar-content">
-                    <div class="section-header"><i class="fas fa-user-edit"></i> Client & Scenario Inputs</div>
+        <div id="alertsContainer"></div>
 
-                    <div class="subsection-header"><i class="fas fa-address-card"></i> Client Details</div>
-                    <div class="input-group">
-                        <label for="clientName"><i class="fas fa-signature"></i> Client Name</label>
-                        <input type="text" id="clientName" value="John & Jane Doe">
-                    </div>
-                    <div class="input-group">
-                        <label for="stateResidency"><i class="fas fa-map-marker-alt"></i> State of Residency</label>
-                        <select id="stateResidency">
-                            <option value="NY">New York</option>
-                            <option value="NJ">New Jersey</option>
-                            <option value="CA">California</option>
-                            <option value="FL">Florida</option>
-                            <option value="TX">Texas</option>
-                            <option value="other">Other (No State Tax)</option>
-                        </select>
-                    </div>
+        <!-- Summary tiles -->
+        <div class="tiles" id="keyMetrics"></div>
 
-                    <div class="subsection-header"><i class="fas fa-dollar-sign"></i> Financial Parameters</div>
-                    <div class="input-group">
-                        <label for="currentAge"><i class="fas fa-birthday-cake"></i> Current Age</label>
-                        <input type="number" id="currentAge" value="45">
-                    </div>
-                    <div class="input-group">
-                        <label for="retirementAge"><i class="fas fa-cocktail"></i> Retirement Age</label>
-                        <input type="number" id="retirementAge" value="65">
-                    </div>
-                    <div class="input-group">
-                        <label for="iraBalance"><i class="fas fa-piggy-bank"></i> Current IRA Balance</label>
-                        <input type="text" id="iraBalance" value="1,000,000" data-type="currency">
-                    </div>
-                    <div class="input-group">
-                        <label for="currentIncome"><i class="fas fa-money-bill-wave"></i> Current Annual Income</label>
-                        <input type="text" id="currentIncome" value="150,000" data-type="currency">
-                    </div>
-                    <div class="input-group hidden" id="incomeGrowthRateGroup">
-                        <label for="incomeGrowthRate"><i class="fas fa-chart-line"></i> Income Growth Rate (%)</label>
-                        <input type="number" id="incomeGrowthRate" value="3" step="0.1">
-                    </div>
+        <!-- Controls well -->
+        <section class="controls-well">
+            <div class="controls-grid">
+                <div class="control control-text">
+                    <div class="control-head"><label for="clientName">Client Name</label></div>
+                    <input type="text" id="clientName" value="John &amp; Jane Doe">
+                </div>
+                <div class="control">
+                    <div class="control-head"><label for="iraBalance">Current IRA Balance</label></div>
+                    <div class="money"><span>$</span><input type="text" id="iraBalance" value="1,000,000" data-type="currency"></div>
+                </div>
+                <div class="control">
+                    <div class="control-head"><label for="currentIncome">Current Annual Income</label></div>
+                    <div class="money"><span>$</span><input type="text" id="currentIncome" value="150,000" data-type="currency"></div>
+                </div>
 
-                    <div class="subsection-header"><i class="fas fa-exchange-alt"></i> Conversion Strategy</div>
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="multiYearStrategy" checked>
-                        <label for="multiYearStrategy">Multi-Year Conversion Strategy</label>
-                    </div>
-                    <div id="conversionStrategyDiv">
-                        <div class="input-group">
-                            <label for="totalConversionAmount"><i class="fas fa-coins"></i> Total Conversion
-                                Amount</label>
-                            <input type="text" id="totalConversionAmount" value="500,000" data-type="currency">
-                        </div>
-                        <div class="strategy-grid">
-                            <div class="input-group">
-                                <label for="conversionYears"><i class="fas fa-calendar-alt"></i> Period (Years)</label>
-                                <input type="number" id="conversionYears" value="5">
-                                <div class="input-hint" id="conversionAgeHint"></div>
-                            </div>
-                            <div class="input-group">
-                                <label for="conversionStrategy"><i class="fas fa-cogs"></i> Type</label>
-                                <select id="conversionStrategy">
-                                    <option value="equal">Equal Annual</option>
-                                    <option value="optimized">Tax-Optimized</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="input-group hidden" id="maxBracketDiv">
-                            <label for="maxTaxBracket"><i class="fas fa-percentage"></i> Max Tax Bracket</label>
-                            <select id="maxTaxBracket">
-                                <option value="22">22%</option>
-                                <option value="24" selected>24%</option>
-                                <option value="32">32%</option>
-                                <option value="35">35%</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="input-group hidden" id="singleConversionDiv">
-                        <label for="conversionAmount"><i class="fas fa-coins"></i> Single Conversion Amount</label>
-                        <input type="text" id="conversionAmount" value="500,000" data-type="currency">
-                    </div>
+                <div class="control">
+                    <div class="control-head"><label for="currentAge">Current Age</label><span class="control-val" id="currentAge_val"></span></div>
+                    <input type="range" id="currentAge" min="30" max="80" step="1" value="45" data-unit="">
+                </div>
+                <div class="control">
+                    <div class="control-head"><label for="retirementAge">Retirement Age</label><span class="control-val" id="retirementAge_val"></span></div>
+                    <input type="range" id="retirementAge" min="50" max="75" step="1" value="65" data-unit="">
+                </div>
+                <div class="control">
+                    <div class="control-head"><label for="analysisYear">Analysis Horizon</label><span class="control-val" id="analysisYear_val"></span></div>
+                    <input type="range" id="analysisYear" min="1" max="45" step="1" value="45" data-unit=" yr"
+                        onchange="updateNetAdvantage(this.value);" oninput="updateNetAdvantage(this.value);">
+                </div>
 
-                    <div class="subsection-header"><i class="fas fa-sliders-h"></i> Assumptions & Advanced Options</div>
-                    <div class="input-group">
-                        <label for="preRetirementReturn"><i class="fas fa-chart-line"></i> Pre-Retirement Return
-                            (%)</label>
-                        <input type="number" id="preRetirementReturn" value="8" step="0.1">
+                <div class="control">
+                    <div class="control-head"><label>Conversion Approach</label></div>
+                    <div class="segmented" data-target="multiYearStrategyProxy">
+                        <button type="button" data-toggle="multiYearStrategy" data-checked="true" class="seg-btn active">Multi-Year</button>
+                        <button type="button" data-toggle="multiYearStrategy" data-checked="false" class="seg-btn">Single Year</button>
                     </div>
-                    <div class="input-group">
-                        <label for="postRetirementReturn"><i class="fas fa-chart-line"></i> Post-Retirement Return
-                            (%)</label>
-                        <input type="number" id="postRetirementReturn" value="6" step="0.1">
-                    </div>
-                    <div class="input-group">
-                        <label for="inflationRate"><i class="fas fa-money-bill-wave"></i> Inflation Rate (%)</label>
-                        <input type="number" id="inflationRate" value="2.5" step="0.1">
-                    </div>
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="adjustForInflation">
-                        <label for="adjustForInflation">Show Inflation-Adjusted Projections</label>
-                    </div>
-                    <div class="input-hint">When enabled, projected balances, taxes, and opportunity cost are shown in today's dollars.</div>
-                    <div class="input-group">
-                        <label for="capitalGainsRate"><i class="fas fa-percentage"></i> Capital Gains Rate (%)</label>
-                        <input type="number" id="capitalGainsRate" value="20" step="0.1">
-                    </div>
-                    <div class="input-group">
-                        <label for="payTaxesFrom"><i class="fas fa-file-invoice-dollar"></i> Pay Conversion Taxes
-                            From</label>
-                        <select id="payTaxesFrom">
-                            <option value="outside">Outside Funds</option>
-                            <option value="ira">IRA Withdrawal</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label for="rmdAge"><i class="fas fa-calendar-alt"></i> RMD Starting Age</label>
-                        <input type="number" id="rmdAge" value="73">
-                    </div>
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="includeSocialSecurity">
-                        <label for="includeSocialSecurity">Include Social Security</label>
-                    </div>
-                    <div class="input-group hidden" id="socialSecurityDiv">
-                        <label for="socialSecurityBenefit"><i class="fas fa-hand-holding-usd"></i> Annual Social
-                            Security</label>
-                        <input type="text" id="socialSecurityBenefit" value="30,000" data-type="currency">
-                    </div>
+                    <input type="checkbox" id="multiYearStrategy" class="visually-hidden" checked>
+                </div>
 
-                    <div class="subsection-header"><i class="fas fa-tags"></i> Asset Valuation Discount (Advanced)</div>
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="enableAssetDiscount">
-                        <label for="enableAssetDiscount">Apply Asset Valuation Discount</label>
-                    </div>
-                    <div class="input-group hidden" id="assetDiscountDiv">
-                        <div class="opportunity-explanation">
-                            <h4><i class="fas fa-exclamation-triangle"></i> Advanced Feature</h4>
-                            <p>This feature models scenarios where IRA assets are valued at a discount prior to
-                                conversion (e.g., private investments, oil & gas partnerships, real estate). Requires
-                                qualified independent appraisal for actual implementation.</p>
-                        </div>
-                        <div class="strategy-grid">
-                            <div class="input-group">
-                                <label for="valuationDiscount"><i class="fas fa-percentage"></i> Valuation Discount
-                                    (%)</label>
-                                <input type="number" id="valuationDiscount" value="35" step="1" min="0" max="90">
-                                <div class="input-hint">Combined DLOM + Minority Interest discount</div>
-                            </div>
-                            <div class="input-group">
-                                <label for="operationalReduction"><i class="fas fa-percentage"></i> Initial Operational
-                                    Reduction (%)</label>
-                                <input type="number" id="operationalReduction" value="70" step="1" min="0" max="95">
-                                <div class="input-hint">IDCs, startup costs, operational expenses</div>
-                            </div>
-                        </div>
-                        <div class="input-group">
-                            <label for="discountStrategy"><i class="fas fa-cogs"></i> Discount Application</label>
-                            <select id="discountStrategy">
-                                <option value="conversion">Apply Only to Conversion Amount</option>
-                                <option value="entire">Apply to Entire IRA Balance</option>
-                            </select>
-                            <div class="input-hint">Whether discount applies to full IRA or just conversion portion
-                            </div>
-                        </div>
-                    </div>
+                <div class="control" id="conversionStrategyDiv-amount">
+                    <div class="control-head"><label for="totalConversionAmount">Total Conversion Amount</label></div>
+                    <div class="money"><span>$</span><input type="text" id="totalConversionAmount" value="500,000" data-type="currency"></div>
+                </div>
+                <div class="control" id="conversionStrategyDiv">
+                    <div class="control-head"><label for="conversionYears">Conversion Period</label><span class="control-val" id="conversionYears_val"></span></div>
+                    <input type="range" id="conversionYears" min="1" max="20" step="1" value="5" data-unit=" yr">
+                    <div class="input-hint" id="conversionAgeHint"></div>
+                </div>
 
-                    <div class="subsection-header"><i class="fas fa-calendar-alt"></i> Analysis Year</div>
-                    <div class="input-group">
-                        <label for="analysisYear"><i class="fas fa-clock"></i> Analysis Year</label>
-                        <input type="number" id="analysisYear" min="1" max="45" value="45"
-                            onchange="updateNetAdvantage(this.value);" oninput="updateNetAdvantage(this.value);">
-                        <div class="input-hint">
-                            <i class="fas fa-info-circle"></i> Sets the full projection and report horizon in years
-                            (1-45)
-                        </div>
+                <div class="control" id="singleConversionDiv">
+                    <div class="control-head"><label for="conversionAmount">Single Conversion Amount</label></div>
+                    <div class="money"><span>$</span><input type="text" id="conversionAmount" value="500,000" data-type="currency"></div>
+                </div>
 
+                <div class="control">
+                    <div class="control-head"><label>Conversion Schedule</label></div>
+                    <div class="segmented" data-target="conversionStrategy">
+                        <button type="button" data-value="equal" class="seg-btn active">Equal Annual</button>
+                        <button type="button" data-value="optimized" class="seg-btn">Tax-Optimized</button>
                     </div>
+                    <select id="conversionStrategy" class="visually-hidden">
+                        <option value="equal">Equal Annual</option>
+                        <option value="optimized">Tax-Optimized</option>
+                    </select>
+                </div>
+                <div class="control" id="maxBracketDiv">
+                    <div class="control-head"><label for="maxTaxBracket">Max Tax Bracket</label></div>
+                    <div class="segmented" data-target="maxTaxBracket">
+                        <button type="button" data-value="22" class="seg-btn">22%</button>
+                        <button type="button" data-value="24" class="seg-btn active">24%</button>
+                        <button type="button" data-value="32" class="seg-btn">32%</button>
+                        <button type="button" data-value="35" class="seg-btn">35%</button>
+                    </div>
+                    <select id="maxTaxBracket" class="visually-hidden">
+                        <option value="22">22%</option>
+                        <option value="24" selected>24%</option>
+                        <option value="32">32%</option>
+                        <option value="35">35%</option>
+                    </select>
+                </div>
+
+                <div class="control" id="incomeGrowthRateGroup">
+                    <div class="control-head"><label for="incomeGrowthRate">Income Growth</label><span class="control-val" id="incomeGrowthRate_val"></span></div>
+                    <input type="range" id="incomeGrowthRate" min="0" max="8" step="0.1" value="3" data-unit="%">
+                </div>
+                <div class="control">
+                    <div class="control-head"><label for="preRetirementReturn">Pre-Retirement Return</label><span class="control-val" id="preRetirementReturn_val"></span></div>
+                    <input type="range" id="preRetirementReturn" min="0" max="15" step="0.1" value="8" data-unit="%">
+                </div>
+                <div class="control">
+                    <div class="control-head"><label for="postRetirementReturn">Post-Retirement Return</label><span class="control-val" id="postRetirementReturn_val"></span></div>
+                    <input type="range" id="postRetirementReturn" min="0" max="12" step="0.1" value="6" data-unit="%">
+                </div>
+                <div class="control">
+                    <div class="control-head"><label for="inflationRate">Inflation Rate</label><span class="control-val" id="inflationRate_val"></span></div>
+                    <input type="range" id="inflationRate" min="0" max="6" step="0.1" value="2.5" data-unit="%">
+                </div>
+                <div class="control">
+                    <div class="control-head"><label for="capitalGainsRate">Capital Gains Rate</label><span class="control-val" id="capitalGainsRate_val"></span></div>
+                    <input type="range" id="capitalGainsRate" min="0" max="40" step="0.1" value="20" data-unit="%">
+                </div>
+                <div class="control">
+                    <div class="control-head"><label for="rmdAge">RMD Starting Age</label><span class="control-val" id="rmdAge_val"></span></div>
+                    <input type="range" id="rmdAge" min="70" max="75" step="1" value="73" data-unit="">
+                </div>
+
+                <div class="control">
+                    <div class="control-head"><label>Pay Conversion Taxes From</label></div>
+                    <div class="segmented" data-target="payTaxesFrom">
+                        <button type="button" data-value="outside" class="seg-btn active">Outside Funds</button>
+                        <button type="button" data-value="ira" class="seg-btn">IRA Withdrawal</button>
+                    </div>
+                    <select id="payTaxesFrom" class="visually-hidden">
+                        <option value="outside">Outside Funds</option>
+                        <option value="ira">IRA Withdrawal</option>
+                    </select>
+                </div>
+                <div class="control" id="socialSecurityDiv">
+                    <div class="control-head"><label for="socialSecurityBenefit">Annual Social Security</label></div>
+                    <div class="money"><span>$</span><input type="text" id="socialSecurityBenefit" value="30,000" data-type="currency"></div>
                 </div>
             </div>
 
-            <div class="content-area fade-in-up">
-                <div class="results-header">
-                    <button class="action-btn optimization-btn" id="optimizeBtn"><i class="fas fa-magic"></i>
-                        Auto-Optimize Strategy</button>
-                    <button class="action-btn report-btn" id="generateReportBtn"><i class="fas fa-file-pdf"></i>
-                        Generate Professional Report</button>
-                </div>
+            <div class="toggle-row">
+                <label class="toggle"><input type="checkbox" id="includeSocialSecurity"><span>Include Social Security</span></label>
+                <label class="toggle"><input type="checkbox" id="adjustForInflation" checked><span>Today's dollars</span></label>
+                <label class="toggle"><input type="checkbox" id="enableAssetDiscount"><span>Asset valuation discount</span></label>
+            </div>
+            <div class="control-note">Today's dollars is on by default — projections are inflation-adjusted. Uncheck for nominal figures.</div>
 
-                <div id="alertsContainer"></div>
-
-                <div class="tabs">
-                    <button class="tab active" data-tab="summary"><i class="fas fa-chart-bar"></i> Executive
-                        Summary</button>
-                    <button class="tab" data-tab="opportunity"><i class="fas fa-lightbulb"></i> Opportunity Cost
-                        Analysis</button>
-                    <button class="tab" data-tab="strategy"><i class="fas fa-chart-line"></i> Conversion
-                        Strategy</button>
-                    <button class="tab" data-tab="analysis"><i class="fas fa-table"></i> Detailed Analysis</button>
-                    <button class="tab" data-tab="tax"><i class="fas fa-file-invoice-dollar"></i> Tax
-                        Optimization</button>
-                    <button class="tab" data-tab="scenarios"><i class="fas fa-dice"></i> Scenario Modeling</button>
-                    <button class="tab" data-tab="rmd"><i class="fas fa-calendar-alt"></i> RMD Analysis</button>
-                </div>
-
-                <div class="tab-content">
-                    <div id="summaryTab">
-                        <div class="results-grid" id="keyMetrics"></div>
-                        <div class="chart-container">
-                            <div class="chart-title"><i class="fas fa-chart-line"></i> Net Worth Comparison (After-Tax)
-                            </div>
-                            <canvas id="comparisonChart"></canvas>
-                        </div>
-                        <div class="comparison-container">
-                            <div class="strategy-card" id="traditionalCard">
-                                <div class="strategy-title"><i class="fas fa-university"></i> Traditional IRA Strategy
-                                </div>
-                                <div class="strategy-details">
-                                    <div class="detail-item">
-                                        <span class="detail-label">Remaining IRA (After-Tax)</span>
-                                        <span class="detail-value" id="tradPreTaxValue"></span>
-                                    </div>
-                                    <div class="detail-item">
-                                        <span class="detail-label">Reinvested RMDs (After-Tax)</span>
-                                        <span class="detail-value" id="tradRmdsValue"></span>
-                                    </div>
-                                    <div class="detail-item">
-                                        <span class="detail-label">Invested Tax Dollars (After-Tax)</span>
-                                        <span class="detail-value" id="tradTaxesValue"></span>
-                                    </div>
-                                </div>
-                                <div class="strategy-final-value">
-                                    <span class="final-label">Final After-Tax Value</span>
-                                    <span class="final-value" id="tradFinalValue"></span>
-                                </div>
-                            </div>
-                            <div class="strategy-card selected" id="rothCard">
-                                <div class="strategy-title"><i class="fas fa-seedling"></i> Roth Conversion Strategy
-                                </div>
-                                <div class="strategy-details">
-                                    <div class="detail-item">
-                                        <span class="detail-label">Final Roth Balance</span>
-                                        <span class="detail-value" id="rothBalanceValue"></span>
-                                    </div>
-                                    <div class="detail-item">
-                                        <span class="detail-label">Remaining IRA &amp; Reinvested RMDs (After-Tax)</span>
-                                        <span class="detail-value" id="rothOppCostValue"></span>
-                                    </div>
-                                    <div class="detail-item">
-                                        <span class="detail-label">Total Taxes Paid</span>
-                                        <span class="detail-value" id="rothTaxesPaidValue"></span>
-                                    </div>
-                                </div>
-                                <div class="strategy-final-value">
-                                    <span class="final-label">Final Net Value</span>
-                                    <span class="final-value" id="rothFinalValue"></span>
-                                </div>
-                            </div>
-                        </div>
+            <div id="assetDiscountDiv" class="advanced-block">
+                <div class="advanced-note"><i class="fas fa-circle-info"></i> Models IRA assets valued at a discount prior to
+                    conversion (e.g. private investments, partnerships, real estate). Requires a qualified independent
+                    appraisal for actual implementation.</div>
+                <div class="controls-grid">
+                    <div class="control">
+                        <div class="control-head"><label for="valuationDiscount">Valuation Discount</label><span class="control-val" id="valuationDiscount_val"></span></div>
+                        <input type="range" id="valuationDiscount" min="0" max="90" step="1" value="35" data-unit="%">
                     </div>
-
-                    <div id="opportunityTab" class="hidden">
-                        <div class="opportunity-cost-section">
-                            <div class="chart-title"><i class="fas fa-lightbulb"></i> Opportunity Cost Analysis</div>
-                            <div class="opportunity-explanation">
-                                <h4>Understanding Opportunity Cost</h4>
-                                <p>Opportunity cost represents the potential investment growth that could have been
-                                    achieved if the taxes paid for Roth conversions were instead invested in a taxable
-                                    account. In the do-nothing baseline those tax dollars stay invested, so they are
-                                    credited to the no-conversion side of the comparison. The calculator applies capital
-                                    gains tax only to the growth above the original tax payments, rather than assuming
-                                    taxes are paid annually on unrealized gains.</p>
-                                <p><strong>Key Insight:</strong> The conversion wins when its total after-tax wealth
-                                    &mdash; tax-free Roth plus any remaining IRA after-tax &mdash; exceeds the do-nothing
-                                    strategy&rsquo;s after-tax wealth: the full IRA taxed at the effective retirement rate,
-                                    plus reinvested RMDs and the tax dollars left invested.</p>
-                            </div>
-                            <div class="cost-breakdown" id="opportunityCostBreakdown"></div>
-                        </div>
-                        <div class="chart-container">
-                            <div class="chart-title"><i class="fas fa-chart-line"></i> Opportunity Cost vs. Roth Growth
-                            </div>
-                            <canvas id="opportunityCostChart"></canvas>
-                        </div>
-                        <div class="chart-container">
-                            <div class="chart-title"><i class="fas fa-balance-scale"></i> Break-Even Analysis</div>
-                            <canvas id="breakEvenChart"></canvas>
-                        </div>
+                    <div class="control">
+                        <div class="control-head"><label for="operationalReduction">Initial Operational Reduction</label><span class="control-val" id="operationalReduction_val"></span></div>
+                        <input type="range" id="operationalReduction" min="0" max="95" step="1" value="70" data-unit="%">
                     </div>
-
-                    <div id="strategyTab" class="hidden">
-                        <div class="chart-container">
-                            <div class="chart-title"><i class="fas fa-calendar-alt"></i> Multi-Year Conversion & Tax
-                                Timeline</div>
-                            <canvas id="conversionTimelineChart"></canvas>
+                    <div class="control">
+                        <div class="control-head"><label for="discountStrategy">Discount Application</label></div>
+                        <div class="segmented" data-target="discountStrategy">
+                            <button type="button" data-value="conversion" class="seg-btn active">Conversion Only</button>
+                            <button type="button" data-value="entire" class="seg-btn">Entire IRA</button>
                         </div>
-                        <div class="table-header">
-                            <div class="chart-title"><i class="fas fa-table"></i> Conversion Schedule</div>
-                        </div>
-                        <table class="data-table" id="conversionTable"></table>
-                    </div>
-
-                    <div id="analysisTab" class="hidden">
-                        <div class="table-header">
-                            <div class="chart-title"><i class="fas fa-table"></i> Year-by-Year Comparison</div>
-                        </div>
-                        <table class="data-table" id="detailedTable"></table>
-                    </div>
-
-                    <div id="taxTab" class="hidden">
-                        <div class="chart-container">
-                            <div class="chart-title"><i class="fas fa-file-invoice-dollar"></i> Tax Bracket Impact
-                                Analysis</div>
-                            <canvas id="taxBracketChart"></canvas>
-                        </div>
-                        <div class="chart-container">
-                            <div class="chart-title"><i class="fas fa-percentage"></i> Marginal vs. Effective Tax Rates
-                            </div>
-                            <canvas id="marginalTaxChart"></canvas>
-                        </div>
-                    </div>
-
-                    <div id="scenariosTab" class="hidden">
-                        <div class="chart-container">
-                            <div class="chart-title"><i class="fas fa-dice"></i> Monte Carlo Simulation (1,000
-                                Scenarios)</div>
-                            <canvas id="monteCarloChart"></canvas>
-                        </div>
-                        <div class="chart-container">
-                            <div class="chart-title"><i class="fas fa-sliders-h"></i> Sensitivity Analysis</div>
-                            <canvas id="sensitivityChart"></canvas>
-                        </div>
-                    </div>
-
-                    <div id="rmdTab" class="hidden">
-                        <div class="chart-container">
-                            <div class="chart-title"><i class="fas fa-calendar-alt"></i> RMD Projections</div>
-                            <canvas id="rmdChart"></canvas>
-                        </div>
-                        <div class="table-header">
-                            <div class="chart-title"><i class="fas fa-table"></i> RMD Schedule</div>
-                        </div>
-                        <table class="data-table" id="rmdTable"></table>
+                        <select id="discountStrategy" class="visually-hidden">
+                            <option value="conversion">Apply Only to Conversion Amount</option>
+                            <option value="entire">Apply to Entire IRA Balance</option>
+                        </select>
                     </div>
                 </div>
             </div>
+        </section>
+
+        <!-- Download row -->
+        <div class="download-row">
+            <button class="action-btn optimization-btn" id="optimizeBtn"><i class="fas fa-wand-magic-sparkles"></i> Auto-Optimize</button>
+            <button class="action-btn report-btn" id="generateReportBtn"><i class="fas fa-download"></i> Download Scenario</button>
         </div>
 
+        <!-- Primary illustration chart -->
+        <div class="chart-container">
+            <div class="chart-title"><i class="fas fa-chart-line"></i> Net Worth Comparison (After-Tax)</div>
+            <canvas id="comparisonChart"></canvas>
+        </div>
+        <p class="chart-caption" id="mainCaption"></p>
+
+        <!-- Strategy comparison -->
+        <section class="stack-section">
+            <div class="eyebrow"><span class="eyebrow-rule"></span> Strategy Comparison</div>
+            <div class="comparison-container">
+                <div class="strategy-card" id="traditionalCard">
+                    <div class="strategy-title"><i class="fas fa-university"></i> Do Nothing</div>
+                    <div class="strategy-details">
+                        <div class="detail-item"><span class="detail-label">Remaining IRA (After-Tax)</span><span class="detail-value" id="tradPreTaxValue"></span></div>
+                        <div class="detail-item"><span class="detail-label">Reinvested RMDs (After-Tax)</span><span class="detail-value" id="tradRmdsValue"></span></div>
+                        <div class="detail-item"><span class="detail-label">Invested Tax Dollars (After-Tax)</span><span class="detail-value" id="tradTaxesValue"></span></div>
+                    </div>
+                    <div class="strategy-final-value"><span class="final-label">Final After-Tax Value</span><span class="final-value" id="tradFinalValue"></span></div>
+                </div>
+                <div class="strategy-card selected" id="rothCard">
+                    <div class="strategy-title"><i class="fas fa-seedling"></i> Roth Conversion</div>
+                    <div class="strategy-details">
+                        <div class="detail-item"><span class="detail-label">Final Roth Balance</span><span class="detail-value" id="rothBalanceValue"></span></div>
+                        <div class="detail-item"><span class="detail-label">Remaining IRA &amp; Reinvested RMDs (After-Tax)</span><span class="detail-value" id="rothOppCostValue"></span></div>
+                        <div class="detail-item"><span class="detail-label">Total Taxes Paid</span><span class="detail-value" id="rothTaxesPaidValue"></span></div>
+                    </div>
+                    <div class="strategy-final-value"><span class="final-label">Final Net Value</span><span class="final-value" id="rothFinalValue"></span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Opportunity cost -->
+        <section class="stack-section">
+            <div class="eyebrow"><span class="eyebrow-rule"></span> Opportunity Cost</div>
+            <div class="opportunity-explanation">
+                <h4>Understanding Opportunity Cost</h4>
+                <p>Opportunity cost is the growth those conversion-tax dollars could have earned in a taxable account.
+                    In the do-nothing baseline they stay invested, so they are credited to the no-conversion side.
+                    Capital gains tax is applied only to growth above the original tax payments.</p>
+                <p><strong>Key Insight:</strong> The conversion wins when its total after-tax wealth — tax-free Roth plus
+                    any remaining IRA after-tax — exceeds the do-nothing wealth: the full IRA taxed at the effective
+                    retirement rate, plus reinvested RMDs and the tax dollars left invested.</p>
+            </div>
+            <div class="cost-breakdown" id="opportunityCostBreakdown"></div>
+            <div class="chart-grid">
+                <div class="chart-container">
+                    <div class="chart-title"><i class="fas fa-chart-line"></i> Opportunity Cost vs. Roth Growth</div>
+                    <canvas id="opportunityCostChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title"><i class="fas fa-scale-balanced"></i> Break-Even Analysis</div>
+                    <canvas id="breakEvenChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Conversion strategy -->
+        <section class="stack-section">
+            <div class="eyebrow"><span class="eyebrow-rule"></span> Conversion Strategy</div>
+            <div class="chart-container">
+                <div class="chart-title"><i class="fas fa-calendar-days"></i> Multi-Year Conversion &amp; Tax Timeline</div>
+                <canvas id="conversionTimelineChart"></canvas>
+            </div>
+            <table class="data-table" id="conversionTable"></table>
+        </section>
+
+        <!-- Detailed analysis -->
+        <section class="stack-section">
+            <div class="eyebrow"><span class="eyebrow-rule"></span> Detailed Analysis</div>
+            <table class="data-table" id="detailedTable"></table>
+        </section>
+
+        <!-- Tax optimization -->
+        <section class="stack-section">
+            <div class="eyebrow"><span class="eyebrow-rule"></span> Tax Optimization</div>
+            <div class="chart-grid">
+                <div class="chart-container">
+                    <div class="chart-title"><i class="fas fa-file-invoice-dollar"></i> Tax Bracket Impact</div>
+                    <canvas id="taxBracketChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title"><i class="fas fa-percent"></i> Marginal vs. Effective Tax Rates</div>
+                    <canvas id="marginalTaxChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Scenario modeling -->
+        <section class="stack-section">
+            <div class="eyebrow"><span class="eyebrow-rule"></span> Scenario Modeling</div>
+            <div class="chart-grid">
+                <div class="chart-container">
+                    <div class="chart-title"><i class="fas fa-dice"></i> Monte Carlo Simulation (1,000 Scenarios)</div>
+                    <canvas id="monteCarloChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title"><i class="fas fa-sliders"></i> Sensitivity Analysis</div>
+                    <canvas id="sensitivityChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- RMD analysis -->
+        <section class="stack-section">
+            <div class="eyebrow"><span class="eyebrow-rule"></span> RMD Analysis</div>
+            <div class="chart-container">
+                <div class="chart-title"><i class="fas fa-calendar-days"></i> RMD Projections</div>
+                <canvas id="rmdChart"></canvas>
+            </div>
+            <table class="data-table" id="rmdTable"></table>
+        </section>
+
         <div class="disclosure">
+            <i class="fas fa-circle-info disclosure-icon"></i>
             <p><strong>Tax Basis</strong><br>
                 Projections use 2026 federal income tax brackets and a $32,200 standard deduction for married couples
                 filing jointly, reflecting the IRS 2026 inflation adjustments (Rev. Proc. 2025-32) as amended by the
