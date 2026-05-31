@@ -1735,6 +1735,61 @@
                     + `<strong>${formatCurrency(analysisData.totalTaxesPaid)}</strong> in conversion taxes.`;
             }
 
+            // Render every chart (single-screen layout — all sections visible).
+            function renderAllCharts() {
+                createComparisonChart();
+                createOpportunityChart();
+                createConversionChart();
+                createAdvancedCharts();
+            }
+
+            // Live value labels for sliders.
+            function syncSliderValue(el) {
+                const span = document.getElementById(el.id + '_val');
+                if (!span) return;
+                const unit = el.dataset.unit || '';
+                span.textContent = `${el.value}${unit}`;
+            }
+            function syncAllSliders() {
+                document.querySelectorAll('.controls-well input[type="range"]').forEach(syncSliderValue);
+            }
+
+            // Keep segmented toggles and preset chips in sync with their backing inputs,
+            // including when values change programmatically (e.g. Auto-Optimize).
+            function syncControlsUI() {
+                document.querySelectorAll('.segmented').forEach(group => {
+                    group.querySelectorAll('.seg-btn').forEach(btn => {
+                        let active = false;
+                        if (btn.dataset.toggle) {
+                            const cb = document.getElementById(btn.dataset.toggle);
+                            active = cb && (cb.checked === (btn.dataset.checked === 'true'));
+                        } else if (group.dataset.target) {
+                            const sel = document.getElementById(group.dataset.target);
+                            active = sel && String(sel.value) === String(btn.dataset.value);
+                        }
+                        btn.classList.toggle('active', active);
+                    });
+                });
+                const stateSel = document.getElementById('stateResidency');
+                if (stateSel) {
+                    document.querySelectorAll('#statePresets button').forEach(b => b.classList.toggle('active', b.dataset.state === stateSel.value));
+                }
+            }
+
+            // Caption under the primary chart — explains the after-tax/net number.
+            function updateCaption() {
+                const el = document.getElementById('mainCaption');
+                if (!el || !analysisData || !analysisData.years) return;
+                const f = analysisData.years.length - 1;
+                const adv = analysisData.netAdvantage[f];
+                const dollars = analysisData.inputs.adjustForInflation ? "in today's dollars" : "in nominal dollars";
+                const verb = adv >= 0 ? 'adds' : 'costs';
+                el.innerHTML = `The <span class="coral">Roth conversion</span> line is total after-tax wealth ${dollars}. `
+                    + `At year ${f} (age ${analysisData.inputs.currentAge + f}), converting ${verb} `
+                    + `<strong>${formatCurrency(Math.abs(adv))}</strong> versus doing nothing — after paying `
+                    + `<strong>${formatCurrency(analysisData.totalTaxesPaid)}</strong> in conversion taxes.`;
+            }
+
             function showTab(tabName, forceUpdate = false) {
                 if (!forceUpdate) {
                     document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
