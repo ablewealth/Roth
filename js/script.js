@@ -380,7 +380,12 @@
                         const extraDeduction = getSeniorBonusDeduction(baseCeiling, inputs.currentAge + i, projectionBaseYear + i);
                         const targetIncome = getFederalGrossCeilingForBracket(targetBracket, extraDeduction);
                         const growingIncome = currentIncome * Math.pow(1 + inputs.incomeGrowthRate, i);
-                        const roomInBracket = Math.max(0, targetIncome - growingIncome);
+                        // Top bracket has no ceiling (Infinity), so there is no headroom to "fill" —
+                        // spread the remaining amount evenly across the remaining years instead of
+                        // dumping it all in year one.
+                        const roomInBracket = targetBracket.max === Infinity
+                            ? remainingAmount / (years - i)
+                            : Math.max(0, targetIncome - growingIncome);
                         const conversionAmount = Math.min(remainingAmount, roomInBracket);
 
                         conversions.push({ year: i, amount: conversionAmount });
@@ -1779,7 +1784,11 @@
                 const optimalAnnual = Math.min(roomInBracket, inputs.iraBalance * 0.15); // cap at 15% of IRA/yr
 
                 let message;
-                if (optimalAnnual > 0) {
+                if (containing.max === Infinity) {
+                    // Already in the top bracket — there is no ceiling to "fill", so the bracket-fill
+                    // heuristic doesn't apply. Don't auto-set a plan; explain the trade-off instead.
+                    message = { type: 'warning', html: `<i class="fas fa-triangle-exclamation"></i> Your income is already at the top tax bracket, so there's no lower-bracket headroom to convert into. A conversion here is taxed at your top rate — it only helps if your future retirement rate would be higher.` };
+                } else if (optimalAnnual > 0) {
                     const optimalTotal = Math.min(inputs.iraBalance * 0.7, optimalAnnual * 10); // ≤70% over ≤10 yrs
                     const optimalYears = Math.min(10, Math.max(3, Math.ceil(optimalTotal / optimalAnnual)));
 
@@ -1793,7 +1802,7 @@
                         : '';
                     message = { type: 'success', html: `<i class="fas fa-check-circle"></i> Strategy optimized — a ${optimalYears}-year conversion of ${formatCurrency(optimalTotal)} fills the ${formatPercent(targetBracket.rate)} tax bracket.${fallbackNote}` };
                 } else {
-                    message = { type: 'warning', html: `<i class="fas fa-triangle-exclamation"></i> Your income is already at the top tax bracket, so there's no lower-bracket headroom to convert into. A conversion here is taxed at your top rate — it only helps if your future retirement rate would be higher.` };
+                    message = { type: 'warning', html: `<i class="fas fa-triangle-exclamation"></i> No bracket headroom is available — check the IRA balance and income inputs to model a conversion.` };
                 }
 
                 calculateAndDisplay();
