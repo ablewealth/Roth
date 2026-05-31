@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
         content="Able Wealth Management Roth Conversion Analyzer — model multi-year Roth conversion strategies using 2026 federal tax schedules updated for the One Big Beautiful Bill Act (OBBBA).">
-    <meta name="theme-color" content="#1e293b">
+    <meta name="theme-color" content="#1c2e4c">
     <meta name="color-scheme" content="light">
     <title>AWM Roth Conversion Analyzer | 2026 Tax Year</title>
 
@@ -878,8 +878,8 @@
         @media print {
             :root {
                 --print-primary-color: #1a1a1a;
-                --print-secondary-color: #4a5568;
-                --print-accent-color: #2563eb;
+                --print-secondary-color: #5b5446;
+                --print-accent-color: #c0562a;
                 --print-border-color: #e2e8f0;
                 --print-background-color: #f8fafc;
                 --print-header-bg: #f1f5f9;
@@ -1541,6 +1541,116 @@
 
         /* --- Disclosure --- */
         .disclosure h4 { font-family: var(--serif); font-weight: 500; color: var(--primary-color); }
+
+        /* --- Strategy comparison cards: flat tan, serif numerals, thin rust accent --- */
+        .strategy-card {
+            border-radius: var(--radius-md);
+            box-shadow: none;
+        }
+
+        .strategy-card::before { height: 2px; background: var(--border-color); }
+        .strategy-card.selected { border-color: var(--accent-color); box-shadow: none; }
+        .strategy-card.selected::before { background: var(--accent-color); }
+        .strategy-card:hover { transform: none; box-shadow: var(--shadow-md); }
+
+        .strategy-title {
+            font-family: var(--serif);
+            font-weight: 500;
+            font-size: 1.3rem;
+            color: var(--primary-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .detail-label {
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .detail-value { font-family: var(--serif); font-weight: 500; font-size: 1.05rem; color: var(--text-primary); font-feature-settings: "onum" 1; }
+
+        .strategy-final-value {
+            background: var(--background-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+        }
+
+        .strategy-card.selected .strategy-final-value { border-color: var(--accent-color); background: #fbf2ea; }
+
+        .final-label {
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .final-value {
+            font-family: var(--serif);
+            font-weight: 500;
+            font-size: 2.1rem;
+            color: var(--primary-color);
+            font-feature-settings: "onum" 1, "pnum" 1;
+        }
+
+        .strategy-card.selected .final-value { color: var(--accent-color); }
+
+        /* --- Opportunity-cost section + cost items: flat ivory, no clashing gradient --- */
+        .opportunity-cost-section {
+            background: var(--background-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            box-shadow: none;
+        }
+
+        .opportunity-explanation {
+            background: var(--card-background);
+            border-left: 3px solid var(--accent-color);
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            box-shadow: none;
+        }
+
+        .opportunity-explanation h4 { font-family: var(--serif); font-weight: 500; color: var(--primary-color); }
+
+        .cost-item {
+            background: var(--card-background);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            text-align: left;
+            box-shadow: none;
+        }
+
+        .cost-item:hover { transform: none; box-shadow: var(--shadow-sm); }
+
+        .cost-item-value {
+            font-family: var(--serif);
+            font-weight: 500;
+            font-size: 1.6rem;
+            color: var(--primary-color);
+            font-feature-settings: "onum" 1;
+        }
+
+        .cost-item-label {
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        /* --- Alerts: muted, palette-consistent --- */
+        .alert { border-radius: var(--radius-sm); box-shadow: none; }
+        .alert-success { color: #2f5d43; background: #eef2ec; border-color: #cdd8c9; }
+        .alert-success i { color: var(--success-color); }
+        .alert-warning { color: #7c5a1e; background: #f7f0e0; border-color: #e6d9b8; }
+        .alert-warning i { color: var(--warning-color); }
+        .alert-info { color: #294056; background: #eef1f4; border-color: #cdd6df; }
+        .alert-info i { color: var(--primary-color); }
+
+        /* --- Discount metric accents map onto the warm palette --- */
+        .metric-card[style*="warning"] { border-color: var(--warning-color) !important; }
     </style>
 </head>
 
@@ -1780,15 +1890,15 @@
                                 </div>
                                 <div class="strategy-details">
                                     <div class="detail-item">
-                                        <span class="detail-label">Final Pre-Tax Value</span>
+                                        <span class="detail-label">Remaining IRA (After-Tax)</span>
                                         <span class="detail-value" id="tradPreTaxValue"></span>
                                     </div>
                                     <div class="detail-item">
-                                        <span class="detail-label">Total RMDs Taken</span>
+                                        <span class="detail-label">Reinvested RMDs (After-Tax)</span>
                                         <span class="detail-value" id="tradRmdsValue"></span>
                                     </div>
                                     <div class="detail-item">
-                                        <span class="detail-label">Est. Future Taxes</span>
+                                        <span class="detail-label">Invested Tax Dollars (After-Tax)</span>
                                         <span class="detail-value" id="tradTaxesValue"></span>
                                     </div>
                                 </div>
@@ -1806,7 +1916,7 @@
                                         <span class="detail-value" id="rothBalanceValue"></span>
                                     </div>
                                     <div class="detail-item">
-                                        <span class="detail-label">Opportunity Cost</span>
+                                        <span class="detail-label">Remaining IRA &amp; Reinvested RMDs (After-Tax)</span>
                                         <span class="detail-value" id="rothOppCostValue"></span>
                                     </div>
                                     <div class="detail-item">
@@ -1829,12 +1939,14 @@
                                 <h4>Understanding Opportunity Cost</h4>
                                 <p>Opportunity cost represents the potential investment growth that could have been
                                     achieved if the taxes paid for Roth conversions were instead invested in a taxable
-                                    account. The calculator applies capital gains tax only to the growth above the
-                                    original tax payments, rather than assuming taxes are paid annually on unrealized
-                                    gains. This analysis helps determine whether the tax-free growth of Roth assets
-                                    outweighs the investment potential of the tax payments.</p>
-                                <p><strong>Key Insight:</strong> The Roth conversion is beneficial when the final Roth
-                                    value minus opportunity cost exceeds the traditional IRA after-tax value.</p>
+                                    account. In the do-nothing baseline those tax dollars stay invested, so they are
+                                    credited to the no-conversion side of the comparison. The calculator applies capital
+                                    gains tax only to the growth above the original tax payments, rather than assuming
+                                    taxes are paid annually on unrealized gains.</p>
+                                <p><strong>Key Insight:</strong> The conversion wins when its total after-tax wealth
+                                    &mdash; tax-free Roth plus any remaining IRA after-tax &mdash; exceeds the do-nothing
+                                    strategy&rsquo;s after-tax wealth: the full IRA taxed at the effective retirement rate,
+                                    plus reinvested RMDs and the tax dollars left invested.</p>
                             </div>
                             <div class="cost-breakdown" id="opportunityCostBreakdown"></div>
                         </div>

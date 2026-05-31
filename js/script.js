@@ -291,6 +291,25 @@
                 return baseRate;
             };
 
+            // Effective (blended) ordinary-income tax rate for valuing a traditional IRA at retirement.
+            // Rather than taxing the whole balance at a single top marginal rate (which overstates the
+            // hit on a lump sum), this models a realistic annual drawdown: it derives the blended
+            // effective rate at the retiree's income level (a representative 4%-of-balance withdrawal,
+            // or the RMD if larger, plus Social Security) and applies that to the balance.
+            const getEffectiveRetirementRate = (balance, rmd, inputs) => {
+                const ssIncome = inputs.includeSocialSecurity ? inputs.socialSecurityBenefit : 0;
+                const withdrawal = Math.max(rmd, balance * 0.04);
+                const ordinaryIncome = withdrawal + ssIncome;
+                if (ordinaryIncome <= 0) return 0;
+                const fed = calculateFederalTax(ordinaryIncome) / ordinaryIncome;
+                const state = calculateStateTax(ordinaryIncome, inputs.stateResidency) / ordinaryIncome;
+                return fed + state;
+            };
+
+            // After-tax value of a taxable side account (long-term capital gains on net growth only).
+            const afterTaxTaxable = (value, basis, capitalGainsRate) =>
+                value - Math.max(0, value - basis) * capitalGainsRate;
+
             // Enhanced input gathering
             function getCurrentInputs() {
                 return {
@@ -402,6 +421,9 @@
                     traditionalIRA: [],
                     rothIRA: [],
                     traditionalAfterTax: [],
+                    noConvIraAfterTax: [],
+                    noConvRmdReinvest: [],
+                    convRemainingAfterTax: [],
                     rothNetBenefit: [],
                     netAdvantage: [],
                     conversionTaxes: [],
@@ -418,10 +440,19 @@
                     inputs
                 };
 
-                let traditionalBalance = inputs.iraBalance;
+                // Conversion (Roth) track
+                let traditionalBalance = inputs.iraBalance;   // IRA remaining after conversions
                 let rothBalance = 0;
-                let opportunityCost = 0;
+                let convSide = 0;                             // after-tax RMDs reinvested in taxable
+                let convSideBasis = 0;
+                let opportunityCost = 0;                      // taxes paid from outside, invested instead
                 let opportunityCostBasis = 0;
+
+                // No-conversion (do-nothing) baseline track — same starting dollars, never converted
+                let noConvBalance = inputs.iraBalance;
+                let noConvSide = 0;                           // after-tax RMDs reinvested in taxable
+                let noConvSideBasis = 0;
+
                 let displayCumulativeConversions = 0;
                 let displayCumulativeTaxes = 0;
                 let displayDiscountBenefit = 0;
@@ -434,11 +465,14 @@
                     const returnRate = isRetired ? inputs.postRetirementReturn : inputs.preRetirementReturn;
                     const annualIncome = inputs.currentIncome * Math.pow(1 + inputs.incomeGrowthRate, Math.min(year, inputs.retirementAge - inputs.currentAge));
 
-                    // Apply investment returns
+                    // Apply investment returns to every balance in both tracks
                     if (year > 0) {
                         traditionalBalance *= (1 + returnRate);
                         rothBalance *= (1 + returnRate);
+                        convSide *= (1 + returnRate);
                         opportunityCost *= (1 + returnRate);
+                        noConvBalance *= (1 + returnRate);
+                        noConvSide *= (1 + returnRate);
                     }
 
                     // Process conversions with potential asset discounting
@@ -502,24 +536,52 @@
                         rothBalance += conversionAmount; // Add actual conversion amount to Roth IRA
                     }
 
-                    // Calculate RMDs
-                    let rmd = 0;
-                    if (age >= inputs.rmdAge && traditionalBalance > 0) {
-                        const factor = rmdFactors[age] || 6.4;
-                        rmd = traditionalBalance / factor;
-                        traditionalBalance -= rmd;
+                    // Required minimum distributions — forced, taxed, and reinvested after-tax in a
+                    // taxable account in BOTH tracks so each strategy keeps the same money fairly.
+                    const rmdFactor = rmdFactors[age] || 6.4;
+
+                    // Effective retirement tax rates (blended drawdown) for each track's IRA balance.
+                    const convRetireRate = getEffectiveRetirementRate(traditionalBalance, traditionalBalance > 0 ? traditionalBalance / rmdFactor : 0, inputs);
+                    const noConvRetireRate = getEffectiveRetirementRate(noConvBalance, noConvBalance > 0 ? noConvBalance / rmdFactor : 0, inputs);
+
+                    let rmd = 0;            // no-conversion (do-nothing) RMD — the schedule conversions aim to shrink
+                    if (age >= inputs.rmdAge && noConvBalance > 0) {
+                        rmd = noConvBalance / rmdFactor;
+                        noConvBalance -= rmd;
+                        const afterTaxRmd = rmd * (1 - noConvRetireRate);
+                        noConvSide += afterTaxRmd;
+                        noConvSideBasis += afterTaxRmd;
                     }
 
-                    // Calculate projected retirement tax rate for traditional assets
-                    const projectedRetirementIncome = rmd + (inputs.includeSocialSecurity ? inputs.socialSecurityBenefit : 0);
-                    const retirementFedRate = calculateMarginalFederalTaxRate(projectedRetirementIncome);
-                    const retirementStateRate = calculateMarginalStateTaxRate(projectedRetirementIncome, inputs.stateResidency);
-                    const totalRetirementTaxRate = retirementFedRate + retirementStateRate;
-                    const taxableOpportunityGain = Math.max(0, opportunityCost - opportunityCostBasis);
-                    const afterTaxOpportunityCost = opportunityCost - (taxableOpportunityGain * inputs.capitalGainsRate);
-                    const displayTraditionalBalance = getDisplayValue(traditionalBalance, year, inputs);
+                    let convRmd = 0;        // RMD on the (smaller) post-conversion balance
+                    if (age >= inputs.rmdAge && traditionalBalance > 0) {
+                        convRmd = traditionalBalance / rmdFactor;
+                        traditionalBalance -= convRmd;
+                        const afterTaxRmd = convRmd * (1 - convRetireRate);
+                        convSide += afterTaxRmd;
+                        convSideBasis += afterTaxRmd;
+                    }
+
+                    // After-tax wealth of each whole-portfolio strategy at this point in time.
+                    const afterTaxOpportunityCost = afterTaxTaxable(opportunityCost, opportunityCostBasis, inputs.capitalGainsRate);
+                    const convSideAfterTax = afterTaxTaxable(convSide, convSideBasis, inputs.capitalGainsRate);
+                    const noConvSideAfterTax = afterTaxTaxable(noConvSide, noConvSideBasis, inputs.capitalGainsRate);
+
+                    // No-conversion baseline: full IRA taxed at retirement + reinvested RMDs + the tax
+                    // dollars (that a conversion would have spent) left invested in a taxable account.
+                    const noConvIraAfterTax = noConvBalance * (1 - noConvRetireRate);
+                    const noConversionWealth = noConvIraAfterTax + noConvSideAfterTax + afterTaxOpportunityCost;
+
+                    // Conversion strategy: tax-free Roth + after-tax value of any unconverted IRA + RMDs.
+                    const convRemainingAfterTax = traditionalBalance * (1 - convRetireRate) + convSideAfterTax;
+                    const conversionWealth = rothBalance + convRemainingAfterTax;
+
+                    const displayTraditionalBalance = getDisplayValue(noConvBalance, year, inputs);
                     const displayRothBalance = getDisplayValue(rothBalance, year, inputs);
-                    const displayTraditionalAfterTax = getDisplayValue(traditionalBalance * (1 - totalRetirementTaxRate), year, inputs);
+                    const displayNoConversionWealth = getDisplayValue(noConversionWealth, year, inputs);
+                    const displayConversionWealth = getDisplayValue(conversionWealth, year, inputs);
+                    const displayNoConvIraAfterTax = getDisplayValue(noConvIraAfterTax, year, inputs);
+                    const displayConvRemainingAfterTax = getDisplayValue(convRemainingAfterTax, year, inputs);
                     const displayOpportunityCost = getDisplayValue(afterTaxOpportunityCost, year, inputs);
                     const displayRmd = getDisplayValue(rmd, year, inputs);
                     const displayFederalTax = getDisplayValue(federalTax, year, inputs);
@@ -531,10 +593,13 @@
                     data.years.push(year);
                     data.traditionalIRA.push(displayTraditionalBalance);
                     data.rothIRA.push(displayRothBalance);
-                    data.traditionalAfterTax.push(displayTraditionalAfterTax);
+                    data.traditionalAfterTax.push(displayNoConversionWealth);
+                    data.noConvIraAfterTax.push(displayNoConvIraAfterTax);
+                    data.noConvRmdReinvest.push(getDisplayValue(noConvSideAfterTax, year, inputs));
+                    data.convRemainingAfterTax.push(displayConvRemainingAfterTax);
                     data.opportunityCost.push(displayOpportunityCost);
-                    data.rothNetBenefit.push(displayRothBalance - displayOpportunityCost);
-                    data.netAdvantage.push((displayRothBalance - displayOpportunityCost) - displayTraditionalAfterTax);
+                    data.rothNetBenefit.push(displayConversionWealth);
+                    data.netAdvantage.push(displayConversionWealth - displayNoConversionWealth);
                     data.federalTaxes[year] = displayFederalTax;
                     data.stateTaxes[year] = displayStateTax;
                     data.conversionTaxes[year] = displayTotalTax;
@@ -628,17 +693,17 @@
 
             function updateStrategySummary() {
                 const finalYear = analysisData.years.length - 1;
-                const totalRmds = analysisData.rmdAmounts.reduce((a, b) => a + b, 0);
-                const tradFinalPreTax = analysisData.traditionalIRA[finalYear];
-                const estimatedTaxes = tradFinalPreTax - analysisData.traditionalAfterTax[finalYear];
 
-                document.getElementById('tradPreTaxValue').textContent = formatCurrency(tradFinalPreTax);
-                document.getElementById('tradRmdsValue').textContent = formatCurrency(totalRmds);
-                document.getElementById('tradTaxesValue').textContent = formatCurrency(estimatedTaxes);
+                // Traditional (do-nothing) card — after-tax components that sum to the Final Value:
+                //   remaining IRA after-tax + reinvested RMDs (taxable) + invested tax dollars (taxable)
+                document.getElementById('tradPreTaxValue').textContent = formatCurrency(analysisData.noConvIraAfterTax[finalYear]);
+                document.getElementById('tradRmdsValue').textContent = formatCurrency(analysisData.noConvRmdReinvest[finalYear]);
+                document.getElementById('tradTaxesValue').textContent = formatCurrency(analysisData.opportunityCost[finalYear]);
                 document.getElementById('tradFinalValue').textContent = formatCurrency(analysisData.traditionalAfterTax[finalYear]);
 
+                // Roth conversion card — tax-free Roth + remaining IRA & reinvested RMDs (after-tax)
                 document.getElementById('rothBalanceValue').textContent = formatCurrency(analysisData.rothIRA[finalYear]);
-                document.getElementById('rothOppCostValue').textContent = formatCurrency(analysisData.opportunityCost[finalYear]);
+                document.getElementById('rothOppCostValue').textContent = formatCurrency(analysisData.convRemainingAfterTax[finalYear]);
                 document.getElementById('rothTaxesPaidValue').textContent = formatCurrency(analysisData.totalTaxesPaid);
                 document.getElementById('rothFinalValue').textContent = formatCurrency(analysisData.rothNetBenefit[finalYear]);
             }
@@ -735,7 +800,7 @@
                         labels: labels,
                         datasets: [
                             {
-                                label: 'Roth Net Benefit',
+                                label: 'Roth Conversion (after-tax)',
                                 data: analysisData.rothNetBenefit,
                                 borderColor: '#1c2e4c',
                                 backgroundColor: 'rgba(28, 46, 76, 0.1)',
@@ -745,7 +810,7 @@
                                 tension: 0.1
                             },
                             {
-                                label: 'Traditional After-Tax',
+                                label: 'Do Nothing (after-tax)',
                                 data: analysisData.traditionalAfterTax,
                                 borderColor: '#c0562a',
                                 backgroundColor: 'rgba(192, 86, 42, 0.1)',
@@ -1409,10 +1474,10 @@
                         <tr>
                             <th>Year</th>
                             <th>Age</th>
-                            <th>Traditional After-Tax</th>
+                            <th>Do Nothing (After-Tax)</th>
                             <th>Roth Balance</th>
-                            <th>Opportunity Cost</th>
-                            <th>Roth Net Benefit</th>
+                            <th>Invested Tax $ (After-Tax)</th>
+                            <th>Roth Conversion (After-Tax)</th>
                             <th>Net Advantage</th>
                             <th>RMD</th>
                         </tr>
