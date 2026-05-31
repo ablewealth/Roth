@@ -476,6 +476,13 @@
                 let displayCumulativeTaxes = 0;
                 let displayDiscountBenefit = 0;
 
+                // Lifetime ordinary-income tax accumulators (display/today's-dollar terms) for the
+                // tax comparison: RMD taxes along the way + final liquidation tax at the horizon.
+                let displayDoNothingRmdTax = 0;
+                let displayConvRmdTax = 0;
+                let finalDoNothingLiquidationTax = 0;
+                let finalConvLiquidationTax = 0;
+
                 const analysisYears = normalizeAnalysisYear(inputs.analysisYear);
 
                 for (let year = 0; year <= analysisYears; year++) {
@@ -575,6 +582,7 @@
                         const afterTaxRmd = rmd * (1 - noConvRetireRate);
                         noConvSide += afterTaxRmd;
                         noConvSideBasis += afterTaxRmd;
+                        displayDoNothingRmdTax += getDisplayValue(rmd * noConvRetireRate, year, inputs);
                     }
 
                     let convRmd = 0;        // RMD on the (smaller) post-conversion balance
@@ -584,6 +592,13 @@
                         const afterTaxRmd = convRmd * (1 - convRetireRate);
                         convSide += afterTaxRmd;
                         convSideBasis += afterTaxRmd;
+                        displayConvRmdTax += getDisplayValue(convRmd * convRetireRate, year, inputs);
+                    }
+
+                    // At the horizon, capture the income tax owed to liquidate each remaining IRA.
+                    if (year === analysisYears) {
+                        finalDoNothingLiquidationTax = getDisplayValue(noConvBalance * noConvRetireRate, year, inputs);
+                        finalConvLiquidationTax = getDisplayValue(traditionalBalance * convRetireRate, year, inputs);
                     }
 
                     // After-tax wealth of each whole-portfolio strategy at this point in time.
@@ -643,6 +658,13 @@
                 data.opportunityReturn = data.finalOpportunityCost > 0 && displayCumulativeTaxes > 0 ? Math.pow(data.finalOpportunityCost / displayCumulativeTaxes, 1 / analysisYears) - 1 : 0;
                 data.totalDiscountBenefit = displayDiscountBenefit;
                 data.effectiveTaxSavings = displayDiscountBenefit > 0 ? (displayDiscountBenefit * (data.marginalRates.find(r => r > 0) || 0.24)) : 0;
+
+                // Lifetime ordinary-income tax comparison (today's-dollar terms):
+                //   Do-nothing  = RMD taxes + tax to liquidate the remaining IRA at the horizon.
+                //   Roth path   = conversion taxes now + RMD/liquidation taxes on any unconverted IRA.
+                data.doNothingLifetimeTax = displayDoNothingRmdTax + finalDoNothingLiquidationTax;
+                data.rothLifetimeTax = displayCumulativeTaxes + displayConvRmdTax + finalConvLiquidationTax;
+                data.lifetimeTaxSavings = data.doNothingLifetimeTax - data.rothLifetimeTax;
 
                 return data;
             }
@@ -727,6 +749,27 @@
                 document.getElementById('rothOppCostValue').textContent = formatCurrency(analysisData.convRemainingAfterTax[finalYear]);
                 document.getElementById('rothTaxesPaidValue').textContent = formatCurrency(analysisData.totalTaxesPaid);
                 document.getElementById('rothFinalValue').textContent = formatCurrency(analysisData.rothNetBenefit[finalYear]);
+            }
+
+            function updateTaxComparison() {
+                const el = document.getElementById('taxComparison');
+                if (!el || !analysisData) return;
+                const { doNothingLifetimeTax, rothLifetimeTax, lifetimeTaxSavings } = analysisData;
+                const saves = lifetimeTaxSavings >= 0;
+                el.innerHTML = `
+                    <div class="cost-item">
+                        <div class="cost-item-value">${formatCurrency(doNothingLifetimeTax)}</div>
+                        <div class="cost-item-label">Do-Nothing IRA Taxes (RMDs + Final)</div>
+                    </div>
+                    <div class="cost-item">
+                        <div class="cost-item-value">${formatCurrency(rothLifetimeTax)}</div>
+                        <div class="cost-item-label">Roth Strategy Taxes (Conversion + Remaining)</div>
+                    </div>
+                    <div class="cost-item">
+                        <div class="cost-item-value" style="color: ${saves ? 'var(--accent-color)' : 'var(--error-color)'};">${formatCurrency(Math.abs(lifetimeTaxSavings))}</div>
+                        <div class="cost-item-label">${saves ? 'Lifetime Tax Saved' : 'Additional Lifetime Tax'}</div>
+                    </div>
+                `;
             }
 
             function updateOpportunityCostBreakdown() {
@@ -1664,6 +1707,7 @@
                     updateKeyMetrics();
                     updateStrategySummary();
                     updateOpportunityCostBreakdown();
+                    updateTaxComparison();
                     updateTables();
                     showAlerts();
                     syncAllSliders();
