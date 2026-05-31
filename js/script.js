@@ -321,7 +321,7 @@
             // Enhanced input gathering
             function getCurrentInputs() {
                 return {
-                    clientName: document.getElementById('clientName').value || 'Client',
+                    clientName: '',
                     stateResidency: document.getElementById('stateResidency').value,
                     currentAge: getInputValue('currentAge'),
                     retirementAge: getInputValue('retirementAge'),
@@ -364,7 +364,13 @@
                 const conversions = [];
 
                 if (strategy === 'optimized') {
-                    const targetBracket = federalTaxBrackets.find(b => b.rate === maxTaxBracket) || federalTaxBrackets[2];
+                    const chosen = federalTaxBrackets.find(b => b.rate === maxTaxBracket) || federalTaxBrackets[2];
+                    // If current income already sits above the chosen bracket, there is no headroom
+                    // in it — fall back to filling the bracket that currently contains the client's
+                    // income so the optimizer still converts (instead of producing nothing).
+                    const currentTaxable = getFederalTaxableIncome(currentIncome);
+                    const containing = federalTaxBrackets.find(b => currentTaxable <= b.max) || federalTaxBrackets[federalTaxBrackets.length - 1];
+                    const targetBracket = chosen.max >= containing.max ? chosen : containing;
                     const baseCeiling = targetBracket.max + federalStandardDeduction;
 
                     let remainingAmount = total;
@@ -374,7 +380,12 @@
                         const extraDeduction = getSeniorBonusDeduction(baseCeiling, inputs.currentAge + i, projectionBaseYear + i);
                         const targetIncome = getFederalGrossCeilingForBracket(targetBracket, extraDeduction);
                         const growingIncome = currentIncome * Math.pow(1 + inputs.incomeGrowthRate, i);
-                        const roomInBracket = Math.max(0, targetIncome - growingIncome);
+                        // Top bracket has no ceiling (Infinity), so there is no headroom to "fill" —
+                        // spread the remaining amount evenly across the remaining years instead of
+                        // dumping it all in year one.
+                        const roomInBracket = targetBracket.max === Infinity
+                            ? remainingAmount / (years - i)
+                            : Math.max(0, targetIncome - growingIncome);
                         const conversionAmount = Math.min(remainingAmount, roomInBracket);
 
                         conversions.push({ year: i, amount: conversionAmount });
@@ -1555,13 +1566,11 @@
             }
 
             function updateHeaderInfo() {
-                const clientName = document.getElementById('clientName').value || 'Client';
                 const currentDate = new Date().toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric'
                 });
-                document.getElementById('clientNameDisplay').textContent = clientName;
                 document.getElementById('headerDate').textContent = `Date: ${currentDate}`;
             }
 
@@ -1660,13 +1669,17 @@
                     syncAllSliders();
                     syncControlsUI();
                     updateCaption();
-
-                    // Single-screen layout: every section is visible, so render all charts.
-                    renderAllCharts();
-
                 } catch (error) {
+                    // Core numbers failed — log it (no blocking alert that interrupts editing).
                     console.error('Calculation error:', error);
-                    alert('An error occurred during calculation. Please check your inputs and try again.');
+                    return;
+                }
+
+                // Charts are isolated: a chart failure must never blank the numbers/tables.
+                try {
+                    renderAllCharts();
+                } catch (error) {
+                    console.error('Chart rendering error:', error);
                 }
             }
 
@@ -1756,34 +1769,45 @@
 
             function optimizeConversions() {
                 const inputs = getCurrentInputs();
-                const targetBracket = federalTaxBrackets.find(b => b.rate === inputs.maxTaxBracket) || federalTaxBrackets[2];
-                const currentMarginalRate = calculateMarginalFederalTaxRate(inputs.currentIncome) + calculateMarginalStateTaxRate(inputs.currentIncome, inputs.stateResidency);
+                const chosen = federalTaxBrackets.find(b => b.rate === inputs.maxTaxBracket) || federalTaxBrackets[2];
+                // Use the higher of the chosen bracket and the bracket that currently contains the
+                // client's income, so high earners still get a real plan (fill their current bracket).
+                const currentTaxable = getFederalTaxableIncome(inputs.currentIncome);
+                const containing = federalTaxBrackets.find(b => currentTaxable <= b.max) || federalTaxBrackets[federalTaxBrackets.length - 1];
+                const targetBracket = chosen.max >= containing.max ? chosen : containing;
 
-                // Calculate optimal conversion amount, including the OBBBA senior bonus deduction
-                // (age 65+, 2025–2028) which raises the bracket-fill ceiling; 0 otherwise.
+                // Optimal annual conversion = room left in the target bracket (incl. OBBBA senior bonus).
                 const seniorBonus = getSeniorBonusDeduction(targetBracket.max + federalStandardDeduction, inputs.currentAge, projectionBaseYear);
                 const roomInBracket = Math.max(0, getFederalGrossCeilingForBracket(targetBracket, seniorBonus) - inputs.currentIncome);
-                const optimalAnnual = Math.min(roomInBracket, inputs.iraBalance * 0.15); // Max 15% per year
+                const optimalAnnual = Math.min(roomInBracket, inputs.iraBalance * 0.15); // cap at 15% of IRA/yr
 
-                if (optimalAnnual > 0) {
-                    const optimalTotal = Math.min(inputs.iraBalance * 0.7, optimalAnnual * 10); // Max 70% of IRA over max 10 years
+                let message;
+                if (containing.max === Infinity) {
+                    // Already in the top bracket — there is no ceiling to "fill", so the bracket-fill
+                    // heuristic doesn't apply. Don't auto-set a plan; explain the trade-off instead.
+                    message = { type: 'warning', html: `<i class="fas fa-triangle-exclamation"></i> Your income is already at the top tax bracket, so there's no lower-bracket headroom to convert into. A conversion here is taxed at your top rate — it only helps if your future retirement rate would be higher.` };
+                } else if (optimalAnnual > 0) {
+                    const optimalTotal = Math.min(inputs.iraBalance * 0.7, optimalAnnual * 10); // ≤70% over ≤10 yrs
                     const optimalYears = Math.min(10, Math.max(3, Math.ceil(optimalTotal / optimalAnnual)));
 
-                    document.getElementById('totalConversionAmount').value = Math.round(optimalTotal / 1000) * 1000;
+                    document.getElementById('totalConversionAmount').value = (Math.round(optimalTotal / 1000) * 1000).toLocaleString();
                     document.getElementById('conversionYears').value = optimalYears;
                     document.getElementById('conversionStrategy').value = 'optimized';
                     document.getElementById('multiYearStrategy').checked = true;
 
-                    // Show success message
-                    const alertsContainer = document.getElementById('alertsContainer');
-                    alertsContainer.innerHTML = `
-                        <div class="alert alert-success"><i class="fas fa-check-circle"></i> ✅ Strategy optimized! Recommended ${optimalYears}-year conversion of ${formatCurrency(optimalTotal)} 
-                            to stay within the ${formatPercent(inputs.maxTaxBracket)} tax bracket.
-                        </div>
-                    ` + alertsContainer.innerHTML;
+                    const fallbackNote = targetBracket.rate !== inputs.maxTaxBracket
+                        ? ` Your income already fills the ${formatPercent(inputs.maxTaxBracket)} bracket, so this fills the ${formatPercent(targetBracket.rate)} bracket instead.`
+                        : '';
+                    message = { type: 'success', html: `<i class="fas fa-check-circle"></i> Strategy optimized — a ${optimalYears}-year conversion of ${formatCurrency(optimalTotal)} fills the ${formatPercent(targetBracket.rate)} tax bracket.${fallbackNote}` };
+                } else {
+                    message = { type: 'warning', html: `<i class="fas fa-triangle-exclamation"></i> No bracket headroom is available — check the IRA balance and income inputs to model a conversion.` };
                 }
 
                 calculateAndDisplay();
+
+                // Prepend after calculateAndDisplay() (which rebuilds the alerts container).
+                const alertsContainer = document.getElementById('alertsContainer');
+                alertsContainer.innerHTML = `<div class="alert alert-${message.type}">${message.html}</div>` + alertsContainer.innerHTML;
             }
 
             /*************  ✨ Windsurf Command ⭐  *************/
@@ -1804,14 +1828,6 @@
                         return;
                     }
 
-                    const summaryTab = document.getElementById('summaryTab');
-                    const wasHidden = summaryTab.classList.contains('hidden');
-
-                    // Temporarily show the summary tab to render the chart and get content
-                    if (wasHidden) {
-                        summaryTab.classList.remove('hidden');
-                    }
-
                     // Ensure the comparison chart is rendered and available for the report
                     createComparisonChart();
 
@@ -1819,7 +1835,7 @@
                     setTimeout(() => {
                         try {
                             const inputs = getCurrentInputs();
-                            const clientName = inputs.clientName || 'Client';
+                            const clientName = inputs.clientName;
                             const reportDate = new Date().toLocaleDateString('en-US', {
                                 year: 'numeric',
                                 month: 'long',
@@ -1930,7 +1946,7 @@
                                     </div>
                                     <div class="print-header-info">
                                         <h2>Roth Conversion Analysis Report</h2>
-                                        <p><strong>Prepared for:</strong> ${clientName}</p>
+                                        ${clientName ? `<p><strong>Prepared for:</strong> ${clientName}</p>` : ''}
                                         <p><strong>Report Date:</strong> ${reportDate}</p>
                                         <p><strong>Analysis Period:</strong> ${analysisData.years.length - 1} years</p>
                                         <p><strong>Advisor:</strong> Able Wealth Management Team</p>
@@ -1980,11 +1996,6 @@
                                 return;
                             }
 
-                            // Hide the summary tab again if it was originally hidden
-                            if (wasHidden) {
-                                summaryTab.classList.add('hidden');
-                            }
-
                             // Trigger print dialog with a short delay
                             setTimeout(() => {
                                 window.print();
@@ -2005,7 +2016,7 @@
             function initialize() {
                 // Input change listeners
                 const inputsToWatch = [
-                    'clientName', 'stateResidency', 'currentAge', 'retirementAge', 'iraBalance',
+                    'stateResidency', 'currentAge', 'retirementAge', 'iraBalance',
                     'currentIncome', 'totalConversionAmount', 'conversionYears', 'preRetirementReturn',
                     'postRetirementReturn', 'inflationRate', 'adjustForInflation', 'multiYearStrategy', 'conversionStrategy', 'payTaxesFrom',
                     'maxTaxBracket', 'conversionAmount', 'capitalGainsRate', 'rmdAge',

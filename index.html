@@ -1871,7 +1871,7 @@
 
         /* Controls well */
         .controls-well { background: var(--bone); border: 1px solid var(--border-color); border-radius: 3px; padding: 28px 30px; margin-bottom: 24px; }
-        .controls-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px 36px; }
+        .controls-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px 40px; }
         .control { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
         .control-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; min-height: 16px; }
         .control-head label { font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.14em; font-size: 0.62rem; font-weight: 600; color: rgb(var(--ink-rgb) / 0.6); margin: 0; display: block; }
@@ -1959,7 +1959,6 @@
                     </div>
                 </div>
                 <div class="header-meta">
-                    <span id="clientNameDisplay"></span>
                     <span id="headerDate"></span>
                 </div>
                 <select id="stateResidency" class="visually-hidden">
@@ -1981,10 +1980,6 @@
         <!-- Controls well -->
         <section class="controls-well">
             <div class="controls-grid">
-                <div class="control control-text">
-                    <div class="control-head"><label for="clientName">Client Name</label></div>
-                    <input type="text" id="clientName" value="John &amp; Jane Doe">
-                </div>
                 <div class="control">
                     <div class="control-head"><label for="iraBalance">Current IRA Balance</label></div>
                     <div class="money"><span>$</span><input type="text" id="iraBalance" value="1,000,000" data-type="currency"></div>
