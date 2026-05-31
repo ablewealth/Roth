@@ -14,7 +14,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Spectral:wght@300;400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700;800&family=Spectral:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css"
@@ -1651,6 +1651,196 @@
 
         /* --- Discount metric accents map onto the warm palette --- */
         .metric-card[style*="warning"] { border-color: var(--warning-color) !important; }
+
+        /* ===================================================================
+           AWM Calculator Design System — paper / bone / ink / coral / ocean
+           Editorial illustration: paper-and-ink palette with one coral accent,
+           serif numerals, mono labels & inputs, rounded-sm, hairline borders.
+           =================================================================== */
+        :root {
+            --paper: #faf6ec;
+            --bone:  #ece4d2;
+            --ink:   #1e2a4a;
+            --ink-rgb: 30 42 74;
+            --coral: #c0562a;
+            --coral-rgb: 192 86 42;
+            --ocean: #2f6f8f;
+            --cta:   #15245B;
+            --mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+            /* Re-map legacy tokens onto the new materials */
+            --primary-color: var(--ink);
+            --primary-hover: #16213c;
+            --primary-light: var(--bone);
+            --primary-gradient: linear-gradient(90deg, var(--ink), var(--coral));
+            --secondary-color: var(--ink);
+            --accent-color: var(--coral);
+            --accent-hover: #a4471f;
+            --success-color: var(--ink);
+            --warning-color: var(--coral);
+            --error-color: #b23b2e;
+
+            --background-primary: var(--paper);
+            --background-secondary: var(--paper);
+            --card-background: var(--bone);
+            --field-background: var(--paper);
+
+            --text-primary: var(--ink);
+            --text-secondary: rgb(var(--ink-rgb) / 0.70);
+            --text-muted: rgb(var(--ink-rgb) / 0.55);
+
+            --border-color: rgb(var(--ink-rgb) / 0.12);
+            --border-light: rgb(var(--ink-rgb) / 0.08);
+
+            --radius-sm: 3px; --radius-md: 3px; --radius-lg: 3px; --radius-xl: 3px; --radius-2xl: 3px;
+            --shadow-sm: none;
+            --shadow-md: 0 1px 2px rgb(var(--ink-rgb) / 0.06);
+            --shadow-lg: 0 8px 24px -12px rgb(var(--ink-rgb) / 0.25);
+        }
+
+        /* Deep ink frame around the paper sheet */
+        body { background: var(--cta); color: var(--ink); }
+        .container {
+            background: var(--paper);
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+            box-shadow: 0 30px 80px -24px rgb(0 0 0 / 0.50);
+        }
+
+        /* Header — serif headline, mono client meta */
+        .header { border-bottom: 1px solid var(--border-color); border-radius: 0; }
+        .header::before { display: none; }
+        .header-title h1 {
+            font-family: var(--serif);
+            font-weight: 500;
+            color: var(--ink);
+            -webkit-text-fill-color: var(--ink);
+            background: none;
+            letter-spacing: -0.01em;
+        }
+        #headerClientName, .header-client-info, #headerDate {
+            font-family: var(--mono);
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            color: rgb(var(--ink-rgb) / 0.55);
+            font-weight: 500;
+        }
+        #headerClientName { font-weight: 600; color: rgb(var(--ink-rgb) / 0.75); }
+
+        /* Section / eyebrow headers */
+        .section-header { font-family: var(--serif); font-weight: 500; color: var(--ink); border-bottom: 1px solid var(--border-color); }
+        .subsection-header {
+            font-family: var(--mono);
+            text-transform: uppercase;
+            letter-spacing: 0.18em;
+            font-size: 0.66rem;
+            font-weight: 600;
+            color: rgb(var(--ink-rgb) / 0.5);
+        }
+
+        /* Controls well = bone */
+        .sidebar { background: var(--bone); border: 1px solid var(--border-color); }
+        .sidebar::before { display: none; }
+
+        .input-group label {
+            font-family: var(--mono);
+            text-transform: uppercase;
+            letter-spacing: 0.16em;
+            font-size: 0.66rem;
+            font-weight: 600;
+            color: rgb(var(--ink-rgb) / 0.6);
+        }
+
+        .input-group input, .input-group select {
+            background: var(--paper);
+            border: 1px solid rgb(var(--ink-rgb) / 0.15);
+            border-radius: 3px;
+            font-family: var(--mono);
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--ink);
+            font-variant-numeric: tabular-nums;
+        }
+        .input-group input:focus, .input-group select:focus {
+            border-color: var(--coral);
+            box-shadow: 0 0 0 3px rgb(var(--coral-rgb) / 0.30);
+        }
+        .input-hint { font-family: var(--sans); font-style: normal; color: rgb(var(--ink-rgb) / 0.5); }
+        .checkbox-group { background: var(--paper); border: 1px solid var(--border-color); border-radius: 3px; }
+        .checkbox-group:hover { background: var(--paper); }
+        .checkbox-group input[type="checkbox"] { accent-color: var(--coral); }
+        .checkbox-group label { font-family: var(--sans); color: var(--ink); }
+
+        /* Summary tiles */
+        .metric-card { background: var(--bone); border: 1px solid var(--border-color); border-radius: 3px; text-align: left; box-shadow: none; }
+        .metric-card::before { display: none; }
+        .metric-card:hover { transform: none; box-shadow: none; border-color: rgb(var(--ink-rgb) / 0.2); }
+        .metric-label { font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.18em; font-size: 0.6rem; font-weight: 600; color: rgb(var(--ink-rgb) / 0.5); }
+        .metric-value { font-family: var(--serif); font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1; }
+        .metric-value.positive { color: var(--coral); }
+        .metric-value.negative { color: var(--error-color); }
+
+        /* Tabs — ink active / coral hover, mono */
+        .tabs { background: transparent; border-bottom: 1px solid var(--border-color); border-radius: 0; }
+        .tab { font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.64rem; font-weight: 600; border-radius: 3px 3px 0 0; color: rgb(var(--ink-rgb) / 0.6); }
+        .tab:hover { color: var(--coral); background: transparent; }
+        .tab.active { background: var(--ink); color: var(--paper); box-shadow: none; }
+
+        /* Buttons — single dark CTA (report) + coral secondary (optimize) */
+        .action-btn { font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.18em; font-size: 0.66rem; font-weight: 600; border-radius: 3px; box-shadow: none; }
+        .report-btn { background: var(--cta); color: var(--paper); }
+        .report-btn:hover { background: #0f1c47; transform: none; box-shadow: var(--shadow-lg); }
+        .optimization-btn { background: var(--coral); }
+        .optimization-btn:hover { background: var(--accent-hover); transform: none; box-shadow: var(--shadow-lg); }
+
+        /* Strategy comparison cards */
+        .strategy-card { background: var(--bone); border: 1px solid var(--border-color); border-radius: 3px; box-shadow: none; }
+        .strategy-card::before { height: 2px; background: var(--border-color); }
+        .strategy-card.selected { border-color: var(--coral); box-shadow: none; }
+        .strategy-card.selected::before { background: var(--coral); }
+        .strategy-card:hover { transform: none; box-shadow: var(--shadow-md); }
+        .strategy-title { font-family: var(--serif); font-weight: 500; color: var(--ink); border-bottom: 1px solid var(--border-color); }
+        .detail-label { font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.62rem; font-weight: 600; color: rgb(var(--ink-rgb) / 0.6); }
+        .detail-value { font-family: var(--serif); font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; }
+        .strategy-final-value { background: var(--paper); border: 1px solid var(--border-color); border-radius: 3px; }
+        .strategy-card.selected .strategy-final-value { border-color: var(--coral); background: rgb(var(--coral-rgb) / 0.06); }
+        .final-label { font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.16em; font-size: 0.62rem; font-weight: 600; color: rgb(var(--ink-rgb) / 0.6); }
+        .final-value { font-family: var(--serif); font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1; }
+        .strategy-card.selected .final-value { color: var(--coral); }
+
+        /* Opportunity-cost section + cost items */
+        .opportunity-cost-section { background: var(--paper); border: 1px solid var(--border-color); border-radius: 3px; box-shadow: none; }
+        .opportunity-explanation { background: var(--bone); border-left: 3px solid var(--coral); border-radius: 0 3px 3px 0; box-shadow: none; }
+        .opportunity-explanation h4 { font-family: var(--serif); font-weight: 500; color: var(--ink); }
+        .cost-item { background: var(--bone); border: 1px solid var(--border-color); border-radius: 3px; text-align: left; box-shadow: none; }
+        .cost-item:hover { transform: none; box-shadow: none; }
+        .cost-item-value { font-family: var(--serif); font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; }
+        .cost-item-label { font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.6rem; font-weight: 600; color: rgb(var(--ink-rgb) / 0.55); }
+
+        /* Chart frame + tables */
+        .chart-container { background: var(--paper); border: 1px solid var(--border-color); border-radius: 3px; box-shadow: none; }
+        .chart-container::before { display: none; }
+        .chart-title { font-family: var(--serif); font-weight: 500; color: var(--ink); }
+        .data-table { background: var(--paper); border: 1px solid var(--border-color); border-radius: 3px; }
+        .data-table th { background: var(--bone); font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.6rem; font-weight: 600; color: rgb(var(--ink-rgb) / 0.6); }
+        .data-table td { font-variant-numeric: tabular-nums; }
+        .data-table tr:hover { background: rgb(var(--coral-rgb) / 0.04); }
+
+        /* Quiet alerts */
+        .alert { border-radius: 3px; box-shadow: none; }
+        .alert-success, .alert-warning, .alert-info { color: var(--ink); background: var(--bone); border-color: var(--border-color); }
+        .alert-success i, .alert-warning i { color: var(--coral); }
+        .alert-info i { color: var(--ocean); }
+
+        /* Footnote — Info icon + ink/60 paragraphs */
+        .disclosure { border-top: 1px solid var(--border-color); color: rgb(var(--ink-rgb) / 0.6); font-size: 0.75rem; display: flex; gap: 12px; align-items: flex-start; }
+        .disclosure .disclosure-icon { color: var(--ocean); font-size: 0.95rem; margin-top: 4px; flex-shrink: 0; }
+        .disclosure h4 { font-family: var(--serif); font-weight: 500; color: var(--ink); }
+
+        /* Semantic outcome colors — coral for advantage, restrained red for loss */
+        .positive { color: var(--coral); }
+        .negative { color: var(--error-color); }
     </style>
 </head>
 
@@ -2020,6 +2210,7 @@
         </div>
 
         <div class="disclosure">
+            <i class="fas fa-circle-info disclosure-icon"></i>
             <p><strong>Tax Basis</strong><br>
                 Projections use 2026 federal income tax brackets and a $32,200 standard deduction for married couples
                 filing jointly, reflecting the IRS 2026 inflation adjustments (Rev. Proc. 2025-32) as amended by the

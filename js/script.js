@@ -110,13 +110,21 @@
             let charts = {};
             let analysisData = {};
 
-            // Editorial chart theme: warm-gray ink, Inter for axes/legends.
+            // Editorial chart theme (AWM design system): ink ticks, faint ink grid.
             if (window.Chart) {
                 Chart.defaults.font.family = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-                Chart.defaults.font.size = 12;
-                Chart.defaults.color = '#6f6a5c';
-                Chart.defaults.borderColor = 'rgba(28, 46, 76, 0.08)';
+                Chart.defaults.font.size = 11;
+                Chart.defaults.color = 'rgba(30, 42, 74, 0.55)';
+                Chart.defaults.borderColor = 'rgba(30, 42, 74, 0.08)';
             }
+
+            // Shared design-system chart palette
+            const CHART_COLORS = {
+                coral: '#c0562a',          // primary outcome
+                ocean: '#2f6f8f',          // comparison
+                inkFaint: 'rgba(30, 42, 74, 0.45)', // tertiary / baseline
+                ink: '#1e2a4a'
+            };
 
             // 2026 tax assumptions modeled as married filing jointly / joint return schedules.
             // Federal figures reflect the IRS 2026 inflation adjustments (Rev. Proc. 2025-32) as
@@ -761,7 +769,7 @@
 
                 breakdownHTML += `
                     <div class="cost-item">
-                        <div class="cost-item-value ${totalAdvantage >= 0 ? 'positive' : 'negative'}" style="color: ${totalAdvantage >= 0 ? 'var(--success-color)' : 'var(--error-color)'};">${formatCurrency(Math.abs(totalAdvantage))}</div>
+                        <div class="cost-item-value ${totalAdvantage >= 0 ? 'positive' : 'negative'}" style="color: ${totalAdvantage >= 0 ? 'var(--accent-color)' : 'var(--error-color)'};">${formatCurrency(Math.abs(totalAdvantage))}</div>
                         <div class="cost-item-label">${totalAdvantage >= 0 ? 'Net Benefit' : 'Net Cost'}</div>
                     </div>
                 `;
@@ -802,19 +810,21 @@
                             {
                                 label: 'Roth Conversion (after-tax)',
                                 data: analysisData.rothNetBenefit,
-                                borderColor: '#1c2e4c',
-                                backgroundColor: 'rgba(28, 46, 76, 0.1)',
-                                borderWidth: 3,
+                                borderColor: CHART_COLORS.coral,
+                                backgroundColor: 'rgba(192, 86, 42, 0.08)',
+                                borderWidth: 2.5,
                                 fill: false,
                                 pointRadius: 0,
+                                activeDot: { r: 5 },
                                 tension: 0.1
                             },
                             {
                                 label: 'Do Nothing (after-tax)',
                                 data: analysisData.traditionalAfterTax,
-                                borderColor: '#c0562a',
-                                backgroundColor: 'rgba(192, 86, 42, 0.1)',
+                                borderColor: CHART_COLORS.ocean,
+                                backgroundColor: 'rgba(47, 111, 143, 0.08)',
                                 borderWidth: 2,
+                                borderDash: [5, 4],
                                 fill: false,
                                 pointRadius: 0,
                                 tension: 0.1
@@ -822,10 +832,11 @@
                             {
                                 label: 'Net Advantage',
                                 data: analysisData.netAdvantage,
-                                borderColor: '#3f7d57',
-                                backgroundColor: 'rgba(63, 125, 87, 0.1)',
-                                borderWidth: 2,
-                                fill: true,
+                                borderColor: CHART_COLORS.inkFaint,
+                                backgroundColor: 'rgba(30, 42, 74, 0.05)',
+                                borderWidth: 1.5,
+                                borderDash: [2, 3],
+                                fill: false,
                                 pointRadius: 0,
                                 tension: 0.1
                             }
@@ -836,10 +847,10 @@
                         maintainAspectRatio: false,
                         plugins: {
                             tooltip: {
-                                backgroundColor: 'rgba(28, 46, 76, 0.94)',
-                                titleColor: '#fff',
-                                bodyColor: '#fff',
-                                borderColor: '#1c2e4c',
+                                backgroundColor: '#faf6ec',
+                                titleColor: '#1e2a4a',
+                                bodyColor: '#1e2a4a',
+                                borderColor: 'rgba(30, 42, 74, 0.15)',
                                 borderWidth: 1,
                                 callbacks: {
                                     label: function (context) {
@@ -870,7 +881,7 @@
                                     minRotation: 0
                                 },
                                 grid: {
-                                    color: 'rgba(28, 46, 76, 0.08)'
+                                    color: 'rgba(30, 42, 74, 0.08)'
                                 }
                             },
                             y: {
@@ -880,7 +891,7 @@
                                     }
                                 },
                                 grid: {
-                                    color: 'rgba(28, 46, 76, 0.08)'
+                                    color: 'rgba(30, 42, 74, 0.08)'
                                 }
                             }
                         }
@@ -898,8 +909,8 @@
                             {
                                 label: 'Roth IRA Balance',
                                 data: analysisData.rothIRA,
-                                borderColor: '#1c2e4c',
-                                backgroundColor: 'rgba(28, 46, 76, 0.1)',
+                                borderColor: '#1e2a4a',
+                                backgroundColor: 'rgba(30, 42, 74, 0.1)',
                                 borderWidth: 3,
                                 fill: false,
                                 pointRadius: 0
@@ -916,8 +927,8 @@
                             {
                                 label: 'Roth Net Value',
                                 data: analysisData.rothNetBenefit,
-                                borderColor: '#3f7d57',
-                                backgroundColor: 'rgba(63, 125, 87, 0.1)',
+                                borderColor: '#2f6f8f',
+                                backgroundColor: 'rgba(47, 111, 143, 0.1)',
                                 borderWidth: 2,
                                 fill: true,
                                 pointRadius: 0
@@ -974,8 +985,8 @@
                         datasets: [{
                             label: 'Net Advantage',
                             data: analysisData.netAdvantage,
-                            backgroundColor: analysisData.netAdvantage.map(adv => adv >= 0 ? 'rgba(63, 125, 87, 0.7)' : 'rgba(184, 68, 47, 0.7)'),
-                            borderColor: analysisData.netAdvantage.map(adv => adv >= 0 ? '#3f7d57' : '#b8442f'),
+                            backgroundColor: analysisData.netAdvantage.map(adv => adv >= 0 ? 'rgba(47, 111, 143, 0.7)' : 'rgba(184, 68, 47, 0.7)'),
+                            borderColor: analysisData.netAdvantage.map(adv => adv >= 0 ? '#2f6f8f' : '#b8442f'),
                             borderWidth: 1
                         }]
                     },
@@ -1037,8 +1048,8 @@
                             {
                                 label: 'Conversion Amount',
                                 data: analysisData.inputs.conversions.map(c => c.amount),
-                                backgroundColor: 'rgba(28, 46, 76, 0.3)',
-                                borderColor: '#1c2e4c',
+                                backgroundColor: 'rgba(30, 42, 74, 0.3)',
+                                borderColor: '#1e2a4a',
                                 borderWidth: 1,
                                 type: 'line',
                                 yAxisID: 'y1'
@@ -1120,8 +1131,8 @@
                                     if (income < bracket.min) return 0;
                                     return Math.min(income, bracket.max) - bracket.min;
                                 }),
-                                backgroundColor: 'rgba(28, 46, 76, 0.5)',
-                                borderColor: '#1c2e4c',
+                                backgroundColor: 'rgba(30, 42, 74, 0.5)',
+                                borderColor: '#1e2a4a',
                                 borderWidth: 1
                             },
                             {
@@ -1189,8 +1200,8 @@
                         datasets: [{
                             label: 'Net Advantage Distribution',
                             data: percentiles,
-                            backgroundColor: percentiles.map(val => val >= 0 ? 'rgba(63, 125, 87, 0.7)' : 'rgba(184, 68, 47, 0.7)'),
-                            borderColor: percentiles.map(val => val >= 0 ? '#3f7d57' : '#b8442f'),
+                            backgroundColor: percentiles.map(val => val >= 0 ? 'rgba(47, 111, 143, 0.7)' : 'rgba(184, 68, 47, 0.7)'),
+                            borderColor: percentiles.map(val => val >= 0 ? '#2f6f8f' : '#b8442f'),
                             borderWidth: 2
                         }]
                     },
@@ -1251,11 +1262,11 @@
                             label: 'Net Advantage',
                             data: sensitivityResults.map(r => r.advantage),
                             backgroundColor: sensitivityResults.map(r =>
-                                r.advantage > analysisData.totalAdvantage ? 'rgba(63, 125, 87, 0.7)' :
+                                r.advantage > analysisData.totalAdvantage ? 'rgba(47, 111, 143, 0.7)' :
                                     r.advantage < 0 ? 'rgba(184, 68, 47, 0.7)' : 'rgba(192, 86, 42, 0.7)'
                             ),
                             borderColor: sensitivityResults.map(r =>
-                                r.advantage > analysisData.totalAdvantage ? '#3f7d57' :
+                                r.advantage > analysisData.totalAdvantage ? '#2f6f8f' :
                                     r.advantage < 0 ? '#b8442f' : '#c0562a'
                             ),
                             borderWidth: 2
@@ -1336,8 +1347,8 @@
                             {
                                 label: 'Effective Tax Rate on Conversion',
                                 data: effectiveTaxData,
-                                backgroundColor: 'rgba(28, 46, 76, 0.7)',
-                                borderColor: '#1c2e4c',
+                                backgroundColor: 'rgba(30, 42, 74, 0.7)',
+                                borderColor: '#1e2a4a',
                                 borderWidth: 1
                             }
                         ]
