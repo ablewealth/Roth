@@ -14,10 +14,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Spectral:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css"
         crossorigin="anonymous" referrerpolicy="no-referrer">
 
     <!-- Chart.js Library -->
@@ -1290,6 +1290,256 @@
                 opacity: 0;
             }
         }
+
+        /* =====================================================================
+           Editorial Redesign — Navy / Rust / Ivory
+           A warm, framed, print-inspired theme: deep navy matte frame around an
+           ivory sheet, serif display type with old-style numerals, small-caps
+           warm-gray labels, and tan panels. Overrides the tokens above.
+           ===================================================================== */
+        :root {
+            --primary-color: #1c2e4c;
+            --primary-hover: #142239;
+            --primary-light: #ebe6d6;
+            --primary-gradient: linear-gradient(135deg, #1c2e4c 0%, #2a3f63 100%);
+            --secondary-color: #2a3f63;
+            --accent-color: #c0562a;
+            --accent-hover: #a4471f;
+            --warning-color: #b8862c;
+            --error-color: #b8442f;
+            --success-color: #3f7d57;
+
+            --background-primary: #fbf7ec;
+            --background-secondary: #fbf7ec;
+            --card-background: #ebe6d6;
+            --field-background: #fdfbf3;
+
+            --text-primary: #1c2e4c;
+            --text-secondary: #6f6a5c;
+            --text-muted: #948d7c;
+
+            --border-color: #ddd6c2;
+            --border-light: #e6e0cf;
+
+            --serif: 'Spectral', Georgia, 'Times New Roman', serif;
+            --shadow-sm: 0 1px 2px 0 rgb(28 46 76 / 0.05);
+            --shadow-md: 0 4px 10px -3px rgb(28 46 76 / 0.10);
+            --shadow-lg: 0 14px 30px -10px rgb(28 46 76 / 0.18);
+            --shadow-xl: 0 24px 48px -16px rgb(28 46 76 / 0.22);
+        }
+
+        /* Numerals: old-style figures for an engraved, editorial feel */
+        .metric-value,
+        .header-title h1,
+        .chart-title,
+        .data-table td {
+            font-feature-settings: "onum" 1, "pnum" 1;
+        }
+
+        /* --- Navy matte frame around an ivory sheet --- */
+        body {
+            background: #14213d;
+            background-attachment: fixed;
+            padding: 28px;
+        }
+
+        .container {
+            background: var(--background-primary);
+            border: 1px solid #e3dcc8;
+            border-radius: 18px;
+            padding: 48px 52px;
+            box-shadow: 0 30px 80px -20px rgb(0 0 0 / 0.55);
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .container { padding: 24px 18px; border-radius: 12px; }
+        }
+
+        /* --- Header: flat, no card --- */
+        .header {
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            padding: 0 0 28px 0;
+            margin-bottom: 32px;
+            border-bottom: 1px solid var(--border-color);
+            border-radius: 0;
+        }
+
+        .header::before { display: none; }
+
+        .header-title h1 {
+            font-family: var(--serif);
+            font-weight: 500;
+            letter-spacing: -0.01em;
+            color: var(--primary-color);
+            -webkit-text-fill-color: var(--primary-color);
+            background: none;
+            font-size: 2.4rem;
+        }
+
+        #headerClientName,
+        .header-client-info,
+        #headerDate {
+            color: var(--text-secondary);
+        }
+
+        /* --- Section + sub-section headers: serif title, hairline rule --- */
+        .section-header {
+            font-family: var(--serif);
+            font-weight: 500;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 14px;
+        }
+
+        .subsection-header {
+            font-family: var(--sans, inherit);
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            border-bottom: none;
+            margin: 28px 0 16px 0;
+        }
+
+        /* --- Panels: input sidebar + cards sit on the ivory sheet as tan blocks --- */
+        .sidebar {
+            background: var(--card-background);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+        }
+
+        .sidebar::before { display: none; }
+
+        /* --- Labels: small-caps, warm gray --- */
+        .input-group label {
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .input-group input,
+        .input-group select {
+            background: var(--field-background);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            box-shadow: none;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgb(192 86 42 / 0.15);
+        }
+
+        .checkbox-group {
+            background: var(--field-background);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+        }
+
+        .checkbox-group:hover {
+            background: #fffdf6;
+            transform: none;
+        }
+
+        .checkbox-group input[type="checkbox"] { accent-color: var(--accent-color); }
+        .checkbox-group label { color: var(--text-primary); font-weight: 600; }
+        .input-hint { font-style: normal; }
+
+        /* --- Buttons: small-caps, letter-spaced --- */
+        .action-btn {
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 0.8rem;
+            box-shadow: none;
+        }
+
+        .optimization-btn { background: var(--accent-color); }
+        .optimization-btn:hover { background: var(--accent-hover); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+        .report-btn { background: var(--primary-color); }
+        .report-btn:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+        /* --- Metric cards: tan, flat, serif value --- */
+        .metric-card {
+            background: var(--card-background);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            text-align: left;
+            box-shadow: none;
+        }
+
+        .metric-card:hover {
+            transform: none;
+            box-shadow: var(--shadow-md);
+            border-color: var(--border-color);
+        }
+
+        .metric-card::before { height: 2px; background: var(--accent-color); }
+
+        .metric-value {
+            font-family: var(--serif);
+            font-weight: 500;
+            font-size: 2.1rem;
+            letter-spacing: -0.01em;
+            color: var(--primary-color);
+        }
+
+        .metric-label {
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        /* --- Tabs: navy active pill --- */
+        .tabs { background: transparent; border-bottom: 1px solid var(--border-color); border-radius: 0; padding: 0; gap: 4px; }
+
+        .tab {
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-size: 0.74rem;
+            font-weight: 600;
+            border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+        }
+
+        .tab:hover { color: var(--accent-color); background: transparent; }
+
+        .tab.active {
+            color: #fff;
+            background: var(--primary-color);
+            box-shadow: none;
+        }
+
+        /* --- Chart + table surfaces --- */
+        .chart-container {
+            background: var(--background-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            box-shadow: none;
+        }
+
+        .chart-container::before { display: none; }
+
+        .chart-title { font-family: var(--serif); font-weight: 500; font-size: 1.4rem; color: var(--primary-color); }
+
+        .data-table { background: var(--field-background); border-radius: var(--radius-md); }
+        .data-table th { background: var(--card-background); color: var(--text-secondary); letter-spacing: 0.08em; }
+        .data-table tr:hover { background: #fffdf6; }
+
+        /* --- Disclosure --- */
+        .disclosure h4 { font-family: var(--serif); font-weight: 500; color: var(--primary-color); }
     </style>
 </head>
 
