@@ -1876,6 +1876,26 @@
         .control-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; min-height: 16px; }
         .control-head label { font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.14em; font-size: 0.62rem; font-weight: 600; color: rgb(var(--ink-rgb) / 0.6); margin: 0; display: block; }
         .control-val { font-family: var(--mono); font-size: 0.82rem; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+        /* Info tooltip on control labels */
+        .info {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 14px; height: 14px; margin-left: 5px; border-radius: 50%;
+            border: 1px solid rgb(var(--ink-rgb) / 0.35); color: rgb(var(--ink-rgb) / 0.5);
+            font-family: var(--serif); font-size: 9px; font-style: italic; font-weight: 600;
+            cursor: help; position: relative; text-transform: none; letter-spacing: 0; vertical-align: middle;
+        }
+        .info:hover { border-color: var(--coral); color: var(--coral); }
+        .info::after {
+            content: attr(data-tip);
+            position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+            width: 230px; background: var(--paper); color: rgb(var(--ink-rgb) / 0.85);
+            border: 1px solid rgb(var(--ink-rgb) / 0.18); border-radius: 3px; padding: 10px 12px;
+            font-family: var(--sans); font-size: 0.72rem; font-style: normal; font-weight: 400;
+            line-height: 1.45; letter-spacing: 0; text-align: left; text-transform: none;
+            box-shadow: var(--shadow-lg); opacity: 0; visibility: hidden; transition: opacity 0.15s; z-index: 50; pointer-events: none;
+        }
+        .info:hover::after { opacity: 1; visibility: visible; }
         .control input[type="text"] { width: 100%; padding: 10px 12px; background: var(--paper); border: 1px solid rgb(var(--ink-rgb) / 0.15); border-radius: 3px; font-family: var(--mono); font-size: 0.85rem; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
         .control input[type="text"]:focus { outline: none; border-color: var(--coral); box-shadow: 0 0 0 3px rgb(var(--coral-rgb) / 0.3); }
         .money { position: relative; }
@@ -2080,15 +2100,16 @@
                 </div>
 
                 <div class="control">
-                    <div class="control-head"><label>Pay Conversion Taxes From</label></div>
-                    <div class="segmented" data-target="payTaxesFrom">
-                        <button type="button" data-value="outside" class="seg-btn active">Outside Funds</button>
-                        <button type="button" data-value="ira" class="seg-btn">IRA Withdrawal</button>
-                    </div>
-                    <select id="payTaxesFrom" class="visually-hidden">
-                        <option value="outside">Outside Funds</option>
-                        <option value="ira">IRA Withdrawal</option>
-                    </select>
+                    <div class="control-head"><label for="outsideFundsPct">Taxes Paid From Outside Funds <span class="info" data-tip="What share of the conversion tax is paid with money outside the IRA (e.g. a brokerage or savings account) versus withheld from the IRA itself. 100% keeps the full converted amount in the Roth and is usually best; the rest is taken from the IRA, which shrinks the conversion.">i</span></label><span class="control-val" id="outsideFundsPct_val"></span></div>
+                    <input type="range" id="outsideFundsPct" min="0" max="100" step="5" value="100" data-unit="%">
+                </div>
+                <div class="control">
+                    <div class="control-head"><label for="taxableAccountReturn">Taxable Account Return <span class="info" data-tip="The annual return earned on the outside funds used to pay the tax (the opportunity-cost account). Set it to your expected brokerage return if invested, or low (e.g. 1–2%) if that money sits in cash.">i</span></label><span class="control-val" id="taxableAccountReturn_val"></span></div>
+                    <input type="range" id="taxableAccountReturn" min="0" max="12" step="0.1" value="6" data-unit="%">
+                </div>
+                <div class="control">
+                    <div class="control-head"><label for="discountRate">Discount Rate <span class="info" data-tip="The annual rate used to express future taxes in today's value for the Lifetime Tax Comparison. Higher rates weight taxes you pay sooner more heavily. Use roughly your expected return for an opportunity-cost view, or your inflation rate for a purchasing-power view; 0% sums raw dollars.">i</span></label><span class="control-val" id="discountRate_val"></span></div>
+                    <input type="range" id="discountRate" min="0" max="10" step="0.1" value="3" data-unit="%">
                 </div>
                 <div class="control" id="socialSecurityDiv">
                     <div class="control-head"><label for="socialSecurityBenefit">Annual Social Security</label></div>
@@ -2173,9 +2194,15 @@
         <section class="stack-section">
             <div class="eyebrow"><span class="eyebrow-rule"></span> Lifetime Tax Comparison</div>
             <p class="chart-caption" style="margin-top:0;margin-bottom:18px;">Total ordinary-income tax each path pays
-                over the full horizon, in today's dollars — the do-nothing IRA (taxes on RMDs plus the final
-                withdrawal) versus the Roth strategy (conversion tax now, plus any tax on an unconverted IRA balance).</p>
+                over the full horizon, present-valued at your chosen discount rate — the do-nothing IRA (taxes on RMDs
+                plus the final withdrawal) versus the Roth strategy (conversion tax now, plus any tax on an unconverted
+                IRA balance).</p>
             <div class="cost-breakdown" id="taxComparison"></div>
+            <div class="chart-container" style="margin-top:20px;">
+                <div class="chart-title"><i class="fas fa-chart-column"></i> Taxes Paid Over Time</div>
+                <canvas id="taxesOverTimeChart"></canvas>
+            </div>
+            <p class="chart-caption" id="taxesOverTimeCaption"></p>
         </section>
 
         <!-- Opportunity cost -->

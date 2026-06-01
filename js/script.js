@@ -338,7 +338,9 @@
                     postRetirementReturn: getInputValue('postRetirementReturn') / 100,
                     inflationRate: getInputValue('inflationRate') / 100,
                     adjustForInflation: document.getElementById('adjustForInflation').checked,
-                    payTaxesFrom: document.getElementById('payTaxesFrom').value,
+                    discountRate: getInputValue('discountRate') / 100,
+                    outsideFundsPct: getInputValue('outsideFundsPct') / 100,
+                    taxableAccountReturn: getInputValue('taxableAccountReturn') / 100,
                     rmdAge: getInputValue('rmdAge'),
                     includeSocialSecurity: document.getElementById('includeSocialSecurity').checked,
                     socialSecurityBenefit: getInputValue('socialSecurityBenefit'),
@@ -450,6 +452,8 @@
                     stateTaxes: [],
                     cumulativeConversions: [],
                     rmdAmounts: [],
+                    doNothingTaxByYear: [],
+                    rothTaxByYear: [],
                     marginalRates: [],
                     opportunityCost: [],
                     opportunityGrowth: [],
@@ -476,12 +480,10 @@
                 let displayCumulativeTaxes = 0;
                 let displayDiscountBenefit = 0;
 
-                // Lifetime ordinary-income tax accumulators (display/today's-dollar terms) for the
-                // tax comparison: RMD taxes along the way + final liquidation tax at the horizon.
-                let displayDoNothingRmdTax = 0;
-                let displayConvRmdTax = 0;
-                let finalDoNothingLiquidationTax = 0;
-                let finalConvLiquidationTax = 0;
+                // Lifetime ordinary-income tax accumulators, present-valued at the chosen discount
+                // rate (RMD taxes along the way + the income tax to liquidate the IRA at the horizon).
+                let pvDoNothingTax = 0;
+                let pvRothTax = 0;
 
                 const analysisYears = normalizeAnalysisYear(inputs.analysisYear);
 
@@ -496,7 +498,7 @@
                         traditionalBalance *= (1 + returnRate);
                         rothBalance *= (1 + returnRate);
                         convSide *= (1 + returnRate);
-                        opportunityCost *= (1 + returnRate);
+                        opportunityCost *= (1 + inputs.taxableAccountReturn);
                         noConvBalance *= (1 + returnRate);
                         noConvSide *= (1 + returnRate);
                     }
@@ -551,15 +553,17 @@
                         displayCumulativeConversions += getDisplayValue(conversionAmount, year, inputs);
                         displayCumulativeTaxes += getDisplayValue(totalTax, year, inputs);
 
-                        if (inputs.payTaxesFrom === 'ira') {
-                            traditionalBalance -= totalTax;
-                        } else {
-                            opportunityCost += totalTax;
-                            opportunityCostBasis += totalTax;
-                        }
+                        // Split the conversion tax between outside funds (invested in a taxable
+                        // account) and tax withheld from the conversion itself, per the outside-funds %.
+                        const outsidePortion = totalTax * inputs.outsideFundsPct;
+                        const iraPortion = totalTax - outsidePortion;
+                        opportunityCost += outsidePortion;
+                        opportunityCostBasis += outsidePortion;
 
-                        traditionalBalance -= conversionAmount; // Remove actual conversion amount from traditional IRA
-                        rothBalance += conversionAmount; // Add actual conversion amount to Roth IRA
+                        // The full conversion leaves the traditional IRA; the IRA-funded tax is
+                        // withheld from it, so only the net amount lands in the Roth.
+                        traditionalBalance -= conversionAmount;
+                        rothBalance += (conversionAmount - iraPortion);
                     }
 
                     // Required minimum distributions — forced, taxed, and reinvested after-tax in a
@@ -582,7 +586,6 @@
                         const afterTaxRmd = rmd * (1 - noConvRetireRate);
                         noConvSide += afterTaxRmd;
                         noConvSideBasis += afterTaxRmd;
-                        displayDoNothingRmdTax += getDisplayValue(rmd * noConvRetireRate, year, inputs);
                     }
 
                     let convRmd = 0;        // RMD on the (smaller) post-conversion balance
@@ -592,14 +595,17 @@
                         const afterTaxRmd = convRmd * (1 - convRetireRate);
                         convSide += afterTaxRmd;
                         convSideBasis += afterTaxRmd;
-                        displayConvRmdTax += getDisplayValue(convRmd * convRetireRate, year, inputs);
                     }
 
-                    // At the horizon, capture the income tax owed to liquidate each remaining IRA.
-                    if (year === analysisYears) {
-                        finalDoNothingLiquidationTax = getDisplayValue(noConvBalance * noConvRetireRate, year, inputs);
-                        finalConvLiquidationTax = getDisplayValue(traditionalBalance * convRetireRate, year, inputs);
-                    }
+                    // Annual ordinary-income taxes for each path (nominal): RMD taxes every year,
+                    // plus the income tax to liquidate the remaining IRA in the final year. The Roth
+                    // path also pays the conversion tax (totalTax) in conversion years.
+                    const isFinalYear = year === analysisYears;
+                    const doNothingTaxNominal = rmd * noConvRetireRate + (isFinalYear ? noConvBalance * noConvRetireRate : 0);
+                    const rothTaxNominal = totalTax + convRmd * convRetireRate + (isFinalYear ? traditionalBalance * convRetireRate : 0);
+                    const pvFactor = Math.pow(1 + inputs.discountRate, year);
+                    pvDoNothingTax += doNothingTaxNominal / pvFactor;
+                    pvRothTax += rothTaxNominal / pvFactor;
 
                     // After-tax wealth of each whole-portfolio strategy at this point in time.
                     const afterTaxOpportunityCost = afterTaxTaxable(opportunityCost, opportunityCostBasis, inputs.capitalGainsRate);
@@ -644,6 +650,8 @@
                     data.conversionTaxes[year] = displayTotalTax;
                     data.cumulativeConversions[year] = displayCumulativeConversions;
                     data.rmdAmounts[year] = displayRmd;
+                    data.doNothingTaxByYear[year] = getDisplayValue(doNothingTaxNominal, year, inputs);
+                    data.rothTaxByYear[year] = getDisplayValue(rothTaxNominal, year, inputs);
                     data.marginalRates[year] = marginalRate;
                     data.discountedConversions[year] = displayDiscountedConversion;
                     data.effectiveDiscountRates[year] = effectiveDiscountRate;
@@ -659,11 +667,11 @@
                 data.totalDiscountBenefit = displayDiscountBenefit;
                 data.effectiveTaxSavings = displayDiscountBenefit > 0 ? (displayDiscountBenefit * (data.marginalRates.find(r => r > 0) || 0.24)) : 0;
 
-                // Lifetime ordinary-income tax comparison (today's-dollar terms):
-                //   Do-nothing  = RMD taxes + tax to liquidate the remaining IRA at the horizon.
-                //   Roth path   = conversion taxes now + RMD/liquidation taxes on any unconverted IRA.
-                data.doNothingLifetimeTax = displayDoNothingRmdTax + finalDoNothingLiquidationTax;
-                data.rothLifetimeTax = displayCumulativeTaxes + displayConvRmdTax + finalConvLiquidationTax;
+                // Lifetime ordinary-income tax comparison, present-valued at the discount rate:
+                //   Do-nothing = RMD taxes + tax to liquidate the remaining IRA at the horizon.
+                //   Roth path  = conversion taxes now + RMD/liquidation taxes on any unconverted IRA.
+                data.doNothingLifetimeTax = pvDoNothingTax;
+                data.rothLifetimeTax = pvRothTax;
                 data.lifetimeTaxSavings = data.doNothingLifetimeTax - data.rothLifetimeTax;
 
                 return data;
@@ -756,20 +764,25 @@
                 if (!el || !analysisData) return;
                 const { doNothingLifetimeTax, rothLifetimeTax, lifetimeTaxSavings } = analysisData;
                 const saves = lifetimeTaxSavings >= 0;
+                const discLabel = `PV @ ${formatPercent(analysisData.inputs.discountRate)}`;
                 el.innerHTML = `
                     <div class="cost-item">
                         <div class="cost-item-value">${formatCurrency(doNothingLifetimeTax)}</div>
-                        <div class="cost-item-label">Do-Nothing IRA Taxes (RMDs + Final)</div>
+                        <div class="cost-item-label">Do-Nothing IRA Taxes (${discLabel})</div>
                     </div>
                     <div class="cost-item">
                         <div class="cost-item-value">${formatCurrency(rothLifetimeTax)}</div>
-                        <div class="cost-item-label">Roth Strategy Taxes (Conversion + Remaining)</div>
+                        <div class="cost-item-label">Roth Strategy Taxes (${discLabel})</div>
                     </div>
                     <div class="cost-item">
                         <div class="cost-item-value" style="color: ${saves ? 'var(--accent-color)' : 'var(--error-color)'};">${formatCurrency(Math.abs(lifetimeTaxSavings))}</div>
                         <div class="cost-item-label">${saves ? 'Lifetime Tax Saved' : 'Additional Lifetime Tax'}</div>
                     </div>
                 `;
+                const cap = document.getElementById('taxesOverTimeCaption');
+                if (cap) {
+                    cap.innerHTML = `Annual ordinary-income taxes by year (today's dollars). The <span class="coral">Roth</span> path front-loads tax during the conversion window; the do-nothing path back-loads it as RMDs and the final withdrawal. Present value applies a ${formatPercent(analysisData.inputs.discountRate)} discount rate, which is why timing matters.`;
+                }
             }
 
             function updateOpportunityCostBreakdown() {
@@ -1654,10 +1667,10 @@
                     });
                 }
 
-                if (analysisData.inputs.payTaxesFrom === 'ira') {
+                if (analysisData.inputs.outsideFundsPct < 1) {
                     alerts.push({
                         type: 'info',
-                        message: 'Consider paying conversion taxes from outside funds to maximize the benefit of the conversion strategy.'
+                        message: `Only ${formatPercent(analysisData.inputs.outsideFundsPct)} of conversion taxes are paid from outside funds. Paying more from outside funds (rather than the IRA) generally improves the conversion benefit.`
                     });
                 }
 
@@ -1733,6 +1746,50 @@
                 createOpportunityChart();
                 createConversionChart();
                 createAdvancedCharts();
+                createTaxesChart();
+            }
+
+            // Annual ordinary-income taxes paid by each path over time (today's dollars).
+            function createTaxesChart() {
+                const labels = analysisData.years.map(y => `Age ${analysisData.inputs.currentAge + y}`);
+                createOrUpdateChart('taxesOverTimeChart', {
+                    type: 'bar',
+                    data: {
+                        labels,
+                        datasets: [
+                            { label: 'Do Nothing', data: analysisData.doNothingTaxByYear, backgroundColor: 'rgba(47, 111, 143, 0.6)', borderColor: CHART_COLORS.ocean, borderWidth: 1 },
+                            { label: 'Roth Conversion', data: analysisData.rothTaxByYear, backgroundColor: 'rgba(192, 86, 42, 0.6)', borderColor: CHART_COLORS.coral, borderWidth: 1 }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            tooltip: {
+                                backgroundColor: '#faf6ec', titleColor: '#1e2a4a', bodyColor: '#1e2a4a',
+                                borderColor: 'rgba(30, 42, 74, 0.15)', borderWidth: 1,
+                                callbacks: { label: c => `${c.dataset.label}: ${formatCurrency(c.parsed.y)}` }
+                            },
+                            legend: { position: 'top', labels: { usePointStyle: true, padding: 15 } }
+                        },
+                        scales: {
+                            x: {
+                                grid: { display: false },
+                                ticks: {
+                                    autoSkip: false, maxRotation: 0, minRotation: 0,
+                                    callback: function (value, index, ticks) {
+                                        const year = analysisData.years[index];
+                                        return (year % 5 === 0 || index === ticks.length - 1) ? this.getLabelForValue(value) : '';
+                                    }
+                                }
+                            },
+                            y: {
+                                grid: { color: 'rgba(30, 42, 74, 0.08)' },
+                                ticks: { callback: v => '$' + Math.round(v / 1000).toLocaleString() + 'K' }
+                            }
+                        }
+                    }
+                });
             }
 
             // Live value labels for sliders.
@@ -1948,7 +2005,7 @@
                                     <ul>
                                         <li>The Roth conversion strategy ${analysisData.totalAdvantage >= 0 ? 'provides a net benefit' : 'results in a net cost'} of <strong>${formatCurrency(Math.abs(analysisData.totalAdvantage))}</strong> over the analysis period.</li>
                                         <li>Break-even point: ${analysisData.breakEvenYear >= 0 ? `Year ${analysisData.breakEvenYear} (age ${inputs.currentAge + analysisData.breakEvenYear})` : 'Beyond the analysis period'}.</li>
-                                        <li>Total tax investment required: <strong>${formatCurrency(analysisData.totalTaxesPaid)}</strong> ${inputs.payTaxesFrom === 'ira' ? '(paid from IRA withdrawals)' : '(paid from outside funds)'}.</li>
+                                        <li>Total tax investment required: <strong>${formatCurrency(analysisData.totalTaxesPaid)}</strong> (${formatPercent(inputs.outsideFundsPct)} paid from outside funds, the rest from IRA withdrawals).</li>
                                         <li>Conversion ROI: <strong>${formatPercent((analysisData.totalAdvantage / analysisData.totalTaxesPaid))}</strong> return on tax payments over the analysis period.</li>
                                         ${analysisData.inputs.enableAssetDiscount ? `<li>Asset valuation discount applied: Estimated tax savings of <strong>${formatCurrency(analysisData.effectiveTaxSavings || 0)}</strong> (subject to IRS acceptance of qualified appraisal).</li>` : ''}
                                     </ul>
@@ -1961,7 +2018,7 @@
                                     <h4>Professional Recommendations</h4>
                                     <ul>
                                         <li>${analysisData.totalAdvantage >= 0 ? '<strong>Proceed</strong> with the Roth conversion strategy as outlined.' : '<strong>Reconsider</strong> the current conversion strategy or explore alternative approaches.'}</li>
-                                        ${inputs.payTaxesFrom === 'ira' ? '<li>Consider paying conversion taxes from <strong>outside sources</strong> rather than IRA withdrawals to maximize conversion benefits.</li>' : '<li>Paying taxes from outside funds optimizes the conversion strategy effectiveness.</li>'}
+                                        ${inputs.outsideFundsPct < 1 ? '<li>Consider paying a larger share of conversion taxes from <strong>outside sources</strong> rather than IRA withdrawals to maximize conversion benefits.</li>' : '<li>Paying taxes from outside funds optimizes the conversion strategy effectiveness.</li>'}
                                         ${analysisData.breakEvenYear > 15 ? '<li>Note the extended break-even period; ensure this aligns with your long-term financial goals and timeline.</li>' : ''}
                                         <li>Monitor tax law changes that could impact the analysis assumptions.</li>
                                         <li>Consider implementing conversions during market downturns to maximize tax efficiency.</li>
@@ -2062,7 +2119,8 @@
                 const inputsToWatch = [
                     'stateResidency', 'currentAge', 'retirementAge', 'iraBalance',
                     'currentIncome', 'totalConversionAmount', 'conversionYears', 'preRetirementReturn',
-                    'postRetirementReturn', 'inflationRate', 'adjustForInflation', 'multiYearStrategy', 'conversionStrategy', 'payTaxesFrom',
+                    'postRetirementReturn', 'inflationRate', 'adjustForInflation', 'multiYearStrategy', 'conversionStrategy',
+                    'discountRate', 'outsideFundsPct', 'taxableAccountReturn',
                     'maxTaxBracket', 'conversionAmount', 'capitalGainsRate', 'rmdAge',
                     'includeSocialSecurity', 'socialSecurityBenefit', 'incomeGrowthRate',
                     'enableAssetDiscount', 'valuationDiscount', 'operationalReduction', 'discountStrategy',
