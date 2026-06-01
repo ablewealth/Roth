@@ -2001,7 +2001,7 @@
         <section class="controls-well">
             <div class="controls-grid">
                 <div class="control">
-                    <div class="control-head"><label>Filing Status <span class="info" data-tip="Federal brackets, the standard deduction, the OBBBA senior bonus, Social Security taxation thresholds, and Medicare IRMAA tiers all depend on filing status. (State tax is modeled with its standard schedule.)">i</span></label></div>
+                    <div class="control-head"><label for="filingStatus">Filing Status <span class="info" data-tip="Federal brackets, the standard deduction, the OBBBA senior bonus, Social Security taxation thresholds, and Medicare IRMAA tiers all depend on filing status. (State tax is modeled with its standard schedule.)">i</span></label></div>
                     <div class="segmented" data-target="filingStatus">
                         <button type="button" data-value="mfj" class="seg-btn active">Married Joint</button>
                         <button type="button" data-value="single" class="seg-btn">Single</button>
@@ -2147,6 +2147,7 @@
                 <label class="toggle"><input type="checkbox" id="includeSocialSecurity"><span>Include Social Security</span></label>
                 <label class="toggle"><input type="checkbox" id="relocateInRetirement"><span>Relocate in retirement</span></label>
                 <label class="toggle"><input type="checkbox" id="enableIRMAA"><span>Model Medicare IRMAA</span></label>
+                <label class="toggle"><input type="checkbox" id="enableNIIT" checked><span>Apply 3.8% NIIT</span></label>
                 <label class="toggle"><input type="checkbox" id="adjustForInflation" checked><span>Today's dollars</span></label>
                 <label class="toggle"><input type="checkbox" id="enableAssetDiscount"><span>Asset valuation discount</span></label>
             </div>
@@ -2323,8 +2324,10 @@
                 10/12/22/24/32/35/37% rate schedule permanent, so no reversion to pre-2018 rates is assumed. Where the
                 modeled age reaches 65 during tax years 2025&ndash;2028, the analysis applies the temporary OBBBA senior
                 bonus deduction ($6,000 single / $12,000 MFJ, phasing out above $75,000 / $150,000 of MAGI). Social
-                Security is taxed under the provisional-income method (0/50/85%); when enabled, Medicare IRMAA Part B/D
-                surcharges (age 63+) are estimated from representative tiers. Required minimum distributions begin at age
+                Security is taxed under the provisional-income method (0/50/85%); the 3.8% Net Investment Income Tax is
+                applied to taxable-account gains once MAGI exceeds $250,000 (MFJ) / $200,000 (single); and when enabled,
+                Medicare IRMAA Part B/D surcharges (paid from age 65 on a 2-year MAGI lookback) are estimated from
+                representative tiers. Required minimum distributions begin at age
                 73 (SECURE 2.0). State tax schedules (NY, NJ, CA) use their standard schedule and are illustrative;
                 confirm all figures against current published rates for the applicable tax year.</p>
             <p><strong>Disclosure Statement</strong><br>
