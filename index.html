@@ -20,8 +20,9 @@
         href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css"
         crossorigin="anonymous" referrerpolicy="no-referrer">
 
-    <!-- Chart.js Library -->
+    <!-- Chart.js + jsPDF -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
 
     <style>
@@ -1929,6 +1930,20 @@
         /* Download row */
         .download-row { display: flex; justify-content: flex-end; gap: 12px; margin-bottom: 24px; }
 
+        /* Saved scenarios */
+        .scenario-save { display: flex; gap: 12px; align-items: center; margin-bottom: 20px; flex-wrap: wrap; }
+        .scenario-save input { flex: 1; min-width: 240px; padding: 11px 13px; background: var(--paper); border: 1px solid rgb(var(--ink-rgb) / 0.15); border-radius: 3px; font-family: var(--sans); font-size: 0.9rem; color: var(--ink); }
+        .scenario-save input:focus { outline: none; border-color: var(--coral); box-shadow: 0 0 0 3px rgb(var(--coral-rgb) / 0.3); }
+        .scenario-table { width: 100%; border-collapse: collapse; }
+        .scenario-table th, .scenario-table td { text-align: right; padding: 11px 14px; border-bottom: 1px solid var(--border-color); font-variant-numeric: tabular-nums; vertical-align: top; }
+        .scenario-table thead th { font-family: var(--serif); font-weight: 500; color: var(--ink); font-size: 1rem; }
+        .scenario-table th:first-child, .scenario-table td:first-child { text-align: left; font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.62rem; font-weight: 600; color: rgb(var(--ink-rgb) / 0.6); }
+        .scenario-table tbody td { font-family: var(--serif); color: var(--ink); }
+        .scenario-actions { display: flex; gap: 6px; justify-content: flex-end; margin-top: 6px; }
+        .scenario-mini-btn { font-family: var(--mono); font-size: 0.56rem; text-transform: uppercase; letter-spacing: 0.08em; padding: 4px 8px; border: 1px solid rgb(var(--ink-rgb) / 0.15); background: var(--paper); border-radius: 3px; cursor: pointer; color: rgb(var(--ink-rgb) / 0.7); }
+        .scenario-mini-btn:hover { border-color: var(--coral); color: var(--coral); }
+        .scenario-empty { font-family: var(--sans); font-size: 0.82rem; color: rgb(var(--ink-rgb) / 0.5); }
+
         /* Caption + stacked sections */
         .chart-caption { font-family: var(--sans); font-size: 0.82rem; line-height: 1.55; color: rgb(var(--ink-rgb) / 0.6); margin: 14px 2px 0; max-width: 62rem; }
         .chart-caption strong { color: var(--ink); font-weight: 600; }
@@ -2209,6 +2224,16 @@
             <canvas id="comparisonChart"></canvas>
         </div>
         <p class="chart-caption" id="mainCaption"></p>
+
+        <!-- Saved scenarios -->
+        <section class="stack-section">
+            <div class="eyebrow"><span class="eyebrow-rule"></span> Saved Scenarios</div>
+            <div class="scenario-save">
+                <input type="text" id="scenarioName" placeholder="Name this scenario (e.g. Convert $500k over 5yr)">
+                <button type="button" class="action-btn report-btn" id="saveScenarioBtn"><i class="fas fa-bookmark"></i> Save Current</button>
+            </div>
+            <div id="scenariosCompare"></div>
+        </section>
 
         <!-- Strategy comparison -->
         <section class="stack-section">
