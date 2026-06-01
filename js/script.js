@@ -504,6 +504,10 @@
 
             // Enhanced calculation engine
             function performCalculations(inputs) {
+                // Activate the right federal brackets/deductions for this run (keeps the function pure
+                // for programmatic callers such as Monte Carlo / sensitivity).
+                setFilingStatus(inputs.filingStatus);
+
                 const data = {
                     years: [],
                     traditionalIRA: [],
@@ -552,9 +556,12 @@
                 let pvDoNothingTax = 0;
                 let pvRothTax = 0;
 
-                // Cumulative Medicare IRMAA surcharges (today's-dollar terms) for each path.
+                // Cumulative Medicare IRMAA surcharges (today's-dollar terms) for each path, plus the
+                // MAGI history each path generates (used for the 2-year IRMAA lookback).
                 let cumIrmaaDoNothing = 0;
                 let cumIrmaaConv = 0;
+                const magiDoNothingHistory = [];
+                const magiConvHistory = [];
 
                 const analysisYears = normalizeAnalysisYear(inputs.analysisYear);
 
@@ -695,18 +702,24 @@
                     const convRemainingAfterTax = traditionalBalance * (1 - convRetireRate) + convSideAfterTax;
                     const conversionWealth = rothBalance + convRemainingAfterTax;
 
-                    // Medicare IRMAA: higher MAGI lifts Part B/D premiums (age 63+ MAGI sets premiums
-                    // ~2 years later). Conversions raise MAGI now but shrink later RMDs, so each path's
-                    // surcharge is computed on its own income and netted out of that path's wealth.
-                    if (inputs.enableIRMAA && age >= 63) {
+                    // Medicare IRMAA: surcharges are paid starting at age 65, set by MAGI from 2 years
+                    // prior (the lookback). Conversions raise MAGI now but shrink later RMDs, so each
+                    // path's surcharge is computed on its own income and netted out of its wealth.
+                    if (inputs.enableIRMAA) {
                         const workingIncome = age < inputs.retirementAge ? annualIncome : 0;
                         const otherRet = age >= inputs.retirementAge ? (inputs.otherRetirementIncome || 0) : 0;
                         const ssDN = (inputs.includeSocialSecurity && age >= inputs.retirementAge) ? taxableSocialSecurity(inputs.socialSecurityBenefit, workingIncome + rmd + otherRet) : 0;
                         const ssC = (inputs.includeSocialSecurity && age >= inputs.retirementAge) ? taxableSocialSecurity(inputs.socialSecurityBenefit, workingIncome + convRmd + otherRet) : 0;
-                        const doNothingMAGI = workingIncome + rmd + otherRet + ssDN;
-                        const convMAGI = workingIncome + discountedConversionValue + convRmd + otherRet + ssC;
-                        cumIrmaaDoNothing += getDisplayValue(irmaaCost(doNothingMAGI), year, inputs);
-                        cumIrmaaConv += getDisplayValue(irmaaCost(convMAGI), year, inputs);
+                        magiDoNothingHistory.push(workingIncome + rmd + otherRet + ssDN);
+                        magiConvHistory.push(workingIncome + discountedConversionValue + convRmd + otherRet + ssC);
+
+                        if (age >= 65) {
+                            const lb = year - 2;
+                            const dnMAGI = lb >= 0 ? magiDoNothingHistory[lb] : magiDoNothingHistory[magiDoNothingHistory.length - 1];
+                            const cMAGI = lb >= 0 ? magiConvHistory[lb] : magiConvHistory[magiConvHistory.length - 1];
+                            cumIrmaaDoNothing += getDisplayValue(irmaaCost(dnMAGI), year, inputs);
+                            cumIrmaaConv += getDisplayValue(irmaaCost(cMAGI), year, inputs);
+                        }
                     }
 
                     const displayTraditionalBalance = getDisplayValue(noConvBalance, year, inputs);
