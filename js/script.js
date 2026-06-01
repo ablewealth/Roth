@@ -586,7 +586,6 @@
                         const afterTaxRmd = rmd * (1 - noConvRetireRate);
                         noConvSide += afterTaxRmd;
                         noConvSideBasis += afterTaxRmd;
-                        displayDoNothingRmdTax += getDisplayValue(rmd * noConvRetireRate, year, inputs);
                     }
 
                     let convRmd = 0;        // RMD on the (smaller) post-conversion balance
@@ -596,13 +595,6 @@
                         const afterTaxRmd = convRmd * (1 - convRetireRate);
                         convSide += afterTaxRmd;
                         convSideBasis += afterTaxRmd;
-                        displayConvRmdTax += getDisplayValue(convRmd * convRetireRate, year, inputs);
-                    }
-
-                    // At the horizon, capture the income tax owed to liquidate each remaining IRA.
-                    if (year === analysisYears) {
-                        finalDoNothingLiquidationTax = getDisplayValue(noConvBalance * noConvRetireRate, year, inputs);
-                        finalConvLiquidationTax = getDisplayValue(traditionalBalance * convRetireRate, year, inputs);
                     }
 
                     // Annual ordinary-income taxes for each path (nominal): RMD taxes every year,
