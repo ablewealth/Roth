@@ -307,10 +307,12 @@
             const getEffectiveRetirementRate = (balance, rmd, inputs) => {
                 const ssIncome = inputs.includeSocialSecurity ? inputs.socialSecurityBenefit : 0;
                 const withdrawal = Math.max(rmd, balance * 0.04);
-                const ordinaryIncome = withdrawal + ssIncome;
+                // Other retirement income (pension, part-time, spouse) stacks on top, raising the rate.
+                const ordinaryIncome = withdrawal + ssIncome + (inputs.otherRetirementIncome || 0);
                 if (ordinaryIncome <= 0) return 0;
                 const fed = calculateFederalTax(ordinaryIncome) / ordinaryIncome;
-                const state = calculateStateTax(ordinaryIncome, inputs.stateResidency) / ordinaryIncome;
+                // Retirement-era withdrawals are taxed in the retirement state of residence.
+                const state = calculateStateTax(ordinaryIncome, inputs.retirementState || inputs.stateResidency) / ordinaryIncome;
                 return fed + state;
             };
 
@@ -323,6 +325,11 @@
                 return {
                     clientName: '',
                     stateResidency: document.getElementById('stateResidency').value,
+                    retirementState: document.getElementById('relocateInRetirement').checked
+                        ? document.getElementById('retirementState').value
+                        : document.getElementById('stateResidency').value,
+                    relocateInRetirement: document.getElementById('relocateInRetirement').checked,
+                    otherRetirementIncome: getInputValue('otherRetirementIncome'),
                     currentAge: getInputValue('currentAge'),
                     retirementAge: getInputValue('retirementAge'),
                     iraBalance: getInputValue('iraBalance'),
@@ -544,7 +551,10 @@
                         const seniorDeductionWithout = getSeniorBonusDeduction(incomeWithoutConversion, age, calendarYear);
 
                         federalTax = calculateFederalTax(incomeWithConversion, seniorDeductionWith) - calculateFederalTax(incomeWithoutConversion, seniorDeductionWithout);
-                        stateTax = calculateStateTax(incomeWithConversion, inputs.stateResidency) - calculateStateTax(incomeWithoutConversion, inputs.stateResidency);
+                        // A conversion is taxed in the state of residence for that year — the working
+                        // state before retirement, the (possibly different) retirement state after.
+                        const yearState = age >= inputs.retirementAge ? inputs.retirementState : inputs.stateResidency;
+                        stateTax = calculateStateTax(incomeWithConversion, yearState) - calculateStateTax(incomeWithoutConversion, yearState);
                         totalTax = federalTax + stateTax;
 
                         marginalRate = calculateMarginalFederalTaxRate(incomeWithConversion) + calculateMarginalStateTaxRate(incomeWithConversion, inputs.stateResidency);
@@ -690,6 +700,7 @@
                 document.getElementById('maxBracketDiv').classList.toggle('hidden', strategy !== 'optimized' || !isMultiYear);
 
                 document.getElementById('socialSecurityDiv').classList.toggle('hidden', !document.getElementById('includeSocialSecurity').checked);
+                document.getElementById('retirementStateDiv').classList.toggle('hidden', !document.getElementById('relocateInRetirement').checked);
 
                 const enableDiscount = document.getElementById('enableAssetDiscount').checked;
                 document.getElementById('assetDiscountDiv').classList.toggle('hidden', !enableDiscount);
@@ -2123,6 +2134,7 @@
                     'discountRate', 'outsideFundsPct', 'taxableAccountReturn',
                     'maxTaxBracket', 'conversionAmount', 'capitalGainsRate', 'rmdAge',
                     'includeSocialSecurity', 'socialSecurityBenefit', 'incomeGrowthRate',
+                    'relocateInRetirement', 'retirementState', 'otherRetirementIncome',
                     'enableAssetDiscount', 'valuationDiscount', 'operationalReduction', 'discountStrategy',
                     'analysisYear'
                 ];
