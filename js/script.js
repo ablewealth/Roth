@@ -537,6 +537,7 @@
                 stateTaxInfo.other.brackets = inputs.customStateRate > 0
                     ? [{ min: 0, max: Infinity, rate: inputs.customStateRate }]
                     : [];
+                stateTaxInfo.other.name = inputs.customStateRate > 0 ? 'Other (Custom)' : 'No State Tax';
 
                 const data = {
                     years: [],
@@ -756,9 +757,19 @@
                     };
 
                     // After-tax wealth of each whole-portfolio strategy at this point in time.
-                    const afterTaxOpportunityCost = afterTaxWithNIIT(opportunityCost, opportunityCostBasis, doNothingMAGI);
+                    // The do-nothing path holds TWO taxable accounts (invested tax dollars + reinvested
+                    // RMDs) for the same filer, so their gains must stack for progressive LTCG/NIIT.
+                    // Tax the combined balance, then split the tax pro-rata by gain for the display.
+                    const dnTaxableValue = opportunityCost + noConvSide;
+                    const dnTaxableBasis = opportunityCostBasis + noConvSideBasis;
+                    const dnTaxableAfterTax = afterTaxWithNIIT(dnTaxableValue, dnTaxableBasis, doNothingMAGI);
+                    const dnTaxableTax = dnTaxableValue - dnTaxableAfterTax;
+                    const gainOpp = Math.max(0, opportunityCost - opportunityCostBasis);
+                    const gainSide = Math.max(0, noConvSide - noConvSideBasis);
+                    const dnGainTotal = gainOpp + gainSide;
+                    const afterTaxOpportunityCost = opportunityCost - (dnGainTotal > 0 ? dnTaxableTax * gainOpp / dnGainTotal : 0);
+                    const noConvSideAfterTax = noConvSide - (dnGainTotal > 0 ? dnTaxableTax * gainSide / dnGainTotal : 0);
                     const convSideAfterTax = afterTaxWithNIIT(convSide, convSideBasis, convMAGI);
-                    const noConvSideAfterTax = afterTaxWithNIIT(noConvSide, noConvSideBasis, doNothingMAGI);
 
                     // No-conversion baseline: full IRA taxed at retirement (heir's rate in the final
                     // legacy year) + reinvested RMDs + the tax dollars left invested in a taxable account.
