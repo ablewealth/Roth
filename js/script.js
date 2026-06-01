@@ -554,15 +554,16 @@
                         displayCumulativeTaxes += getDisplayValue(totalTax, year, inputs);
 
                         // Split the conversion tax between outside funds (invested in a taxable
-                        // account) and an extra IRA withdrawal, per the client's outside-funds %.
+                        // account) and tax withheld from the conversion itself, per the outside-funds %.
                         const outsidePortion = totalTax * inputs.outsideFundsPct;
                         const iraPortion = totalTax - outsidePortion;
-                        traditionalBalance -= iraPortion;
                         opportunityCost += outsidePortion;
                         opportunityCostBasis += outsidePortion;
 
-                        traditionalBalance -= conversionAmount; // Remove actual conversion amount from traditional IRA
-                        rothBalance += conversionAmount; // Add actual conversion amount to Roth IRA
+                        // The full conversion leaves the traditional IRA; the IRA-funded tax is
+                        // withheld from it, so only the net amount lands in the Roth.
+                        traditionalBalance -= conversionAmount;
+                        rothBalance += (conversionAmount - iraPortion);
                     }
 
                     // Required minimum distributions — forced, taxed, and reinvested after-tax in a
