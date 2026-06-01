@@ -557,7 +557,7 @@
                         stateTax = calculateStateTax(incomeWithConversion, yearState) - calculateStateTax(incomeWithoutConversion, yearState);
                         totalTax = federalTax + stateTax;
 
-                        marginalRate = calculateMarginalFederalTaxRate(incomeWithConversion) + calculateMarginalStateTaxRate(incomeWithConversion, inputs.stateResidency);
+                        marginalRate = calculateMarginalFederalTaxRate(incomeWithConversion) + calculateMarginalStateTaxRate(incomeWithConversion, yearState);
 
                         // Track actual IRA amounts converted and taxes paid in display terms
                         displayCumulativeConversions += getDisplayValue(conversionAmount, year, inputs);
@@ -792,7 +792,8 @@
                 `;
                 const cap = document.getElementById('taxesOverTimeCaption');
                 if (cap) {
-                    cap.innerHTML = `Annual ordinary-income taxes by year (today's dollars). The <span class="coral">Roth</span> path front-loads tax during the conversion window; the do-nothing path back-loads it as RMDs and the final withdrawal. Present value applies a ${formatPercent(analysisData.inputs.discountRate)} discount rate, which is why timing matters.`;
+                    const dollarsLabel = analysisData.inputs.adjustForInflation ? "today's dollars" : "nominal dollars";
+                    cap.innerHTML = `Annual ordinary-income taxes by year (${dollarsLabel}). The <span class="coral">Roth</span> path front-loads tax during the conversion window; the do-nothing path back-loads it as RMDs and the final withdrawal. Present value applies a ${formatPercent(analysisData.inputs.discountRate)} discount rate, which is why timing matters.`;
                 }
             }
 
@@ -1679,9 +1680,15 @@
                 }
 
                 if (analysisData.inputs.outsideFundsPct < 1) {
+                    // Withholding conversion tax from the IRA before 59½ is generally an early
+                    // distribution subject to a 10% penalty — flag it as a warning.
+                    const earlyWithholding = analysisData.inputs.currentAge < 59.5;
+                    const penaltyNote = earlyWithholding
+                        ? ' Note: withholding taxes from the IRA before age 59½ may subject that portion to a 10% early-withdrawal penalty (not included in these figures).'
+                        : '';
                     alerts.push({
-                        type: 'info',
-                        message: `Only ${formatPercent(analysisData.inputs.outsideFundsPct)} of conversion taxes are paid from outside funds. Paying more from outside funds (rather than the IRA) generally improves the conversion benefit.`
+                        type: earlyWithholding ? 'warning' : 'info',
+                        message: `Only ${formatPercent(analysisData.inputs.outsideFundsPct)} of conversion taxes are paid from outside funds. Paying more from outside funds (rather than the IRA) generally improves the conversion benefit.${penaltyNote}`
                     });
                 }
 
