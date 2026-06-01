@@ -109,6 +109,11 @@
         document.addEventListener('DOMContentLoaded', function () {
             let charts = {};
             let analysisData = {};
+            let savedScenarios = [];
+            try {
+                const parsed = JSON.parse(localStorage.getItem('awmRothScenarios') || '[]');
+                savedScenarios = Array.isArray(parsed) ? parsed.filter(x => x && typeof x === 'object' && x.id && x.snapshot && x.metrics) : [];
+            } catch (e) { savedScenarios = []; }
 
             // Editorial chart theme (AWM design system): ink ticks, faint ink grid.
             if (window.Chart) {
@@ -213,6 +218,14 @@
                 let tier = 0;
                 for (let i = 0; i < t.length; i++) if (magi > t[i]) tier = i + 1;
                 return tier === 0 ? 0 : IRMAA_SURCHARGES[tier - 1] * activeFiling.medicareBeneficiaries;
+            }
+
+            // IRMAA tier (0 = standard premium, 1–5 = surcharge tiers) for a given MAGI.
+            function irmaaTier(magi) {
+                const t = activeFiling.irmaaThresholds;
+                let tier = 0;
+                for (let i = 0; i < t.length; i++) if (magi > t[i]) tier = i + 1;
+                return tier;
             }
 
             // Progressive long-term capital-gains tax: the gain stacks on top of ordinary taxable
@@ -556,6 +569,8 @@
                     rmdAmounts: [],
                     doNothingTaxByYear: [],
                     rothTaxByYear: [],
+                    magiByYear: [],
+                    irmaaTierByYear: [],
                     marginalRates: [],
                     opportunityCost: [],
                     opportunityGrowth: [],
@@ -830,6 +845,8 @@
                     data.rmdAmounts[year] = displayRmd;
                     data.doNothingTaxByYear[year] = getDisplayValue(doNothingTaxNominal, year, inputs);
                     data.rothTaxByYear[year] = getDisplayValue(rothTaxNominal, year, inputs);
+                    data.magiByYear[year] = getDisplayValue(convMAGI, year, inputs);
+                    data.irmaaTierByYear[year] = irmaaTier(convMAGI);
                     data.marginalRates[year] = marginalRate;
                     data.discountedConversions[year] = displayDiscountedConversion;
                     data.effectiveDiscountRates[year] = effectiveDiscountRate;
@@ -955,6 +972,87 @@
                 document.getElementById('rothOppCostValue').textContent = formatCurrency(analysisData.convRemainingAfterTax[finalYear]);
                 document.getElementById('rothTaxesPaidValue').textContent = formatCurrency(analysisData.totalTaxesPaid);
                 document.getElementById('rothFinalValue').textContent = formatCurrency(analysisData.rothNetBenefit[finalYear]);
+            }
+
+            // ---- Saved scenarios (localStorage) ----
+            function escapeHtml(s) {
+                return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+            }
+            function persistScenarios() {
+                try { localStorage.setItem('awmRothScenarios', JSON.stringify(savedScenarios)); } catch (e) { /* ignore quota */ }
+            }
+            function captureScenarioSnapshot() {
+                const snap = {};
+                document.querySelectorAll('.controls-well input[id], .controls-well select[id], #stateResidency, #analysisYear').forEach(el => {
+                    snap[el.id] = el.type === 'checkbox' ? el.checked : el.value;
+                });
+                return snap;
+            }
+            function currentScenarioMetrics() {
+                const d = analysisData, f = d.years.length - 1;
+                return {
+                    netAdv: Math.round(d.netAdvantage[f]),
+                    breakEven: d.breakEvenYear,
+                    taxes: Math.round(d.totalTaxesPaid),
+                    lifetimeSaved: Math.round(d.lifetimeTaxSavings || 0),
+                    rothFinal: Math.round(d.rothNetBenefit[f]),
+                    doNothingFinal: Math.round(d.traditionalAfterTax[f]),
+                    filing: d.inputs.filingStatus
+                };
+            }
+            function saveCurrentScenario() {
+                if (!analysisData.years) return;
+                const nameEl = document.getElementById('scenarioName');
+                const name = (nameEl.value || '').trim() || `Scenario ${savedScenarios.length + 1}`;
+                savedScenarios.push({ id: 'sc' + Date.now(), name, snapshot: captureScenarioSnapshot(), metrics: currentScenarioMetrics() });
+                persistScenarios();
+                nameEl.value = '';
+                renderScenarios();
+            }
+            function loadScenario(id) {
+                const s = savedScenarios.find(x => x.id === id);
+                if (!s) return;
+                Object.entries(s.snapshot).forEach(([k, v]) => {
+                    const el = document.getElementById(k);
+                    if (el) { if (el.type === 'checkbox') el.checked = v; else el.value = v; }
+                });
+                calculateAndDisplay();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+            function deleteScenario(id) {
+                savedScenarios = savedScenarios.filter(x => x.id !== id);
+                persistScenarios();
+                renderScenarios();
+            }
+            function renderScenarios() {
+                const wrap = document.getElementById('scenariosCompare');
+                if (!wrap) return;
+                if (!savedScenarios.length) {
+                    wrap.innerHTML = '<p class="scenario-empty">No saved scenarios yet — adjust the inputs and click “Save Current” to compare strategies side by side.</p>';
+                    return;
+                }
+                const signed = v => (v >= 0 ? '+' : '−') + formatCurrency(Math.abs(v));
+                const rows = [
+                    ['Net Advantage', s => `<span class="${s.metrics.netAdv >= 0 ? 'positive' : 'negative'}">${signed(s.metrics.netAdv)}</span>`],
+                    ['Break-Even', s => s.metrics.breakEven >= 0 ? `Year ${s.metrics.breakEven}` : 'Beyond'],
+                    ['Roth Strategy (after-tax)', s => formatCurrency(s.metrics.rothFinal)],
+                    ['Do Nothing (after-tax)', s => formatCurrency(s.metrics.doNothingFinal)],
+                    ['Total Conversion Taxes', s => formatCurrency(s.metrics.taxes)],
+                    ['Lifetime Tax Saved', s => formatCurrency(s.metrics.lifetimeSaved)],
+                    ['Filing', s => s.metrics.filing === 'mfj' ? 'MFJ' : 'Single']
+                ];
+                let html = '<div style="overflow-x:auto"><table class="scenario-table"><thead><tr><th>Metric</th>';
+                savedScenarios.forEach(s => {
+                    html += `<th>${escapeHtml(s.name)}<div class="scenario-actions"><button class="scenario-mini-btn" data-load="${s.id}">Load</button><button class="scenario-mini-btn" data-del="${s.id}">Remove</button></div></th>`;
+                });
+                html += '</tr></thead><tbody>';
+                rows.forEach(([label, fn]) => {
+                    html += `<tr><td>${label}</td>` + savedScenarios.map(s => `<td>${fn(s)}</td>`).join('') + '</tr>';
+                });
+                html += '</tbody></table></div>';
+                wrap.innerHTML = html;
+                wrap.querySelectorAll('[data-load]').forEach(btn => btn.addEventListener('click', () => loadScenario(btn.dataset.load)));
+                wrap.querySelectorAll('[data-del]').forEach(btn => btn.addEventListener('click', () => deleteScenario(btn.dataset.del)));
             }
 
             function updateTaxComparison() {
@@ -1759,6 +1857,8 @@
                             <th>Roth Conversion (After-Tax)</th>
                             <th>Net Advantage</th>
                             <th>RMD</th>
+                            <th>MAGI</th>
+                            <th>IRMAA Tier</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1767,16 +1867,21 @@
                 analysisData.years.forEach((year, index) => {
                     if (index % 2 === 0 || year >= 40) { // Show every other year until year 40, then all years
                         const adv = analysisData.netAdvantage[year];
+                        const tier = analysisData.irmaaTierByYear[year] || 0;
+                        const age = analysisData.inputs.currentAge + year;
+                        const tierLabel = age < 63 ? '—' : (tier === 0 ? 'Standard' : `Tier ${tier}`);
                         detailHTML += `
                             <tr>
                                 <td>${year}</td>
-                                <td>${analysisData.inputs.currentAge + year}</td>
+                                <td>${age}</td>
                                 <td>${formatCurrency(analysisData.traditionalAfterTax[year])}</td>
                                 <td>${formatCurrency(analysisData.rothIRA[year])}</td>
                                 <td>${formatCurrency(analysisData.opportunityCost[year])}</td>
                                 <td>${formatCurrency(analysisData.rothNetBenefit[year])}</td>
                                 <td class="${adv >= 0 ? 'positive' : 'negative'}">${formatCurrency(adv)}</td>
                                 <td>${formatCurrency(analysisData.rmdAmounts[year])}</td>
+                                <td>${formatCurrency(analysisData.magiByYear[year])}</td>
+                                <td>${tierLabel}</td>
                             </tr>
                         `;
                     }
@@ -2137,6 +2242,110 @@
              * The report is generated in the `#print-report-container` element, and the browser's print dialog is opened.
              */
             /*******  19fb3606-dada-4cc4-99ad-62b0b9efe408 *******/
+            // Editorial PDF export (jsPDF). Falls back to the print report if jsPDF is unavailable.
+            function generateEditorialPDF() {
+                if (!window.jspdf || !window.jspdf.jsPDF) { generateReport(); return; }
+                try {
+                    const d = analysisData;
+                    if (!d || !d.years) { generateReport(); return; }
+                    const inp = getCurrentInputs();
+                    const f = d.years.length - 1;
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF({ unit: 'pt', format: 'letter' });
+                    const W = doc.internal.pageSize.getWidth();
+                    const H = doc.internal.pageSize.getHeight();
+                    const M = 54;
+                    const INK = [30, 42, 74], CORAL = [192, 86, 42], BONE = [236, 228, 210], PAPER = [250, 246, 236], GRAY = [111, 106, 92], NAVY = [21, 36, 91], HAIR = [210, 203, 186];
+                    const money = v => formatCurrency(v);
+                    const signed = v => (v >= 0 ? '+' : '−') + formatCurrency(Math.abs(v));
+                    const fmtPct = v => {
+                        const pct = Math.round(v * 10000) / 100;
+                        return pct.toFixed(pct % 1 ? 1 : 0) + '%';
+                    };
+                    const dollarsLabel = inp.adjustForInflation ? "today's dollars" : "nominal dollars";
+                    const bg = () => { doc.setFillColor(...PAPER); doc.rect(0, 0, W, H, 'F'); doc.setFillColor(...NAVY); doc.rect(0, 0, W, 8, 'F'); };
+                    const eyebrow = (t, x, y, col = CORAL) => { doc.setFont('courier', 'bold'); doc.setFontSize(8); doc.setTextColor(...col); doc.text(t.toUpperCase(), x, y, { charSpace: 1.4 }); };
+
+                    // Cover
+                    bg();
+                    let y = 130;
+                    eyebrow('Interactive Illustration · AWM', M, y);
+                    y += 32; doc.setFont('times', 'normal'); doc.setFontSize(34); doc.setTextColor(...INK); doc.text('Roth Conversion Analysis', M, y);
+                    y += 26; doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.setTextColor(...GRAY);
+                    doc.text(doc.splitTextToSize(`A whole-portfolio comparison of converting vs. doing nothing — after-tax, in ${dollarsLabel}, over a ${f}-year horizon.`, W - 2 * M), M, y);
+                    y += 54;
+                    const cells = [
+                        ['Net Advantage at Year ' + f, signed(Math.round(d.netAdvantage[f])), d.netAdvantage[f] >= 0 ? CORAL : INK],
+                        ['Break-Even', d.breakEvenYear >= 0 ? ('Year ' + d.breakEvenYear) : 'Beyond horizon', INK],
+                        ['Roth Strategy (after-tax)', money(d.rothNetBenefit[f]), INK],
+                        ['Do Nothing (after-tax)', money(d.traditionalAfterTax[f]), INK]
+                    ];
+                    const cw = (W - 2 * M - 16) / 2, chh = 72;
+                    cells.forEach((c, i) => {
+                        const cx = M + (i % 2) * (cw + 16), cy = y + Math.floor(i / 2) * (chh + 16);
+                        doc.setFillColor(...BONE); doc.rect(cx, cy, cw, chh, 'F');
+                        doc.setFont('courier', 'bold'); doc.setFontSize(7); doc.setTextColor(...GRAY); doc.text(c[0].toUpperCase(), cx + 14, cy + 24, { charSpace: 1 });
+                        doc.setFont('times', 'normal'); doc.setFontSize(20); doc.setTextColor(...c[2]); doc.text(String(c[1]), cx + 14, cy + 52);
+                    });
+                    doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(...GRAY);
+                    doc.text('Prepared ' + new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) + '  ·  Able Wealth Management', M, H - 50);
+
+                    // Assumptions
+                    doc.addPage(); bg(); y = 96; eyebrow('Assumptions', M, y);
+                    y += 26; doc.setFont('times', 'normal'); doc.setFontSize(22); doc.setTextColor(...INK); doc.text('Inputs & Assumptions', M, y);
+                    y += 12; doc.setDrawColor(...INK); doc.setLineWidth(0.6); doc.line(M, y, W - M, y);
+                    const stName = s => (stateTaxInfo[s] || {}).name || s;
+                    const rows = [
+                        ['Filing status', inp.filingStatus === 'mfj' ? 'Married filing jointly' : 'Single'],
+                        ['State (current / retirement)', `${stName(inp.stateResidency)} / ${stName(inp.retirementState)}`],
+                        ['Current age → retirement age', `${inp.currentAge} → ${inp.retirementAge}`],
+                        ['Current IRA balance', money(inp.iraBalance)],
+                        ['Current annual income', money(inp.currentIncome)],
+                        ['Conversion', inp.isMultiYear ? `${money(inp.totalConversionAmount)} over ${inp.conversionYears} yrs (${inp.conversionStrategy})` : `${money(inp.conversionAmount)} (single year)`],
+                        ['Pre / post-retirement return', `${fmtPct(inp.preRetirementReturn)} / ${fmtPct(inp.postRetirementReturn)}`],
+                        ['Inflation / discount rate', `${fmtPct(inp.inflationRate)} / ${fmtPct(inp.discountRate)}`],
+                        ['Taxes paid from outside funds', fmtPct(inp.outsideFundsPct)],
+                        ['Capital gains', inp.progressiveCapGains ? 'Progressive (0/15/20%)' : fmtPct(inp.capitalGainsRate)],
+                        ['Social Security', inp.includeSocialSecurity ? money(inp.socialSecurityBenefit) + '/yr' : 'Not included'],
+                        ['Other retirement income', money(inp.otherRetirementIncome)],
+                        ['RMD start age', String(inp.rmdAge)],
+                        ['Modeling', [inp.enableNIIT && 'NIIT', inp.enableIRMAA && 'IRMAA', inp.stepUpAtDeath && 'Step-up', inp.modelSurvivor && 'Widow penalty', inp.modelHeir && ('Heir ' + fmtPct(inp.heirTaxRate))].filter(Boolean).join(', ') || '—'],
+                        ['Analysis horizon', `${inp.analysisYear} years`]
+                    ];
+                    y += 6; doc.setFontSize(10);
+                    rows.forEach(([k, v]) => {
+                        y += 23;
+                        doc.setFont('helvetica', 'normal'); doc.setTextColor(...GRAY); doc.text(k, M, y);
+                        doc.setFont('times', 'normal'); doc.setTextColor(...INK); doc.text(String(v), W - M, y, { align: 'right' });
+                        doc.setDrawColor(...HAIR); doc.setLineWidth(0.3); doc.line(M, y + 7, W - M, y + 7);
+                    });
+
+                    // Results
+                    doc.addPage(); bg(); y = 96; eyebrow('Results', M, y);
+                    y += 26; doc.setFont('times', 'normal'); doc.setFontSize(22); doc.setTextColor(...INK); doc.text('Projected Outcome', M, y);
+                    y += 12; doc.setDrawColor(...INK); doc.setLineWidth(0.6); doc.line(M, y, W - M, y); y += 22;
+                    try { const cc = charts['comparisonChart']; if (cc && cc.toBase64Image) { doc.addImage(cc.toBase64Image(), 'PNG', M, y, W - 2 * M, 220); y += 244; } } catch (e) { /* chart not ready */ }
+                    eyebrow('Lifetime Tax Comparison (PV @ ' + fmtPct(inp.discountRate) + ')', M, y, GRAY); y += 18;
+                    doc.setFontSize(11);
+                    [['Do-nothing IRA taxes', money(d.doNothingLifetimeTax), INK], ['Roth strategy taxes', money(d.rothLifetimeTax), INK], ['Lifetime tax saved', money(d.lifetimeTaxSavings), CORAL]].forEach(([k, v, col]) => {
+                        doc.setFont('helvetica', 'normal'); doc.setTextColor(...GRAY); doc.text(k, M, y);
+                        doc.setFont('times', 'normal'); doc.setTextColor(...col); doc.text(v, W - M, y, { align: 'right' }); y += 19;
+                    });
+
+                    // Closing
+                    doc.addPage(); bg(); y = 130; eyebrow('Important', M, y);
+                    y += 26; doc.setFont('times', 'normal'); doc.setFontSize(20); doc.setTextColor(...INK); doc.text('Hypothetical illustration', M, y);
+                    y += 26; doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.setTextColor(...GRAY);
+                    const disc = 'Outputs are mathematical projections based on the inputs and assumptions shown, using 2026 federal schedules as amended by the One Big Beautiful Bill Act (OBBBA) and representative state, Medicare IRMAA, NIIT, and Social Security rules. Actual results vary with markets, future legislation, and individual facts; many figures (IRMAA, NIIT, SS thresholds) are estimates. This is not tax, legal, or investment advice — review with your CPA and advisor before acting. Able Wealth Management LLC is a registered investment adviser; registration does not imply a particular level of skill or training (CRD #298085).';
+                    doc.text(doc.splitTextToSize(disc, W - 2 * M), M, y);
+
+                    doc.save('roth-conversion-scenario.pdf');
+                } catch (err) {
+                    console.error('PDF export failed:', err);
+                    generateReport();
+                }
+            }
+
             function generateReport() {
                 try {
                     // Check if analysis data exists
@@ -2411,7 +2620,9 @@
 
                 // Button functionality
                 document.getElementById('optimizeBtn').addEventListener('click', optimizeConversions);
-                document.getElementById('generateReportBtn').addEventListener('click', generateReport);
+                document.getElementById('generateReportBtn').addEventListener('click', generateEditorialPDF);
+                document.getElementById('saveScenarioBtn').addEventListener('click', saveCurrentScenario);
+                renderScenarios();
 
                 // Initialize calculations. Prefer to wait for Chart.js, but never block the
                 // numbers/tables on it — if the CDN is unavailable, run anyway (charts skip safely).
