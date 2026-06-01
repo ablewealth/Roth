@@ -307,10 +307,12 @@
             const getEffectiveRetirementRate = (balance, rmd, inputs) => {
                 const ssIncome = inputs.includeSocialSecurity ? inputs.socialSecurityBenefit : 0;
                 const withdrawal = Math.max(rmd, balance * 0.04);
-                const ordinaryIncome = withdrawal + ssIncome;
+                // Other retirement income (pension, part-time, spouse) stacks on top, raising the rate.
+                const ordinaryIncome = withdrawal + ssIncome + (inputs.otherRetirementIncome || 0);
                 if (ordinaryIncome <= 0) return 0;
                 const fed = calculateFederalTax(ordinaryIncome) / ordinaryIncome;
-                const state = calculateStateTax(ordinaryIncome, inputs.stateResidency) / ordinaryIncome;
+                // Retirement-era withdrawals are taxed in the retirement state of residence.
+                const state = calculateStateTax(ordinaryIncome, inputs.retirementState || inputs.stateResidency) / ordinaryIncome;
                 return fed + state;
             };
 
@@ -323,6 +325,11 @@
                 return {
                     clientName: '',
                     stateResidency: document.getElementById('stateResidency').value,
+                    retirementState: document.getElementById('relocateInRetirement').checked
+                        ? document.getElementById('retirementState').value
+                        : document.getElementById('stateResidency').value,
+                    relocateInRetirement: document.getElementById('relocateInRetirement').checked,
+                    otherRetirementIncome: getInputValue('otherRetirementIncome'),
                     currentAge: getInputValue('currentAge'),
                     retirementAge: getInputValue('retirementAge'),
                     iraBalance: getInputValue('iraBalance'),
@@ -544,10 +551,13 @@
                         const seniorDeductionWithout = getSeniorBonusDeduction(incomeWithoutConversion, age, calendarYear);
 
                         federalTax = calculateFederalTax(incomeWithConversion, seniorDeductionWith) - calculateFederalTax(incomeWithoutConversion, seniorDeductionWithout);
-                        stateTax = calculateStateTax(incomeWithConversion, inputs.stateResidency) - calculateStateTax(incomeWithoutConversion, inputs.stateResidency);
+                        // A conversion is taxed in the state of residence for that year — the working
+                        // state before retirement, the (possibly different) retirement state after.
+                        const yearState = age >= inputs.retirementAge ? inputs.retirementState : inputs.stateResidency;
+                        stateTax = calculateStateTax(incomeWithConversion, yearState) - calculateStateTax(incomeWithoutConversion, yearState);
                         totalTax = federalTax + stateTax;
 
-                        marginalRate = calculateMarginalFederalTaxRate(incomeWithConversion) + calculateMarginalStateTaxRate(incomeWithConversion, inputs.stateResidency);
+                        marginalRate = calculateMarginalFederalTaxRate(incomeWithConversion) + calculateMarginalStateTaxRate(incomeWithConversion, yearState);
 
                         // Track actual IRA amounts converted and taxes paid in display terms
                         displayCumulativeConversions += getDisplayValue(conversionAmount, year, inputs);
@@ -690,6 +700,7 @@
                 document.getElementById('maxBracketDiv').classList.toggle('hidden', strategy !== 'optimized' || !isMultiYear);
 
                 document.getElementById('socialSecurityDiv').classList.toggle('hidden', !document.getElementById('includeSocialSecurity').checked);
+                document.getElementById('retirementStateDiv').classList.toggle('hidden', !document.getElementById('relocateInRetirement').checked);
 
                 const enableDiscount = document.getElementById('enableAssetDiscount').checked;
                 document.getElementById('assetDiscountDiv').classList.toggle('hidden', !enableDiscount);
@@ -781,7 +792,8 @@
                 `;
                 const cap = document.getElementById('taxesOverTimeCaption');
                 if (cap) {
-                    cap.innerHTML = `Annual ordinary-income taxes by year (today's dollars). The <span class="coral">Roth</span> path front-loads tax during the conversion window; the do-nothing path back-loads it as RMDs and the final withdrawal. Present value applies a ${formatPercent(analysisData.inputs.discountRate)} discount rate, which is why timing matters.`;
+                    const dollarsLabel = analysisData.inputs.adjustForInflation ? "today's dollars" : "nominal dollars";
+                    cap.innerHTML = `Annual ordinary-income taxes by year (${dollarsLabel}). The <span class="coral">Roth</span> path front-loads tax during the conversion window; the do-nothing path back-loads it as RMDs and the final withdrawal. Present value applies a ${formatPercent(analysisData.inputs.discountRate)} discount rate, which is why timing matters.`;
                 }
             }
 
@@ -1668,9 +1680,15 @@
                 }
 
                 if (analysisData.inputs.outsideFundsPct < 1) {
+                    // Withholding conversion tax from the IRA before 59½ is generally an early
+                    // distribution subject to a 10% penalty — flag it as a warning.
+                    const earlyWithholding = analysisData.inputs.currentAge < 59.5;
+                    const penaltyNote = earlyWithholding
+                        ? ' Note: withholding taxes from the IRA before age 59½ may subject that portion to a 10% early-withdrawal penalty (not included in these figures).'
+                        : '';
                     alerts.push({
-                        type: 'info',
-                        message: `Only ${formatPercent(analysisData.inputs.outsideFundsPct)} of conversion taxes are paid from outside funds. Paying more from outside funds (rather than the IRA) generally improves the conversion benefit.`
+                        type: earlyWithholding ? 'warning' : 'info',
+                        message: `Only ${formatPercent(analysisData.inputs.outsideFundsPct)} of conversion taxes are paid from outside funds. Paying more from outside funds (rather than the IRA) generally improves the conversion benefit.${penaltyNote}`
                     });
                 }
 
@@ -2123,6 +2141,7 @@
                     'discountRate', 'outsideFundsPct', 'taxableAccountReturn',
                     'maxTaxBracket', 'conversionAmount', 'capitalGainsRate', 'rmdAge',
                     'includeSocialSecurity', 'socialSecurityBenefit', 'incomeGrowthRate',
+                    'relocateInRetirement', 'retirementState', 'otherRetirementIncome',
                     'enableAssetDiscount', 'valuationDiscount', 'operationalReduction', 'discountStrategy',
                     'analysisYear'
                 ];

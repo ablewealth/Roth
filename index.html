@@ -1896,8 +1896,8 @@
             box-shadow: var(--shadow-lg); opacity: 0; visibility: hidden; transition: opacity 0.15s; z-index: 50; pointer-events: none;
         }
         .info:hover::after { opacity: 1; visibility: visible; }
-        .control input[type="text"] { width: 100%; padding: 10px 12px; background: var(--paper); border: 1px solid rgb(var(--ink-rgb) / 0.15); border-radius: 3px; font-family: var(--mono); font-size: 0.85rem; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
-        .control input[type="text"]:focus { outline: none; border-color: var(--coral); box-shadow: 0 0 0 3px rgb(var(--coral-rgb) / 0.3); }
+        .control input[type="text"], .control select { width: 100%; padding: 10px 12px; background: var(--paper); border: 1px solid rgb(var(--ink-rgb) / 0.15); border-radius: 3px; font-family: var(--mono); font-size: 0.85rem; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+        .control input[type="text"]:focus, .control select:focus { outline: none; border-color: var(--coral); box-shadow: 0 0 0 3px rgb(var(--coral-rgb) / 0.3); }
         .money { position: relative; }
         .money span { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-family: var(--mono); font-size: 0.85rem; color: rgb(var(--ink-rgb) / 0.4); pointer-events: none; }
         .money input { padding-left: 26px !important; }
@@ -2115,10 +2115,26 @@
                     <div class="control-head"><label for="socialSecurityBenefit">Annual Social Security</label></div>
                     <div class="money"><span>$</span><input type="text" id="socialSecurityBenefit" value="30,000" data-type="currency"></div>
                 </div>
+                <div class="control">
+                    <div class="control-head"><label for="otherRetirementIncome">Other Retirement Income <span class="info" data-tip="Annual taxable income in retirement beyond RMDs and Social Security — pensions, part-time work, a spouse's income, annuities. It stacks on top of withdrawals, raising your effective retirement tax rate (which generally makes conversions more attractive).">i</span></label></div>
+                    <div class="money"><span>$</span><input type="text" id="otherRetirementIncome" value="0" data-type="currency"></div>
+                </div>
+                <div class="control" id="retirementStateDiv">
+                    <div class="control-head"><label for="retirementState">Retirement State <span class="info" data-tip="The state you expect to live in during retirement. Retirement-era IRA withdrawals and RMDs are taxed here — moving to a no-tax state (e.g. FL, TX) can change the conversion math significantly.">i</span></label></div>
+                    <select id="retirementState">
+                        <option value="NY">New York</option>
+                        <option value="NJ">New Jersey</option>
+                        <option value="CA">California</option>
+                        <option value="FL">Florida (no tax)</option>
+                        <option value="TX">Texas (no tax)</option>
+                        <option value="other">Other (no state tax)</option>
+                    </select>
+                </div>
             </div>
 
             <div class="toggle-row">
                 <label class="toggle"><input type="checkbox" id="includeSocialSecurity"><span>Include Social Security</span></label>
+                <label class="toggle"><input type="checkbox" id="relocateInRetirement"><span>Relocate in retirement</span></label>
                 <label class="toggle"><input type="checkbox" id="adjustForInflation" checked><span>Today's dollars</span></label>
                 <label class="toggle"><input type="checkbox" id="enableAssetDiscount"><span>Asset valuation discount</span></label>
             </div>
