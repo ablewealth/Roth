@@ -110,7 +110,10 @@
             let charts = {};
             let analysisData = {};
             let savedScenarios = [];
-            try { savedScenarios = JSON.parse(localStorage.getItem('awmRothScenarios') || '[]'); } catch (e) { savedScenarios = []; }
+            try {
+                const parsed = JSON.parse(localStorage.getItem('awmRothScenarios') || '[]');
+                savedScenarios = Array.isArray(parsed) ? parsed.filter(x => x && typeof x === 'object' && x.id && x.snapshot && x.metrics) : [];
+            } catch (e) { savedScenarios = []; }
 
             // Editorial chart theme (AWM design system): ink ticks, faint ink grid.
             if (window.Chart) {
@@ -2255,7 +2258,10 @@
                     const INK = [30, 42, 74], CORAL = [192, 86, 42], BONE = [236, 228, 210], PAPER = [250, 246, 236], GRAY = [111, 106, 92], NAVY = [21, 36, 91], HAIR = [210, 203, 186];
                     const money = v => formatCurrency(v);
                     const signed = v => (v >= 0 ? '+' : '−') + formatCurrency(Math.abs(v));
-                    const fmtPct = v => (v * 100).toFixed((v * 100) % 1 ? 1 : 0) + '%';
+                    const fmtPct = v => {
+                        const pct = Math.round(v * 10000) / 100;
+                        return pct.toFixed(pct % 1 ? 1 : 0) + '%';
+                    };
                     const dollarsLabel = inp.adjustForInflation ? "today's dollars" : "nominal dollars";
                     const bg = () => { doc.setFillColor(...PAPER); doc.rect(0, 0, W, H, 'F'); doc.setFillColor(...NAVY); doc.rect(0, 0, W, 8, 'F'); };
                     const eyebrow = (t, x, y, col = CORAL) => { doc.setFont('courier', 'bold'); doc.setFontSize(8); doc.setTextColor(...col); doc.text(t.toUpperCase(), x, y, { charSpace: 1.4 }); };
