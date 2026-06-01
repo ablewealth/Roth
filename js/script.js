@@ -126,19 +126,8 @@
                 ink: '#1e2a4a'
             };
 
-            // 2026 tax assumptions modeled as married filing jointly / joint return schedules.
-            // Federal figures reflect the IRS 2026 inflation adjustments (Rev. Proc. 2025-32) as
-            // amended by the One Big Beautiful Bill Act (OBBBA, 2025), which made the TCJA rate
-            // schedule (10/12/22/24/32/35/37%) permanent — there is no 2026 sunset to pre-TCJA rates.
-            const federalStandardDeduction = 32200; // 2026 MFJ standard deduction (OBBBA-adjusted)
-
-            // OBBBA "senior bonus" deduction: an additional deduction for taxpayers age 65+, available
-            // for tax years 2025–2028 only. Up to $6,000 per eligible person ($12,000 MFJ when both
-            // spouses are 65+). It phases out at 6% of MAGI above $150,000 (MFJ), fully eliminated at
-            // $350,000. Because this calculator models a joint return with a single tracked age, both
-            // spouses are assumed age-eligible in the year the modeled age reaches 65.
-            const seniorBonusDeductionMax = 12000;            // MFJ, both spouses 65+
-            const seniorBonusPhaseoutStart = 150000;          // MFJ MAGI threshold
+            // 2026 federal tax assumptions (IRS Rev. Proc. 2025-32, as amended by OBBBA which made the
+            // TCJA 10/12/22/24/32/35/37% schedule permanent). Brackets/deductions switch by filing status.
             const seniorBonusPhaseoutRate = 0.06;
             const seniorBonusFirstYear = 2025;
             const seniorBonusLastYear = 2028;
@@ -147,15 +136,81 @@
             const californiaBehavioralHealthThreshold = 1000000;
             const californiaBehavioralHealthTaxRate = 0.01;
 
-            const federalTaxBrackets = [
-                { min: 0, max: 24800, rate: 0.10 },
-                { min: 24800, max: 100800, rate: 0.12 },
-                { min: 100800, max: 211400, rate: 0.22 },
-                { min: 211400, max: 403550, rate: 0.24 },
-                { min: 403550, max: 512450, rate: 0.32 },
-                { min: 512450, max: 768700, rate: 0.35 },
-                { min: 768700, max: Infinity, rate: 0.37 }
-            ];
+            // Annual per-person Part B + Part D IRMAA surcharge above the base premium, by tier (≈2025).
+            const IRMAA_SURCHARGES = [1060, 2650, 4250, 5840, 6370];
+
+            const FILING_CONFIGS = {
+                mfj: {
+                    label: 'Married Filing Jointly',
+                    standardDeduction: 32200,
+                    seniorBonusMax: 12000,            // both spouses 65+ assumed
+                    seniorBonusPhaseoutStart: 150000,
+                    ssBase1: 32000, ssBase2: 44000,   // Social Security provisional-income thresholds
+                    medicareBeneficiaries: 2,
+                    irmaaThresholds: [212000, 266000, 334000, 400000, 750000],
+                    brackets: [
+                        { min: 0, max: 24800, rate: 0.10 },
+                        { min: 24800, max: 100800, rate: 0.12 },
+                        { min: 100800, max: 211400, rate: 0.22 },
+                        { min: 211400, max: 403550, rate: 0.24 },
+                        { min: 403550, max: 512450, rate: 0.32 },
+                        { min: 512450, max: 768700, rate: 0.35 },
+                        { min: 768700, max: Infinity, rate: 0.37 }
+                    ]
+                },
+                single: {
+                    label: 'Single',
+                    standardDeduction: 16100,
+                    seniorBonusMax: 6000,
+                    seniorBonusPhaseoutStart: 75000,
+                    ssBase1: 25000, ssBase2: 34000,
+                    medicareBeneficiaries: 1,
+                    irmaaThresholds: [106000, 133000, 167000, 200000, 500000],
+                    brackets: [
+                        { min: 0, max: 12400, rate: 0.10 },
+                        { min: 12400, max: 50400, rate: 0.12 },
+                        { min: 50400, max: 105700, rate: 0.22 },
+                        { min: 105700, max: 201775, rate: 0.24 },
+                        { min: 201775, max: 256225, rate: 0.32 },
+                        { min: 256225, max: 640600, rate: 0.35 },
+                        { min: 640600, max: Infinity, rate: 0.37 }
+                    ]
+                }
+            };
+
+            // Active federal config (mutated by setFilingStatus before each calculation).
+            let activeFiling = FILING_CONFIGS.mfj;
+            let federalTaxBrackets = activeFiling.brackets;
+            let federalStandardDeduction = activeFiling.standardDeduction;
+            let seniorBonusDeductionMax = activeFiling.seniorBonusMax;
+            let seniorBonusPhaseoutStart = activeFiling.seniorBonusPhaseoutStart;
+
+            function setFilingStatus(status) {
+                activeFiling = FILING_CONFIGS[status] || FILING_CONFIGS.mfj;
+                federalTaxBrackets = activeFiling.brackets;
+                federalStandardDeduction = activeFiling.standardDeduction;
+                seniorBonusDeductionMax = activeFiling.seniorBonusMax;
+                seniorBonusPhaseoutStart = activeFiling.seniorBonusPhaseoutStart;
+            }
+
+            // Taxable portion of Social Security (provisional-income method, 0/50/85% tiers).
+            function taxableSocialSecurity(ssBenefit, otherOrdinaryIncome) {
+                if (ssBenefit <= 0) return 0;
+                const provisional = otherOrdinaryIncome + 0.5 * ssBenefit;
+                const b1 = activeFiling.ssBase1, b2 = activeFiling.ssBase2;
+                if (provisional <= b1) return 0;
+                if (provisional <= b2) return Math.min(0.5 * ssBenefit, 0.5 * (provisional - b1));
+                return Math.min(0.85 * ssBenefit, 0.85 * (provisional - b2) + Math.min(0.5 * ssBenefit, 0.5 * (b2 - b1)));
+            }
+
+            // Annual Medicare IRMAA surcharge (Part B + D) for the household at a given MAGI.
+            function irmaaCost(magi) {
+                const t = activeFiling.irmaaThresholds;
+                let tier = 0;
+                for (let i = 0; i < t.length; i++) if (magi > t[i]) tier = i + 1;
+                return tier === 0 ? 0 : IRMAA_SURCHARGES[tier - 1] * activeFiling.medicareBeneficiaries;
+            }
+
 
             const stateTaxInfo = {
                 'NY': {
@@ -305,10 +360,11 @@
             // effective rate at the retiree's income level (a representative 4%-of-balance withdrawal,
             // or the RMD if larger, plus Social Security) and applies that to the balance.
             const getEffectiveRetirementRate = (balance, rmd, inputs) => {
-                const ssIncome = inputs.includeSocialSecurity ? inputs.socialSecurityBenefit : 0;
                 const withdrawal = Math.max(rmd, balance * 0.04);
-                // Other retirement income (pension, part-time, spouse) stacks on top, raising the rate.
-                const ordinaryIncome = withdrawal + ssIncome + (inputs.otherRetirementIncome || 0);
+                const otherIncome = withdrawal + (inputs.otherRetirementIncome || 0);
+                // Only the taxable portion of Social Security (provisional-income method) is ordinary income.
+                const taxableSS = inputs.includeSocialSecurity ? taxableSocialSecurity(inputs.socialSecurityBenefit, otherIncome) : 0;
+                const ordinaryIncome = otherIncome + taxableSS;
                 if (ordinaryIncome <= 0) return 0;
                 const fed = calculateFederalTax(ordinaryIncome) / ordinaryIncome;
                 // Retirement-era withdrawals are taxed in the retirement state of residence.
@@ -322,6 +378,8 @@
 
             // Enhanced input gathering
             function getCurrentInputs() {
+                // Activate the federal brackets/deductions for the selected filing status first.
+                setFilingStatus(document.getElementById('filingStatus').value);
                 return {
                     clientName: '',
                     stateResidency: document.getElementById('stateResidency').value,
@@ -348,6 +406,8 @@
                     discountRate: getInputValue('discountRate') / 100,
                     outsideFundsPct: getInputValue('outsideFundsPct') / 100,
                     taxableAccountReturn: getInputValue('taxableAccountReturn') / 100,
+                    filingStatus: document.getElementById('filingStatus').value,
+                    enableIRMAA: document.getElementById('enableIRMAA').checked,
                     rmdAge: getInputValue('rmdAge'),
                     includeSocialSecurity: document.getElementById('includeSocialSecurity').checked,
                     socialSecurityBenefit: getInputValue('socialSecurityBenefit'),
@@ -492,6 +552,10 @@
                 let pvDoNothingTax = 0;
                 let pvRothTax = 0;
 
+                // Cumulative Medicare IRMAA surcharges (today's-dollar terms) for each path.
+                let cumIrmaaDoNothing = 0;
+                let cumIrmaaConv = 0;
+
                 const analysisYears = normalizeAnalysisYear(inputs.analysisYear);
 
                 for (let year = 0; year <= analysisYears; year++) {
@@ -631,10 +695,24 @@
                     const convRemainingAfterTax = traditionalBalance * (1 - convRetireRate) + convSideAfterTax;
                     const conversionWealth = rothBalance + convRemainingAfterTax;
 
+                    // Medicare IRMAA: higher MAGI lifts Part B/D premiums (age 63+ MAGI sets premiums
+                    // ~2 years later). Conversions raise MAGI now but shrink later RMDs, so each path's
+                    // surcharge is computed on its own income and netted out of that path's wealth.
+                    if (inputs.enableIRMAA && age >= 63) {
+                        const workingIncome = age < inputs.retirementAge ? annualIncome : 0;
+                        const otherRet = age >= inputs.retirementAge ? (inputs.otherRetirementIncome || 0) : 0;
+                        const ssDN = (inputs.includeSocialSecurity && age >= inputs.retirementAge) ? taxableSocialSecurity(inputs.socialSecurityBenefit, workingIncome + rmd + otherRet) : 0;
+                        const ssC = (inputs.includeSocialSecurity && age >= inputs.retirementAge) ? taxableSocialSecurity(inputs.socialSecurityBenefit, workingIncome + convRmd + otherRet) : 0;
+                        const doNothingMAGI = workingIncome + rmd + otherRet + ssDN;
+                        const convMAGI = workingIncome + discountedConversionValue + convRmd + otherRet + ssC;
+                        cumIrmaaDoNothing += getDisplayValue(irmaaCost(doNothingMAGI), year, inputs);
+                        cumIrmaaConv += getDisplayValue(irmaaCost(convMAGI), year, inputs);
+                    }
+
                     const displayTraditionalBalance = getDisplayValue(noConvBalance, year, inputs);
                     const displayRothBalance = getDisplayValue(rothBalance, year, inputs);
-                    const displayNoConversionWealth = getDisplayValue(noConversionWealth, year, inputs);
-                    const displayConversionWealth = getDisplayValue(conversionWealth, year, inputs);
+                    const displayNoConversionWealth = getDisplayValue(noConversionWealth, year, inputs) - cumIrmaaDoNothing;
+                    const displayConversionWealth = getDisplayValue(conversionWealth, year, inputs) - cumIrmaaConv;
                     const displayNoConvIraAfterTax = getDisplayValue(noConvIraAfterTax, year, inputs);
                     const displayConvRemainingAfterTax = getDisplayValue(convRemainingAfterTax, year, inputs);
                     const displayOpportunityCost = getDisplayValue(afterTaxOpportunityCost, year, inputs);
@@ -683,6 +761,11 @@
                 data.doNothingLifetimeTax = pvDoNothingTax;
                 data.rothLifetimeTax = pvRothTax;
                 data.lifetimeTaxSavings = data.doNothingLifetimeTax - data.rothLifetimeTax;
+
+                // Medicare IRMAA totals (today's dollars). Positive delta = conversions add surcharges.
+                data.doNothingIrmaa = cumIrmaaDoNothing;
+                data.conversionIrmaa = cumIrmaaConv;
+                data.irmaaDelta = cumIrmaaConv - cumIrmaaDoNothing;
 
                 return data;
             }
@@ -1692,6 +1775,17 @@
                     });
                 }
 
+                // Medicare IRMAA impact of the conversion
+                if (analysisData.inputs.enableIRMAA && Math.abs(analysisData.irmaaDelta) > 50) {
+                    const addsCost = analysisData.irmaaDelta > 0;
+                    alerts.push({
+                        type: addsCost ? 'warning' : 'info',
+                        message: addsCost
+                            ? `Converting adds about ${formatCurrency(analysisData.irmaaDelta)} in Medicare IRMAA surcharges (higher premiums in conversion years). This is already reflected in the net advantage.`
+                            : `Converting lowers future Medicare IRMAA surcharges by about ${formatCurrency(-analysisData.irmaaDelta)} (smaller RMDs keep MAGI in lower premium tiers).`
+                    });
+                }
+
                 // Asset discount specific alerts
                 if (analysisData.inputs.enableAssetDiscount) {
                     const totalDiscount = (1 - analysisData.inputs.operationalReduction) * (1 - analysisData.inputs.valuationDiscount);
@@ -2135,6 +2229,7 @@
             function initialize() {
                 // Input change listeners
                 const inputsToWatch = [
+                    'filingStatus', 'enableIRMAA',
                     'stateResidency', 'currentAge', 'retirementAge', 'iraBalance',
                     'currentIncome', 'totalConversionAmount', 'conversionYears', 'preRetirementReturn',
                     'postRetirementReturn', 'inflationRate', 'adjustForInflation', 'multiYearStrategy', 'conversionStrategy',

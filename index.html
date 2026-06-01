@@ -2001,6 +2001,17 @@
         <section class="controls-well">
             <div class="controls-grid">
                 <div class="control">
+                    <div class="control-head"><label>Filing Status <span class="info" data-tip="Federal brackets, the standard deduction, the OBBBA senior bonus, Social Security taxation thresholds, and Medicare IRMAA tiers all depend on filing status. (State tax is modeled with its standard schedule.)">i</span></label></div>
+                    <div class="segmented" data-target="filingStatus">
+                        <button type="button" data-value="mfj" class="seg-btn active">Married Joint</button>
+                        <button type="button" data-value="single" class="seg-btn">Single</button>
+                    </div>
+                    <select id="filingStatus" class="visually-hidden">
+                        <option value="mfj">Married Filing Jointly</option>
+                        <option value="single">Single</option>
+                    </select>
+                </div>
+                <div class="control">
                     <div class="control-head"><label for="iraBalance">Current IRA Balance</label></div>
                     <div class="money"><span>$</span><input type="text" id="iraBalance" value="1,000,000" data-type="currency"></div>
                 </div>
@@ -2135,6 +2146,7 @@
             <div class="toggle-row">
                 <label class="toggle"><input type="checkbox" id="includeSocialSecurity"><span>Include Social Security</span></label>
                 <label class="toggle"><input type="checkbox" id="relocateInRetirement"><span>Relocate in retirement</span></label>
+                <label class="toggle"><input type="checkbox" id="enableIRMAA"><span>Model Medicare IRMAA</span></label>
                 <label class="toggle"><input type="checkbox" id="adjustForInflation" checked><span>Today's dollars</span></label>
                 <label class="toggle"><input type="checkbox" id="enableAssetDiscount"><span>Asset valuation discount</span></label>
             </div>
@@ -2305,14 +2317,16 @@
         <div class="disclosure">
             <i class="fas fa-circle-info disclosure-icon"></i>
             <p><strong>Tax Basis</strong><br>
-                Projections use 2026 federal income tax brackets and a $32,200 standard deduction for married couples
-                filing jointly, reflecting the IRS 2026 inflation adjustments (Rev. Proc. 2025-32) as amended by the
-                One Big Beautiful Bill Act (OBBBA). OBBBA made the current 10/12/22/24/32/35/37% rate schedule
-                permanent, so no reversion to pre-2018 rates is assumed. Where the modeled age reaches 65 during tax
-                years 2025&ndash;2028, the analysis applies the temporary OBBBA senior bonus deduction (up to $12,000
-                MFJ, phasing out above $150,000 of MAGI). Required minimum distributions begin at age 73 (SECURE 2.0).
-                State tax schedules (NY, NJ, CA) are modeled where selected; figures are illustrative and should be
-                confirmed against current published rates for the applicable tax year.</p>
+                Projections use 2026 federal income tax brackets and standard deductions for the selected filing status
+                (married filing jointly: $32,200; single: $16,100), reflecting the IRS 2026 inflation adjustments
+                (Rev. Proc. 2025-32) as amended by the One Big Beautiful Bill Act (OBBBA). OBBBA made the current
+                10/12/22/24/32/35/37% rate schedule permanent, so no reversion to pre-2018 rates is assumed. Where the
+                modeled age reaches 65 during tax years 2025&ndash;2028, the analysis applies the temporary OBBBA senior
+                bonus deduction ($6,000 single / $12,000 MFJ, phasing out above $75,000 / $150,000 of MAGI). Social
+                Security is taxed under the provisional-income method (0/50/85%); when enabled, Medicare IRMAA Part B/D
+                surcharges (age 63+) are estimated from representative tiers. Required minimum distributions begin at age
+                73 (SECURE 2.0). State tax schedules (NY, NJ, CA) use their standard schedule and are illustrative;
+                confirm all figures against current published rates for the applicable tax year.</p>
             <p><strong>Disclosure Statement</strong><br>
                 The information provided by the Roth Conversion Analyzer is intended for educational and illustrative
                 purposes only. The projections and calculations presented are based on assumptions input by the user and
