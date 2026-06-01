@@ -148,6 +148,7 @@
                     ssBase1: 32000, ssBase2: 44000,   // Social Security provisional-income thresholds
                     medicareBeneficiaries: 2,
                     irmaaThresholds: [212000, 266000, 334000, 400000, 750000],
+                    niitThreshold: 250000,            // 3.8% NIIT MAGI threshold (MFJ, not indexed)
                     brackets: [
                         { min: 0, max: 24800, rate: 0.10 },
                         { min: 24800, max: 100800, rate: 0.12 },
@@ -166,6 +167,7 @@
                     ssBase1: 25000, ssBase2: 34000,
                     medicareBeneficiaries: 1,
                     irmaaThresholds: [106000, 133000, 167000, 200000, 500000],
+                    niitThreshold: 200000,            // 3.8% NIIT MAGI threshold (single, not indexed)
                     brackets: [
                         { min: 0, max: 12400, rate: 0.10 },
                         { min: 12400, max: 50400, rate: 0.12 },
@@ -408,6 +410,7 @@
                     taxableAccountReturn: getInputValue('taxableAccountReturn') / 100,
                     filingStatus: document.getElementById('filingStatus').value,
                     enableIRMAA: document.getElementById('enableIRMAA').checked,
+                    enableNIIT: document.getElementById('enableNIIT').checked,
                     rmdAge: getInputValue('rmdAge'),
                     includeSocialSecurity: document.getElementById('includeSocialSecurity').checked,
                     socialSecurityBenefit: getInputValue('socialSecurityBenefit'),
@@ -688,10 +691,24 @@
                     pvDoNothingTax += doNothingTaxNominal / pvFactor;
                     pvRothTax += rothTaxNominal / pvFactor;
 
+                    // Each path's ordinary (non-gain) income this year — shared by NIIT and IRMAA.
+                    const workingIncome = age < inputs.retirementAge ? annualIncome : 0;
+                    const otherRet = age >= inputs.retirementAge ? (inputs.otherRetirementIncome || 0) : 0;
+                    const ssDN = (inputs.includeSocialSecurity && age >= inputs.retirementAge) ? taxableSocialSecurity(inputs.socialSecurityBenefit, workingIncome + rmd + otherRet) : 0;
+                    const ssC = (inputs.includeSocialSecurity && age >= inputs.retirementAge) ? taxableSocialSecurity(inputs.socialSecurityBenefit, workingIncome + convRmd + otherRet) : 0;
+                    const doNothingMAGI = workingIncome + rmd + otherRet + ssDN;
+                    const convMAGI = workingIncome + discountedConversionValue + convRmd + otherRet + ssC;
+
+                    // 3.8% Net Investment Income Tax on taxable-account gains once MAGI clears the
+                    // threshold. The do-nothing path holds larger taxable accounts (bigger RMDs + the
+                    // invested tax dollars), so NIIT modestly favors converting (Roth shelters gains).
+                    const niitDN = (inputs.enableNIIT && doNothingMAGI > activeFiling.niitThreshold) ? 0.038 : 0;
+                    const niitC = (inputs.enableNIIT && convMAGI > activeFiling.niitThreshold) ? 0.038 : 0;
+
                     // After-tax wealth of each whole-portfolio strategy at this point in time.
-                    const afterTaxOpportunityCost = afterTaxTaxable(opportunityCost, opportunityCostBasis, inputs.capitalGainsRate);
-                    const convSideAfterTax = afterTaxTaxable(convSide, convSideBasis, inputs.capitalGainsRate);
-                    const noConvSideAfterTax = afterTaxTaxable(noConvSide, noConvSideBasis, inputs.capitalGainsRate);
+                    const afterTaxOpportunityCost = afterTaxTaxable(opportunityCost, opportunityCostBasis, inputs.capitalGainsRate + niitDN);
+                    const convSideAfterTax = afterTaxTaxable(convSide, convSideBasis, inputs.capitalGainsRate + niitC);
+                    const noConvSideAfterTax = afterTaxTaxable(noConvSide, noConvSideBasis, inputs.capitalGainsRate + niitDN);
 
                     // No-conversion baseline: full IRA taxed at retirement + reinvested RMDs + the tax
                     // dollars (that a conversion would have spent) left invested in a taxable account.
@@ -706,12 +723,8 @@
                     // prior (the lookback). Conversions raise MAGI now but shrink later RMDs, so each
                     // path's surcharge is computed on its own income and netted out of its wealth.
                     if (inputs.enableIRMAA) {
-                        const workingIncome = age < inputs.retirementAge ? annualIncome : 0;
-                        const otherRet = age >= inputs.retirementAge ? (inputs.otherRetirementIncome || 0) : 0;
-                        const ssDN = (inputs.includeSocialSecurity && age >= inputs.retirementAge) ? taxableSocialSecurity(inputs.socialSecurityBenefit, workingIncome + rmd + otherRet) : 0;
-                        const ssC = (inputs.includeSocialSecurity && age >= inputs.retirementAge) ? taxableSocialSecurity(inputs.socialSecurityBenefit, workingIncome + convRmd + otherRet) : 0;
-                        magiDoNothingHistory.push(workingIncome + rmd + otherRet + ssDN);
-                        magiConvHistory.push(workingIncome + discountedConversionValue + convRmd + otherRet + ssC);
+                        magiDoNothingHistory.push(doNothingMAGI);
+                        magiConvHistory.push(convMAGI);
 
                         if (age >= 65) {
                             const lb = year - 2;
@@ -2242,7 +2255,7 @@
             function initialize() {
                 // Input change listeners
                 const inputsToWatch = [
-                    'filingStatus', 'enableIRMAA',
+                    'filingStatus', 'enableIRMAA', 'enableNIIT',
                     'stateResidency', 'currentAge', 'retirementAge', 'iraBalance',
                     'currentIncome', 'totalConversionAmount', 'conversionYears', 'preRetirementReturn',
                     'postRetirementReturn', 'inflationRate', 'adjustForInflation', 'multiYearStrategy', 'conversionStrategy',
