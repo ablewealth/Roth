@@ -695,20 +695,26 @@
                     const workingIncome = age < inputs.retirementAge ? annualIncome : 0;
                     const otherRet = age >= inputs.retirementAge ? (inputs.otherRetirementIncome || 0) : 0;
                     const ssDN = (inputs.includeSocialSecurity && age >= inputs.retirementAge) ? taxableSocialSecurity(inputs.socialSecurityBenefit, workingIncome + rmd + otherRet) : 0;
-                    const ssC = (inputs.includeSocialSecurity && age >= inputs.retirementAge) ? taxableSocialSecurity(inputs.socialSecurityBenefit, workingIncome + convRmd + otherRet) : 0;
+                    const ssC = (inputs.includeSocialSecurity && age >= inputs.retirementAge) ? taxableSocialSecurity(inputs.socialSecurityBenefit, workingIncome + convRmd + otherRet + discountedConversionValue) : 0;
                     const doNothingMAGI = workingIncome + rmd + otherRet + ssDN;
                     const convMAGI = workingIncome + discountedConversionValue + convRmd + otherRet + ssC;
 
-                    // 3.8% Net Investment Income Tax on taxable-account gains once MAGI clears the
-                    // threshold. The do-nothing path holds larger taxable accounts (bigger RMDs + the
-                    // invested tax dollars), so NIIT modestly favors converting (Roth shelters gains).
-                    const niitDN = (inputs.enableNIIT && doNothingMAGI > activeFiling.niitThreshold) ? 0.038 : 0;
-                    const niitC = (inputs.enableNIIT && convMAGI > activeFiling.niitThreshold) ? 0.038 : 0;
+                    // After-tax value of a taxable account, with the 3.8% NIIT applied to the LESSER of
+                    // the realized gain or the MAGI above the threshold (the actual rule — no cliff that
+                    // taxes the entire gain the moment MAGI ticks $1 over the line). The do-nothing path
+                    // holds larger taxable accounts (bigger RMDs + the invested tax dollars), so NIIT
+                    // modestly favors converting (the Roth shelters those gains).
+                    const afterTaxWithNIIT = (value, basis, baseMAGI) => {
+                        const gain = Math.max(0, value - basis);
+                        if (gain <= 0) return value;
+                        const niitGain = inputs.enableNIIT ? Math.min(gain, Math.max(0, baseMAGI + gain - activeFiling.niitThreshold)) : 0;
+                        return value - (gain * inputs.capitalGainsRate + niitGain * 0.038);
+                    };
 
                     // After-tax wealth of each whole-portfolio strategy at this point in time.
-                    const afterTaxOpportunityCost = afterTaxTaxable(opportunityCost, opportunityCostBasis, inputs.capitalGainsRate + niitDN);
-                    const convSideAfterTax = afterTaxTaxable(convSide, convSideBasis, inputs.capitalGainsRate + niitC);
-                    const noConvSideAfterTax = afterTaxTaxable(noConvSide, noConvSideBasis, inputs.capitalGainsRate + niitDN);
+                    const afterTaxOpportunityCost = afterTaxWithNIIT(opportunityCost, opportunityCostBasis, doNothingMAGI);
+                    const convSideAfterTax = afterTaxWithNIIT(convSide, convSideBasis, convMAGI);
+                    const noConvSideAfterTax = afterTaxWithNIIT(noConvSide, noConvSideBasis, doNothingMAGI);
 
                     // No-conversion baseline: full IRA taxed at retirement + reinvested RMDs + the tax
                     // dollars (that a conversion would have spent) left invested in a taxable account.
@@ -728,8 +734,11 @@
 
                         if (age >= 65) {
                             const lb = year - 2;
-                            const dnMAGI = lb >= 0 ? magiDoNothingHistory[lb] : magiDoNothingHistory[magiDoNothingHistory.length - 1];
-                            const cMAGI = lb >= 0 ? magiConvHistory[lb] : magiConvHistory[magiConvHistory.length - 1];
+                            // Before the 2-year history exists (first two years), fall back to the
+                            // baseline first-year do-nothing MAGI for both paths, so a year-0 conversion
+                            // doesn't trigger its own IRMAA immediately (it surfaces 2 years later).
+                            const dnMAGI = lb >= 0 ? magiDoNothingHistory[lb] : magiDoNothingHistory[0];
+                            const cMAGI = lb >= 0 ? magiConvHistory[lb] : magiDoNothingHistory[0];
                             cumIrmaaDoNothing += getDisplayValue(irmaaCost(dnMAGI), year, inputs);
                             cumIrmaaConv += getDisplayValue(irmaaCost(cMAGI), year, inputs);
                         }
