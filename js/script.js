@@ -149,6 +149,7 @@
                     medicareBeneficiaries: 2,
                     irmaaThresholds: [212000, 266000, 334000, 400000, 750000],
                     niitThreshold: 250000,            // 3.8% NIIT MAGI threshold (MFJ, not indexed)
+                    ltcg0Top: 96700, ltcg15Top: 600050,  // 2026 long-term capital-gains breakpoints (MFJ)
                     brackets: [
                         { min: 0, max: 24800, rate: 0.10 },
                         { min: 24800, max: 100800, rate: 0.12 },
@@ -168,6 +169,7 @@
                     medicareBeneficiaries: 1,
                     irmaaThresholds: [106000, 133000, 167000, 200000, 500000],
                     niitThreshold: 200000,            // 3.8% NIIT MAGI threshold (single, not indexed)
+                    ltcg0Top: 48350, ltcg15Top: 533400,  // 2026 long-term capital-gains breakpoints (single)
                     brackets: [
                         { min: 0, max: 12400, rate: 0.10 },
                         { min: 12400, max: 50400, rate: 0.12 },
@@ -211,6 +213,19 @@
                 let tier = 0;
                 for (let i = 0; i < t.length; i++) if (magi > t[i]) tier = i + 1;
                 return tier === 0 ? 0 : IRMAA_SURCHARGES[tier - 1] * activeFiling.medicareBeneficiaries;
+            }
+
+            // Progressive long-term capital-gains tax: the gain stacks on top of ordinary taxable
+            // income and is taxed across the 0/15/20% breakpoints (so a big conversion can push gains
+            // into a higher LTCG bracket that year).
+            function progressiveLTCG(gain, ordinaryTaxableIncome) {
+                if (gain <= 0) return 0;
+                const base = Math.max(0, ordinaryTaxableIncome);
+                const end = base + gain;
+                const t0 = activeFiling.ltcg0Top, t15 = activeFiling.ltcg15Top;
+                const at15 = Math.max(0, Math.min(end, t15) - Math.max(base, t0));
+                const at20 = Math.max(0, end - Math.max(base, t15));
+                return at15 * 0.15 + at20 * 0.20;   // the 0% band contributes no tax
             }
 
 
@@ -411,6 +426,13 @@
                     filingStatus: document.getElementById('filingStatus').value,
                     enableIRMAA: document.getElementById('enableIRMAA').checked,
                     enableNIIT: document.getElementById('enableNIIT').checked,
+                    progressiveCapGains: document.getElementById('progressiveCapGains').checked,
+                    stepUpAtDeath: document.getElementById('stepUpAtDeath').checked,
+                    modelSurvivor: document.getElementById('modelSurvivor').checked,
+                    survivorAge: getInputValue('survivorAge'),
+                    modelHeir: document.getElementById('modelHeir').checked,
+                    heirTaxRate: getInputValue('heirTaxRate') / 100,
+                    customStateRate: getInputValue('customStateRate') / 100,
                     rmdAge: getInputValue('rmdAge'),
                     includeSocialSecurity: document.getElementById('includeSocialSecurity').checked,
                     socialSecurityBenefit: getInputValue('socialSecurityBenefit'),
@@ -511,6 +533,11 @@
                 // for programmatic callers such as Monte Carlo / sensitivity).
                 setFilingStatus(inputs.filingStatus);
 
+                // A user-supplied flat rate makes "Other / no-listed-state" a real (e.g. IL, MA) state.
+                stateTaxInfo.other.brackets = inputs.customStateRate > 0
+                    ? [{ min: 0, max: Infinity, rate: inputs.customStateRate }]
+                    : [];
+
                 const data = {
                     years: [],
                     traditionalIRA: [],
@@ -571,6 +598,11 @@
                 for (let year = 0; year <= analysisYears; year++) {
                     const age = inputs.currentAge + year;
                     const isRetired = age >= inputs.retirementAge;
+
+                    // Widow(er) penalty: after the first spouse passes, the survivor files Single, which
+                    // compresses brackets and lifts the retirement rate (a strong case for converting).
+                    const widowed = inputs.filingStatus === 'mfj' && inputs.modelSurvivor && age >= inputs.survivorAge;
+                    setFilingStatus(widowed ? 'single' : inputs.filingStatus);
                     const returnRate = isRetired ? inputs.postRetirementReturn : inputs.preRetirementReturn;
                     const annualIncome = inputs.currentIncome * Math.pow(1 + inputs.incomeGrowthRate, Math.min(year, inputs.retirementAge - inputs.currentAge));
 
@@ -685,8 +717,13 @@
                     // plus the income tax to liquidate the remaining IRA in the final year. The Roth
                     // path also pays the conversion tax (totalTax) in conversion years.
                     const isFinalYear = year === analysisYears;
-                    const doNothingTaxNominal = rmd * noConvRetireRate + (isFinalYear ? noConvBalance * noConvRetireRate : 0);
-                    const rothTaxNominal = totalTax + convRmd * convRetireRate + (isFinalYear ? traditionalBalance * convRetireRate : 0);
+                    // SECURE Act 10-year rule: non-spouse heirs must drain an inherited Traditional IRA
+                    // within 10 years, often at a higher rate than the owner's. When modeled, the final
+                    // (legacy) liquidation of the remaining IRA uses the heir's rate instead.
+                    const iraRateDN = (isFinalYear && inputs.modelHeir) ? inputs.heirTaxRate : noConvRetireRate;
+                    const iraRateC = (isFinalYear && inputs.modelHeir) ? inputs.heirTaxRate : convRetireRate;
+                    const doNothingTaxNominal = rmd * noConvRetireRate + (isFinalYear ? noConvBalance * iraRateDN : 0);
+                    const rothTaxNominal = totalTax + convRmd * convRetireRate + (isFinalYear ? traditionalBalance * iraRateC : 0);
                     const pvFactor = Math.pow(1 + inputs.discountRate, year);
                     pvDoNothingTax += doNothingTaxNominal / pvFactor;
                     pvRothTax += rothTaxNominal / pvFactor;
@@ -707,8 +744,15 @@
                     const afterTaxWithNIIT = (value, basis, baseMAGI) => {
                         const gain = Math.max(0, value - basis);
                         if (gain <= 0) return value;
+                        // Step-up in basis at death: the final-year (death) liquidation escapes capital
+                        // gains tax entirely for taxable accounts (the heir inherits a stepped-up basis).
+                        if (inputs.stepUpAtDeath && isFinalYear) return value;
+                        const ordinaryTaxable = Math.max(0, baseMAGI - federalStandardDeduction);
+                        const capGainsTax = inputs.progressiveCapGains
+                            ? progressiveLTCG(gain, ordinaryTaxable)
+                            : gain * inputs.capitalGainsRate;
                         const niitGain = inputs.enableNIIT ? Math.min(gain, Math.max(0, baseMAGI + gain - activeFiling.niitThreshold)) : 0;
-                        return value - (gain * inputs.capitalGainsRate + niitGain * 0.038);
+                        return value - (capGainsTax + niitGain * 0.038);
                     };
 
                     // After-tax wealth of each whole-portfolio strategy at this point in time.
@@ -716,13 +760,13 @@
                     const convSideAfterTax = afterTaxWithNIIT(convSide, convSideBasis, convMAGI);
                     const noConvSideAfterTax = afterTaxWithNIIT(noConvSide, noConvSideBasis, doNothingMAGI);
 
-                    // No-conversion baseline: full IRA taxed at retirement + reinvested RMDs + the tax
-                    // dollars (that a conversion would have spent) left invested in a taxable account.
-                    const noConvIraAfterTax = noConvBalance * (1 - noConvRetireRate);
+                    // No-conversion baseline: full IRA taxed at retirement (heir's rate in the final
+                    // legacy year) + reinvested RMDs + the tax dollars left invested in a taxable account.
+                    const noConvIraAfterTax = noConvBalance * (1 - iraRateDN);
                     const noConversionWealth = noConvIraAfterTax + noConvSideAfterTax + afterTaxOpportunityCost;
 
                     // Conversion strategy: tax-free Roth + after-tax value of any unconverted IRA + RMDs.
-                    const convRemainingAfterTax = traditionalBalance * (1 - convRetireRate) + convSideAfterTax;
+                    const convRemainingAfterTax = traditionalBalance * (1 - iraRateC) + convSideAfterTax;
                     const conversionWealth = rothBalance + convRemainingAfterTax;
 
                     // Medicare IRMAA: surcharges are paid starting at age 65, set by MAGI from 2 years
@@ -781,6 +825,9 @@
                     data.opportunityGrowth[year] = displayOpportunityCost > 0 && displayCumulativeTaxes > 0 ? (displayOpportunityCost / displayCumulativeTaxes - 1) : 0;
                 }
 
+                // Restore the base filing status for any post-loop / chart computations.
+                setFilingStatus(inputs.filingStatus);
+
                 // Calculate summary metrics
                 data.breakEvenYear = data.netAdvantage.findIndex(adv => adv > 0);
                 data.totalAdvantage = data.netAdvantage[analysisYears];
@@ -818,7 +865,18 @@
                 document.getElementById('maxBracketDiv').classList.toggle('hidden', strategy !== 'optimized' || !isMultiYear);
 
                 document.getElementById('socialSecurityDiv').classList.toggle('hidden', !document.getElementById('includeSocialSecurity').checked);
-                document.getElementById('retirementStateDiv').classList.toggle('hidden', !document.getElementById('relocateInRetirement').checked);
+                const relocate = document.getElementById('relocateInRetirement').checked;
+                document.getElementById('retirementStateDiv').classList.toggle('hidden', !relocate);
+
+                // Custom state rate shows when the current or retirement state is "Other".
+                const usesOther = document.getElementById('stateResidency').value === 'other'
+                    || (relocate && document.getElementById('retirementState').value === 'other');
+                document.getElementById('customStateDiv').classList.toggle('hidden', !usesOther);
+
+                // Survivor age only matters for joint filers; heir rate when legacy value is modeled.
+                const survivorOn = document.getElementById('modelSurvivor').checked && document.getElementById('filingStatus').value === 'mfj';
+                document.getElementById('survivorDiv').classList.toggle('hidden', !survivorOn);
+                document.getElementById('heirDiv').classList.toggle('hidden', !document.getElementById('modelHeir').checked);
 
                 const enableDiscount = document.getElementById('enableAssetDiscount').checked;
                 document.getElementById('assetDiscountDiv').classList.toggle('hidden', !enableDiscount);
@@ -2265,6 +2323,7 @@
                 // Input change listeners
                 const inputsToWatch = [
                     'filingStatus', 'enableIRMAA', 'enableNIIT',
+                    'progressiveCapGains', 'stepUpAtDeath', 'modelSurvivor', 'survivorAge', 'modelHeir', 'heirTaxRate', 'customStateRate',
                     'stateResidency', 'currentAge', 'retirementAge', 'iraBalance',
                     'currentIncome', 'totalConversionAmount', 'conversionYears', 'preRetirementReturn',
                     'postRetirementReturn', 'inflationRate', 'adjustForInflation', 'multiYearStrategy', 'conversionStrategy',

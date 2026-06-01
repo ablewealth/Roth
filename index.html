@@ -1975,7 +1975,7 @@
                         <button type="button" data-state="CA">CA</button>
                         <button type="button" data-state="FL">FL</button>
                         <button type="button" data-state="TX">TX</button>
-                        <button type="button" data-state="other">No tax</button>
+                        <button type="button" data-state="other">Other</button>
                     </div>
                 </div>
                 <div class="header-meta">
@@ -2138,8 +2138,20 @@
                         <option value="CA">California</option>
                         <option value="FL">Florida (no tax)</option>
                         <option value="TX">Texas (no tax)</option>
-                        <option value="other">Other (no state tax)</option>
+                        <option value="other">Other (custom rate)</option>
                     </select>
+                </div>
+                <div class="control" id="customStateDiv">
+                    <div class="control-head"><label for="customStateRate">Custom State Tax Rate <span class="info" data-tip="A flat state income-tax rate applied when the state of residency (or retirement state) is set to 'Other'. Use this for states not in the list (e.g. IL ~4.95%, MA ~5%, PA ~3.07%).">i</span></label><span class="control-val" id="customStateRate_val"></span></div>
+                    <input type="range" id="customStateRate" min="0" max="13" step="0.05" value="0" data-unit="%">
+                </div>
+                <div class="control" id="survivorDiv">
+                    <div class="control-head"><label for="survivorAge">Survivor Single From Age <span class="info" data-tip="When the first spouse passes, the survivor files Single — compressing brackets and raising the retirement rate. Set the age at which the modeled person becomes a single filer.">i</span></label><span class="control-val" id="survivorAge_val"></span></div>
+                    <input type="range" id="survivorAge" min="70" max="100" step="1" value="85" data-unit="">
+                </div>
+                <div class="control" id="heirDiv">
+                    <div class="control-head"><label for="heirTaxRate">Heir's Tax Rate <span class="info" data-tip="Under the SECURE Act, non-spouse heirs must empty an inherited Traditional IRA within 10 years, often at a higher rate than yours. This rate is applied to the remaining IRA in the final (legacy) year.">i</span></label><span class="control-val" id="heirTaxRate_val"></span></div>
+                    <input type="range" id="heirTaxRate" min="0" max="50" step="1" value="32" data-unit="%">
                 </div>
             </div>
 
@@ -2148,6 +2160,10 @@
                 <label class="toggle"><input type="checkbox" id="relocateInRetirement"><span>Relocate in retirement</span></label>
                 <label class="toggle"><input type="checkbox" id="enableIRMAA"><span>Model Medicare IRMAA</span></label>
                 <label class="toggle"><input type="checkbox" id="enableNIIT" checked><span>Apply 3.8% NIIT</span></label>
+                <label class="toggle"><input type="checkbox" id="progressiveCapGains" checked><span>Progressive cap gains</span></label>
+                <label class="toggle"><input type="checkbox" id="stepUpAtDeath" checked><span>Step-up at death</span></label>
+                <label class="toggle"><input type="checkbox" id="modelSurvivor"><span>Survivor (widow) penalty</span></label>
+                <label class="toggle"><input type="checkbox" id="modelHeir"><span>Heir / legacy value</span></label>
                 <label class="toggle"><input type="checkbox" id="adjustForInflation" checked><span>Today's dollars</span></label>
                 <label class="toggle"><input type="checkbox" id="enableAssetDiscount"><span>Asset valuation discount</span></label>
             </div>
